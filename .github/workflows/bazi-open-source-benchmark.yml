@@ -1,0 +1,82 @@
+name: bazi-open-source-benchmark
+
+on:
+  push:
+    branches:
+      - feature/bazi-engine-v1
+
+permissions:
+  contents: read
+
+jobs:
+  reference-vectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      TZ: Asia/Shanghai
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Run independent reference engines
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$(mktemp -d)"
+          cd "$work"
+          npm init -y >/dev/null
+          npm install --no-audit --no-fund tyme4ts@1.5.2 @4n6h4x0r/stem-branch@0.8.0 manseryeok@2.0.0
+          cat > bench.mjs <<'EOF'
+          import { SolarTime } from 'tyme4ts';
+          import { computeFourPillars } from '@4n6h4x0r/stem-branch';
+          import { calculateFourPillars } from 'manseryeok';
+
+          const vectors = [
+            { id: 'ordinary-shanghai', y: 2005, m: 12, d: 23, h: 8, min: 37 },
+            { id: 'late-zi', y: 1988, m: 2, d: 15, h: 23, min: 30 },
+            { id: 'pre-lichun', y: 1992, m: 2, d: 2, h: 12, min: 0 },
+            { id: 'leap-day', y: 2000, m: 2, d: 29, h: 12, min: 0 },
+          ];
+
+          function stemBranchPillar(p) {
+            return `${p.stem}${p.branch}`;
+          }
+
+          function stemBranchResult(v) {
+            const p = computeFourPillars(new Date(v.y, v.m - 1, v.d, v.h, v.min, 0));
+            return [p.year, p.month, p.day, p.hour].map(stemBranchPillar).join(' ');
+          }
+
+          function tymeResult(v) {
+            return SolarTime.fromYmdHms(v.y, v.m, v.d, v.h, v.min, 0)
+              .getLunarHour()
+              .getEightChar()
+              .toString();
+          }
+
+          function manseryeokResult(v, dayBoundary = 'midnight') {
+            const r = calculateFourPillars({
+              year: v.y,
+              month: v.m,
+              day: v.d,
+              hour: v.h,
+              minute: v.min,
+              dayBoundary,
+            });
+            const o = r.toHanjaObject();
+            return [o.year.hanja, o.month.hanja, o.day.hanja, o.hour.hanja].join(' ');
+          }
+
+          for (const v of vectors) {
+            const result = {
+              vector: v,
+              tyme4ts_1_5_2: tymeResult(v),
+              stem_branch_0_8_0: stemBranchResult(v),
+              manseryeok_2_0_0_midnight: manseryeokResult(v, 'midnight'),
+              manseryeok_2_0_0_jasi: manseryeokResult(v, 'jasi'),
+            };
+            console.log(`REFERENCE_VECTOR ${JSON.stringify(result)}`);
+          }
+          EOF
+          node bench.mjs
