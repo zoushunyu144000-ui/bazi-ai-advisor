@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: read
+  issues: write
+  pull-requests: write
 
 jobs:
   reference-vectors:
@@ -14,6 +16,7 @@ jobs:
     timeout-minutes: 10
     env:
       TZ: Asia/Shanghai
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -79,4 +82,16 @@ jobs:
             console.log(`REFERENCE_VECTOR ${JSON.stringify(result)}`);
           }
           EOF
-          node bench.mjs
+          node bench.mjs | tee results.txt
+          {
+            echo "## Open-source BaZi benchmark evidence"
+            echo
+            echo "Commit: \`${GITHUB_SHA}\`"
+            echo "Runner: Node 22, TZ=Asia/Shanghai"
+            echo "Pinned references: tyme4ts@1.5.2, @4n6h4x0r/stem-branch@0.8.0, manseryeok@2.0.0"
+            echo
+            echo '```text'
+            cat results.txt
+            echo '```'
+          } > pr-comment.md
+          gh pr comment 5 --repo zoushunyu144000-ui/bazi-ai-advisor --body-file pr-comment.md
