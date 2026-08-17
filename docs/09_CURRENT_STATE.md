@@ -11,7 +11,6 @@
 - Default branch：`main`
 - Foundation branch：`foundation/mvp-v1`
 - Foundation PR：#1（Draft，尚未合并）
-- Initial foundation engineering commit：`35b7bbc05fe12c9b0162090b49ff244de8d0d5d9`
 - 最新 Foundation head：以 PR #1 当前 `head_sha` 为准
 
 ## 2. 当前已完成
@@ -24,7 +23,7 @@
 - `docs/00_PROJECT_INDEX.md` ～ `docs/11_CHATGPT_PROJECT_INSTRUCTIONS.md`
 - `docs/HANDOFF_TEMPLATE.md`
 
-Foundation 分支保留并同步这套治理系统，不覆盖其他窗口成果。
+Foundation 分支已经安全吸收并保留这套治理系统，同时补充工程安全边界；没有覆盖或删除其他窗口成果。
 
 ### Foundation 工程（PR #1）
 
@@ -66,12 +65,17 @@ Foundation 分支保留并同步这套治理系统，不覆盖其他窗口成果
 
 已建立共享 Domain Contracts、版本字段规范、虚构 mock fixtures 与 `db/schema.sql`。
 
+PR 已针对并行更新的 `main` 处理历史冲突；最近一次检查为 `mergeable: true`。PR 继续保持 Draft，因为完整依赖级验证仍待确认。
+
 ## 3. 当前验证状态
 
 已确认：
 
 - `git diff --check`：通过
 - Domain Contracts + fixtures 独立 TypeScript 校验：通过
+- 基于最小模块 stub 的 foundation 源码静态 TypeScript 校验：通过
+- `eslint.config.mjs` / `postcss.config.mjs` JavaScript 语法检查：通过
+- `package.json` / `components.json` JSON 解析：通过
 - GitHub 远端 branch/commit/PR：已创建并可读取
 
 尚未确认：
@@ -80,7 +84,9 @@ Foundation 分支保留并同步这套治理系统，不覆盖其他窗口成果
 - 完整 `npm run typecheck`
 - 完整 `npm run build`
 
-原因：当前执行 sandbox 无法解析 npm registry DNS，因此不能安装完整依赖；GitHub App 能写代码/PR，但当前读取 Actions workflow run 明细返回 403。仓库已经加入 `.github/workflows/ci.yml`，在结果可访问前 PR 保持 Draft，不把未验证状态写成“通过”。
+原因：当前执行 sandbox 无法从 npm registry 完成依赖安装；GitHub App 能写代码/PR，但当前读取 Actions workflow run 明细返回 403。仓库已经加入 `.github/workflows/ci.yml`，并尝试发布可读取的 commit status；在真实完整检查结果可确认前，PR 保持 Draft，不把未验证状态写成“通过”。
+
+当前尚未生成并提交 `package-lock.json`；应在可正常访问 npm registry 的环境中执行 `npm install` 后生成。
 
 ## 4. 外部服务状态
 
@@ -109,10 +115,11 @@ npm run typecheck
 npm run build
 ```
 
-## 6. 正在进行
+## 6. Foundation 当前剩余阻塞
 
-- Foundation PR 与并行建立的 `/docs` 项目治理提交安全整合
-- 完整 CI 验证结果待可访问环境确认
+- 在可访问 npm registry / GitHub Actions 的环境中完成真实 `lint` / `typecheck` / `build`
+- 生成并提交 lockfile
+- 验证通过后再将 PR 从 Draft 转为 Ready；本窗口不自行合并，不部署 Production
 
 ## 7. 下一步
 
