@@ -105,6 +105,60 @@
 
 ---
 
+## D-006 — V1 Foundation 技术栈
+
+日期：2026-08-17
+状态：Approved / Implemented in PR #1
+
+### 决定
+
+V1 Foundation 采用：
+
+- Next.js + TypeScript + App Router
+- Tailwind CSS + shadcn/ui 基础配置
+- PostgreSQL / Supabase
+- Supabase Auth
+- Vercel 作为部署目标
+- Vercel AI SDK + 可替换 Provider / Gateway 边界
+- PostHog 作为 Analytics 预留
+
+具体 package versions 以 `package.json` 为准；外部 Supabase/Vercel/Payment/AI Provider 尚未因为本决策而自动连接。
+
+### 原因
+
+该组合满足单体 MVP 快速交付，同时保留确定性八字 Engine、AI Provider、支付与分析层的清晰边界。
+
+### 影响
+
+后续窗口应优先复用当前基础目录与 Contracts，不另起不兼容的平行架构。
+
+---
+
+## D-007 — 生成型数据统一版本字段
+
+日期：2026-08-17
+状态：Approved / Implemented in foundation contracts
+
+### 决定
+
+跨 Engine、Interpretation、Report 与 AI 层统一使用：
+
+- `engine_version`
+- `rule_profile_version`
+- `mapping_version`
+- `prompt_version`
+- `report_schema_version`
+
+### 原因
+
+保证历史结果可复现、映射规则与 Prompt 可回滚、报告 schema 可迁移，并支持后续灰度/A-B 实验。
+
+### 影响
+
+后续生成 chart / derived features / report 的窗口不得静默移除这些版本信息；若版本语义变化，应新增 Decision Log 并协调 `types/domain/`。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：

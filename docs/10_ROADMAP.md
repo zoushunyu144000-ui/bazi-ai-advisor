@@ -6,7 +6,7 @@
 
 目标：保证多 GPT 窗口长期协作不会因上下文压缩而失控。
 
-状态：进行中 / 基本建立。
+状态：**已建立基础体系，持续维护。**
 
 包含：
 - 项目索引
@@ -26,15 +26,31 @@
 
 目标：形成可部署、可迭代的基础网站。
 
-任务：
-- 初始化 Web 工程
-- 确认框架与版本
-- 建立基础页面布局
-- 配置环境变量规范
-- 连接 Vercel Preview / Production
-- 建立基础错误处理
+状态：**Foundation 工程与依赖级验收已完成；PR #1 已 Ready for review，等待合并 `main`。**
 
-完成后必须更新：`04_TECH_ARCHITECTURE.md` 与 `09_CURRENT_STATE.md`。
+Foundation 已完成：
+
+- Next.js / TypeScript / App Router 初始化
+- Tailwind CSS 与 shadcn/ui 基础配置
+- 基础页面 route shell
+- 模块目录边界
+- `.env.example`
+- Domain Contracts 与版本字段
+- PostgreSQL / Supabase foundation schema
+- 共享 mock fixtures
+- README / AGENTS / CI workflow
+- `package-lock.json` 生成并提交
+- CI 改为 `npm ci` 锁定依赖安装
+- `npm run lint` 通过
+- `npm run typecheck` 通过
+- `npm run build` 通过
+
+Foundation 合并后仍属于后续 Web / 部署工作的事项：
+
+- Vercel Preview project 独立绑定本仓库
+- 基础 error boundary / loading strategy
+
+**不得把本仓库连接或部署覆盖到任何其他既有 Vercel 项目。**
 
 ## Phase 2 — 免费八字测试闭环
 
@@ -56,12 +72,12 @@
 目标：实现第一笔可真实交付的付费产品。
 
 任务：
-- 用户/身份方案
-- 数据库
+- 用户/身份方案落地
+- Supabase database/migrations
 - Full Report Schema
 - Prompt v1
 - 支付供应商
-- 订单/Webhook
+- 订单/Webhook 幂等审计
 - Full Report entitlement
 - 锁定/解锁 UI
 - 支付成功/失败恢复流程
@@ -117,4 +133,4 @@
 
 新增品类必须通过新的 Decision Log 决策进入 Roadmap。
 
-最后更新：2026-08-17
+最后更新：2026-08-18

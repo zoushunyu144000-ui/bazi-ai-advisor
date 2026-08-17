@@ -1,6 +1,6 @@
 # 04 — Technical Architecture
 
-状态：Draft。任何未确认技术选型均保持 TBD。
+状态：Foundation v1 已实现于 `foundation/mvp-v1` / PR #1，尚未合并到 `main`。
 
 ## 1. 架构目标
 
@@ -12,106 +12,124 @@ V1 技术架构优先级：
 4. 支持后续海外用户、多币种和扩容
 5. 不为了未来假设过度工程化
 
-## 2. 当前已知工程环境
+## 2. 当前工程基线
 
-- GitHub repository：`zoushunyu144000-ui/bazi-ai-advisor`
-- 默认分支：`main`
-- Vercel：计划用于网站部署/预览；具体项目连接状态需由部署窗口确认并写回 Current State
+实际代码以 `package.json` 与仓库配置为准：
 
-## 3. 建议逻辑模块
+- Web：Next.js `16.2.11`
+- React：`19.2.6`
+- TypeScript：`^5.8.0`，strict mode
+- Routing：Next.js App Router
+- CSS：Tailwind CSS `^4.1.0`
+- UI 基线：shadcn/ui 配置文件 `components.json` + `lib/utils.ts`
+- Database：PostgreSQL / Supabase 作为 V1 目标数据库
+- Auth：Supabase Auth 作为 V1 目标认证方案
+- AI：Vercel AI SDK `^6.0.0`，通过 provider / gateway adapter 保持模型可替换
+- Deployment：Vercel；**当前尚未绑定本仓库的正式 Vercel Project，也未执行 Production 部署**
+- Analytics：PostHog 环境变量已预留，尚未接入
 
-### Web App
-负责：
-- Landing / 表单 / 报告 / 顾问 UI
-- Auth 状态
-- API 调用
-- 支付跳转/结果页
+Supabase、支付、AI Provider、PostHog 当前均只完成工程接口/环境变量预留，不代表已经连接真实服务。
 
-框架与具体版本：TBD，实际初始化代码一旦落库，以代码为准并更新本文件。
+## 3. 目录与逻辑模块
 
-### Bazi Engine
-负责：
-- 出生信息标准化
-- 时区/地点处理
-- 四柱排盘
-- 十神、五行、旺衰等结构化派生数据
-- 大运/流年计算
+```text
+app/                 App Router 与基础 route shell
+modules/
+  bazi/              确定性排盘边界
+  interpretation/    结构化解释边界
+  ai/                provider / gateway 适配边界
+  billing/           订单、权益、钱包、顾问次数
+  poster/            分享海报预留
+  analytics/         产品分析边界
+lib/                 通用工具
+db/                  PostgreSQL / Supabase schema
+types/domain/        跨窗口共享 Domain Contracts
+tests/fixtures/      共享虚构 fixtures
+```
 
-原则：排盘计算与自然语言解释分离。
+## 4. 核心数据流
 
-### Report Service
-负责：
-- 将结构化命盘转为可追踪、可缓存的报告输入
-- 调用 AI 生成报告
-- 保存报告版本
-- 控制免费/付费章节权益
-
-### AI Advisor
-负责：
-- 获取用户命盘上下文
-- 获取已生成报告摘要/章节
-- 管理问答次数
-- 调用 LLM
-- 保存对话所需数据
-
-### Auth / User
-供应商：TBD。
-
-### Database
-供应商：TBD。逻辑模型见 `05_DATABASE_SCHEMA.md`。
-
-### Payment
-供应商：TBD。业务规则见 `07_BUSINESS_RULES.md`。
-
-## 4. 关键架构边界
+```text
+BirthProfile
+  ↓
+Deterministic Bazi Engine
+  ↓
+BaziChart + BaziCalculationMetadata
+  ↓
+BaziDerivedFeatures
+  ↓
+Interpretation Engine
+  ↓
+PersonalityProfile / Report
+  ↓
+AI Advisor
+```
 
 ### 确定性计算 vs AI 生成
 
 必须分离：
 
-- 八字排盘与历法计算：确定性代码/可靠算法
-- 对命盘的语言解释：AI / 规则结合
+- 四柱、历法与核心排盘：确定性代码 / 可测试算法
+- 语言解释、报告组织、顾问建议：LLM / 规则结合
 
-禁止让 LLM 自行“猜”四柱作为唯一排盘来源。
+禁止把原始出生日期/时间直接交给 LLM，让模型自由生成四柱作为真实命盘。
 
-### 权益控制
+## 5. 共享 Contract 与版本化
 
-付费权限必须由服务端/数据库校验，不得只靠前端隐藏组件。
+`types/domain/` 是模块间与多窗口间的公共接口，禁止用 `any` 绕过边界。
 
-### AI 次数扣减
+生成型数据统一预留以下版本字段：
 
-顾问次数扣减必须可追踪，并防止重复扣减。具体事务方案在数据库/后端实现时冻结。
+- `engine_version`
+- `rule_profile_version`
+- `mapping_version`
+- `prompt_version`
+- `report_schema_version`
 
-## 5. 环境建议
+目的：历史结果可复现、规则可灰度升级、报告可追溯、Prompt 可回滚。
+
+## 6. 权益与支付边界
+
+- 付费权限必须由服务端 / 数据库校验，不只靠前端隐藏组件。
+- 金额使用整数 minor units。
+- AI 顾问次数使用整数 wallet + credit ledger。
+- 顾问扣减、支付回调与账本写入必须支持幂等/事务策略。
+- 当前 foundation 不接真实支付。
+
+## 7. 环境
 
 至少区分：
+
 - Local
 - Preview
 - Production
 
-敏感信息只放环境变量/Secret，不提交到 GitHub。
+Secret 只放环境变量 / Secret Store，不提交 Git。`.env.example` 仅列变量名。
 
-## 6. 版本化要求
+## 8. 基础页面
 
-以下内容建议有版本字段：
-- Bazi calculation version
-- Report prompt version
-- Report schema version
-- Advisor system prompt version
-- Pricing / entitlement version（如后续需要）
+已建立仅用于开发衔接的 route shell：
 
-这样历史用户报告可以追溯生成逻辑。
+- `/`
+- `/birth`
+- `/result`
+- `/report`
+- `/advisor`
+- `/account`
 
-## 7. 待确认
+这些不是最终视觉设计，也不代表业务功能已完成。
 
-- 前端框架及版本
-- Auth
-- Database
+## 9. 尚未实现 / 待后续窗口确认
+
+- 完整八字算法及历法库选择
+- 人格映射规则
+- Supabase 实例连接与 migration 执行
+- 真实 Supabase Auth 流程
 - Payment provider
-- Bazi calculation library/implementation
-- LLM provider/model
-- Observability / analytics
+- AI Provider / model 与 Prompt
+- PostHog 实际接入
+- Vercel Project 绑定与 Preview / Production 策略落地
 - Email provider
-- Localization architecture
+- Localization 完整架构
 
 最后更新：2026-08-17
