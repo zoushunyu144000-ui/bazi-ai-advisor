@@ -26,9 +26,9 @@
 
 目标：形成可部署、可迭代的基础网站。
 
-状态：**Foundation code 已在 `foundation/mvp-v1` / PR #1 实现，等待完整 CI 确认与合并。**
+状态：**Foundation 工程与依赖级验收已完成；PR #1 已 Ready for review，等待合并 `main`。**
 
-已完成于 Foundation：
+Foundation 已完成：
 
 - Next.js / TypeScript / App Router 初始化
 - Tailwind CSS 与 shadcn/ui 基础配置
@@ -39,13 +39,16 @@
 - PostgreSQL / Supabase foundation schema
 - 共享 mock fixtures
 - README / AGENTS / CI workflow
+- `package-lock.json` 生成并提交
+- CI 改为 `npm ci` 锁定依赖安装
+- `npm run lint` 通过
+- `npm run typecheck` 通过
+- `npm run build` 通过
 
-仍待 Phase 1 完成：
+Foundation 合并后仍属于后续 Web / 部署工作的事项：
 
-- 完整 `lint` / `typecheck` / `build` 可见确认
-- package lockfile 在可访问 npm registry 的环境中生成并提交
 - Vercel Preview project 独立绑定本仓库
-- 基础 error boundary / loading strategy（可由后续 Web 窗口完成）
+- 基础 error boundary / loading strategy
 
 **不得把本仓库连接或部署覆盖到任何其他既有 Vercel 项目。**
 
@@ -130,4 +133,4 @@
 
 新增品类必须通过新的 Decision Log 决策进入 Roadmap。
 
-最后更新：2026-08-17
+最后更新：2026-08-18
