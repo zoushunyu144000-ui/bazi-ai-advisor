@@ -32,7 +32,7 @@ jobs:
           npm install --no-audit --no-fund tyme4ts@1.5.2 @4n6h4x0r/stem-branch@0.8.0 manseryeok@2.0.0
           cat > bench.mjs <<'EOF'
           import { SolarTime } from 'tyme4ts';
-          import { computeFourPillars } from '@4n6h4x0r/stem-branch';
+          import { computeFourPillars, getUtcOffset } from '@4n6h4x0r/stem-branch';
           import { calculateFourPillars } from 'manseryeok';
 
           const vectors = [
@@ -78,13 +78,21 @@ jobs:
               stem_branch_0_8_0: stemBranchResult(v),
               manseryeok_2_0_0_midnight: manseryeokResult(v, 'midnight'),
               manseryeok_2_0_0_jasi: manseryeokResult(v, 'jasi'),
+              manseryeok_2_0_0_splitJasi: manseryeokResult(v, 'splitJasi'),
             };
             console.log(`REFERENCE_VECTOR ${JSON.stringify(result)}`);
           }
+
+          console.log(`TIMEZONE_VECTOR ${JSON.stringify({
+            id: 'prc-dst-1990-summer',
+            local: '1990-06-01 12:00',
+            timezone: 'Asia/Shanghai',
+            stem_branch_offset_minutes: getUtcOffset(1990, 6, 1, 12, 0, 'Asia/Shanghai'),
+          })}`);
           EOF
           node bench.mjs | tee results.txt
           {
-            echo "## Open-source BaZi benchmark evidence"
+            echo "## Open-source BaZi benchmark evidence (expanded)"
             echo
             echo "Commit: \`${GITHUB_SHA}\`"
             echo "Runner: Node 22, TZ=Asia/Shanghai"
