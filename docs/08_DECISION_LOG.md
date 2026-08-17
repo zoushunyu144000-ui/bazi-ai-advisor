@@ -401,6 +401,58 @@ PR #4、#5、#6 分别把同一个 root `npm test` 改成自己的模块测试�
 
 ---
 
+## D-015 — Research Before Build / Reuse First
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+从现在开始，所有重要工程模块和重要依赖选型必须执行 **Research Before Build / Reuse First**。
+
+固定优先级：
+
+```text
+成熟可靠库直接复用
+>
+Adapter 封装成熟实现
+>
+参考成熟实现补齐少量业务逻辑
+>
+最后才自行从零实现
+```
+
+开发前至少调查并记录：
+
+- GitHub 成熟开源实现
+- npm 成熟库
+- 可复用 API / MCP / skill / 平台能力
+- License 与商业使用兼容性
+- 当前维护状态 / 最近 release / commit / security
+- 测试、文档、边界规则
+- Adapter 接入可能性
+- 风险与替代方案
+
+禁止为了“代码归自己”而无研究依据重复实现已有成熟能力，尤其包括：历法、节气、干支、时区/DST 数据与基础转换、基础排盘、常见 UI primitives、认证、数据库基础能力。
+
+所有重要外部依赖与参考项目统一登记到 `docs/12_REUSE_AND_REFERENCES.md`。聊天窗口不得仅凭记忆选择依赖；每次重要依赖决策必须重新检查官方来源。
+
+### 原因
+
+多窗口并行开发容易出现重复造轮子、同一基础事实由多个模块重复实现、依赖选型缺少 License/维护状态核查等问题。成熟基础能力通过 Adapter 复用，可以降低算法错误、维护成本和跨模块漂移，同时保留 Domain Contract 与产品规则的自主控制。
+
+### 影响
+
+- `AGENTS.md` 把 Reuse First 升级为所有工程窗口的强制工作协议。
+- `docs/04_TECH_ARCHITECTURE.md` 明确“deterministic 不等于从零手写”，第三方能力优先经 Adapter 隔离。
+- 新建 `docs/12_REUSE_AND_REFERENCES.md` 作为依赖/参考选型长期 source of truth。
+- 原 `docs/12_WAVE1_CONTRACT_INTEGRATION.md` 顺延为 `docs/13_WAVE1_CONTRACT_INTEGRATION.md`。
+- PR #4/#5 当前自研 DST overlap/gap 逻辑在最终 Merge Gate 前必须补一次 Reuse First 复核；能由成熟平台/库承担的 timezone database 与基础转换不得继续自行维护。
+- PR #5 的 `tyme4ts` 继续只允许通过 Adapter 接入，并保留 golden-vector/rule-profile 验证；不得把第三方类型泄漏到 shared Domain。
+- Auth / Database / UI primitives 继续优先复用已批准的 Supabase / PostgreSQL / shadcn/ui 等成熟能力。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
