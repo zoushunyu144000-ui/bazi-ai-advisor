@@ -2,156 +2,153 @@
 
 最后更新：2026-08-18
 
-> 本文件描述“现在真实做到哪里”。只有实际存在于仓库/分支/部署环境或已明确 Approved 的事项才写为已完成。
+> 本文件描述“现在真实做到哪里”。只有实际存在于仓库/分支/PR/部署环境或已明确 Approved 的事项才写为已完成。
 
 ## 1. Repository
 
 - GitHub：`zoushunyu144000-ui/bazi-ai-advisor`
 - Visibility：Private
 - Default branch：`main`
-- Foundation branch：`foundation/mvp-v1`
-- Foundation PR：#1（**已合并 / closed**）
+- Foundation PR：#1（Merged / Closed）
 - Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
-- Merge Commit / 当前 Foundation 合并基线：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- PR #1 merged at：2026-08-17T16:34:25Z
+- Foundation Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
+- Wave 1 shared integration branch：`feature/wave1-contract-integration`
 
-**Foundation 已正式进入 `main`。**
+Foundation 已正式进入 `main`。Foundation 后还有项目治理文档提交进入 `main`；因此不得再把 Foundation Merge Commit 误写成“当前 main HEAD”。
 
-截至本次状态同步前的 GitHub 核对，`main` HEAD 为上述 Merge Commit `f3b0fc9e0590b016d242031ffbcb00c5f7617306`。
+## 2. Wave 1 第一轮开发真实状态
 
-## 2. Foundation 已完成并进入 main
+当前开放 PR：
 
-### 工程基础
+- #2 `design/product-visual-v1`
+- #3 `feature/interpretation-v1`
+- #4 `feature/birth-normalization-v1`
+- #5 `feature/bazi-engine-v1`
+- #6 `feature/supabase-core-v1`
 
-- Next.js `16.2.11`
-- React `19.2.6`
-- TypeScript `^5.8.0` strict
-- App Router
-- Tailwind CSS `^4.1.0`
-- shadcn/ui 基础配置
-- PostgreSQL / Supabase foundation schema
-- Supabase Auth / DB 环境变量与依赖预留
-- Vercel AI SDK provider abstraction 基础依赖
-- PostHog 环境变量预留
+这些 PR **尚未合并**。
 
-已建立：
+总指挥跨 PR 检查后发现共享测试入口、canonical Bazi facts ownership、DST replay、Bazi relations/luck persistence 与 calculation metadata read path 存在需要统一的 Contract 问题。
 
-- `app/`
-- `modules/bazi/`
-- `modules/interpretation/`
-- `modules/ai/`
-- `modules/billing/`
-- `modules/poster/`
-- `modules/analytics/`
-- `lib/`
-- `db/`
-- `types/domain/`
-- `tests/fixtures/`
+因此当前进入 **Wave 1.5 Contract Integration Gate**。
 
-基础 route shell：
+## 3. Wave 1.5 已冻结的共享决定
 
-- `/`
-- `/birth`
-- `/result`
-- `/report`
-- `/advisor`
-- `/account`
+### Canonical Bazi facts
 
-共享 Domain Contracts、版本字段规范、虚构 mock fixtures 与 `db/schema.sql` 已建立并随 PR #1 合并进入 `main`。
+02 Bazi Engine 是传统命理结构事实唯一来源，负责：
 
-### 依赖锁定
-
-- 已在 GitHub Actions 可访问 npm registry 的环境中执行真实依赖安装。
-- 已生成并提交 `package-lock.json`（lockfileVersion 3）。
-- CI 已切换为基于 lockfile 的 `npm ci`，不再使用未锁定的依赖安装作为验收路径。
-
-## 3. Foundation 验收与合并状态
-
-PR #1：`foundation: initialize Bazi MVP architecture`
-
-状态：**Merged**
-
-GitHub 已核实：
-
-- PR state：`closed`
-- merged：`true`
-- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
-- Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-
-Foundation HEAD 对应 GitHub Actions CI run 已完成，结论为 `success`。
-
-验收步骤均通过：
-
-- Install dependencies：`npm ci --no-audit --no-fund`
-- Lint：`npm run lint`
-- Typecheck：`npm run typecheck`
-- Build：`npm run build`
-
-CI workflow 位于 `.github/workflows/ci.yml`，使用 Node.js 22，并对 `foundation/**`、`feature/**`、`fix/**` push 以及面向 `main` 的 pull request 执行验证。
-
-此前“PR #1 Ready for review / 尚未合并 / 等待总指挥决定合并”的状态已经失效，不得继续作为当前项目状态引用。
-
-## 4. 当前开发阶段：Wave 1 并行开发
-
-**当前正式进入 Wave 1 并行开发。**
-
-统一分支基线规则：
-
-1. 后续所有开发窗口必须先同步最新 `main`。
-2. 所有新的业务/功能开发统一从最新 `main` 创建各自的 `feature/*` branch。
-3. 不得继续以旧的 `foundation/mvp-v1` 作为新功能开发基线。
-4. 各窗口继续遵守 `AGENTS.md`、共享 Domain Contracts 与项目记忆回写规则。
-5. 并行窗口如需修改 `types/domain/` 等共享 Contract，应先协调影响面，避免产生不兼容的平行定义。
-
-Wave 1 表示 Foundation 后的并行开发阶段，不代表扩大 V1 产品范围；V1 仍只聚焦八字。
-
-## 5. 项目治理 / 记忆系统
-
-项目治理体系继续保留：
-
-- `AGENTS.md`
-- `docs/00_PROJECT_INDEX.md` ～ `docs/11_CHATGPT_PROJECT_INSTRUCTIONS.md`
-- `docs/HANDOFF_TEMPLATE.md`
-
-Foundation 合并没有覆盖或删除项目记忆体系。
-
-本文件、`docs/10_ROADMAP.md` 与 `docs/08_DECISION_LOG.md` 已在 PR #1 合并后同步真实状态。
-
-## 6. 外部服务状态
-
-Foundation 合并不改变以下状态：
-
-- Vercel Project：未绑定 / 未部署 Production
-- Supabase Project：未连接真实实例，schema 尚未执行
-- Supabase Auth：未实现真实登录流程
-- Payment provider：TBD，未接真实支付
-- Bazi calculation library / algorithm：TBD，未实现完整算法
-- AI Provider / model：TBD，未配置真实 Provider 或 Prompt
-- Analytics：PostHog 仅预留变量，未接入
-
-## 7. 本地开发与验证
-
-```bash
-npm ci
-npm run dev
+```text
+BirthProfile
+→ BaziChart
+→ canonical BaziDerivedFeatures
 ```
 
-验收：
+04 Interpretation 不再独立计算第二套：
 
-```bash
+- 五行分布
+- 十神分布
+- 日主强弱
+- 季节结构
+
+### Score scale
+
+- `WeightedElementScore.score`：0–100 percentage
+- `WeightedTenGodScore.score`：0–100 percentage
+- `confidence`：仍为 0–1
+
+### DST replay
+
+`BirthProfile` 已在 integration branch 增加：
+
+- `resolvedBirthInstant?`
+- `utcOffsetMinutesAtBirth?`
+
+03 一旦完成 DST overlap disambiguation，02 必须使用 resolved instant，不得再次猜 occurrence。
+
+### Bazi calculation context
+
+shared Domain 已在 integration branch 设计：
+
+- `BaziRelation`
+- `BaziLuckStructure`
+- `BaziCalculationContext`
+- `BaziCalculationResult`
+
+目标是保证 02 → 08 → 04/07 链路不丢 metadata、relations、luck 或 canonical derived features。
+
+### PersonalityDimension
+
+V1 暂不扩大 shared `PersonalityDimension`。
+
+`contributors`、`positiveExpression`、`stressExpression`、`explanationCodes` 继续留在 04 module-local `dimensionDetails`。
+
+## 4. 统一测试入口
+
+integration branch 已定义统一 root scripts：
+
+```text
+npm run test:birth
+npm run test:bazi
+npm run test:interpretation
+npm run test:backend
+npm test
+```
+
+`npm test` 顺序运行四个模块测试。
+
+CI 统一为：
+
+```text
+npm ci
 npm run lint
 npm run typecheck
+npm test
 npm run build
 ```
 
-## 8. 下一步边界
+Wave 1 feature PR 最终 merge 前必须吸收这一统一测试入口，不得继续覆盖 root `npm test` 为单模块测试。
 
-Foundation 工程地基已经完成验收并正式合并 `main`。
+## 5. 当前仍未完成
 
-后续窗口统一从最新 `main` 创建 feature branch，并继续遵守：
+Wave 1.5 integration branch 只负责 shared Contract / integration specification，不代表 #2～#6 已完成返工。
 
-- `AGENTS.md`
-- `types/domain/` 共享 Contract
-- 确定性 Bazi Engine 与 LLM 解释层分离
-- 不擅自扩展 V1 到八字以外品类
-- 不连接或覆盖任何“典外文库 / Extra-Canonical Library / bible-library-complete”仓库或 Vercel 项目
+在各 PR 最终 merge 前仍需要：
+
+- #4 Birth：把 resolved instant / UTC offset 写入 shared BirthProfile
+- #5 Bazi：使用 resolved instant；canonical distribution 改为 0–100；shared relations/luck/result
+- #3 Interpretation：消费 #5 canonical BaziDerivedFeatures；停止重算传统命理事实
+- #6 Supabase：持久化 Birth instant/offset、relations/luck，并提供完整 calculation context/result read path
+- #2 Visual：按独立视觉验收结论处理，不因 Contract Integration 自动 merge
+
+具体返工清单见 `docs/12_WAVE1_CONTRACT_INTEGRATION.md`。
+
+## 6. 外部服务状态
+
+- Vercel Production：未由本 Contract Integration 部署
+- Supabase Production：未由本 Contract Integration 应用 migration
+- Payment provider：未接真实支付
+- AI Provider / Prompt：本轮未实现
+- Analytics：本轮未实现
+
+## 7. 工程边界
+
+Wave 1.5 不新增：
+
+- 八字算法业务扩展
+- 支付功能
+- AI Prompt / Advisor 业务
+- 网页视觉改动
+- 新命理品类
+
+本轮只统一 shared contracts、tests、CI 与 integration docs。
+
+## 8. 下一步
+
+1. 合并 Contract Integration PR 到 `main`（需总指挥批准）
+2. #4 / #5 / #3 / #6 分别吸收最新 `main` 并做最小返工
+3. 每个返工 PR 运行统一 CI + cumulative `npm test`
+4. 按依赖顺序逐个 merge，不批量盲合
+5. #2 按视觉验收单独决定
+
+最后更新：2026-08-18

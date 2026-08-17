@@ -40,6 +40,8 @@
 - `08_DECISION_LOG.md`：重要决定、原因与状态
 - `09_CURRENT_STATE.md`：项目当前真实状态
 - `10_ROADMAP.md`：阶段路线图与下一步
+- `11_CHATGPT_PROJECT_INSTRUCTIONS.md`：ChatGPT 项目窗口协作规则
+- `12_WAVE1_CONTRACT_INTEGRATION.md`：Wave 1.5 shared Contract、测试入口、各工程窗口最小返工与 Merge Gate
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口/阶段交接模板
 
 ## AI 工作协议
@@ -52,4 +54,4 @@
 
 重要信息必须回写仓库，不得只存在于聊天记录中。
 
-最后更新：2026-08-17
+最后更新：2026-08-18

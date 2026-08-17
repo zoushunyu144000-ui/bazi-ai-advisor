@@ -222,6 +222,185 @@ Foundation 已成为正式主线的一部分。统一从最新 `main` 分叉可�
 
 ---
 
+## D-010 — 02 是 canonical BaziDerivedFeatures 唯一传统命理事实来源
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+02 Bazi Engine 负责：
+
+```text
+BirthProfile
+→ BaziChart
+→ canonical BaziDerivedFeatures
+```
+
+以下事实不得由 04 Interpretation 再建立第二套计算：
+
+- 五行分布
+- 十神分布
+- 日主强弱
+- 季节结构
+
+`WeightedElementScore.score` 与 `WeightedTenGodScore.score` 统一为 **0–100 percentage scale**；完整分布在浮点舍入容差内应合计约 100。
+
+`confidence` 继续使用 0–1，二者语义不得混淆。
+
+04 可以计算 Interpretation-only signals，例如 element balance、ten-god concentration、visible yang ratio、personality contributors，但这些不属于第二套 `BaziDerivedFeatures`。
+
+### 原因
+
+Wave 1 检查发现 02 与 04 同时独立计算传统命理事实，而且 score scale 分别出现 0–1 与 0–100。若不收敛，会导致同一用户在不同层得到互相矛盾的基础数据。
+
+### 影响
+
+- 02 必须把当前 element/Ten-God distribution 从 0–1 fraction 改为 0–100 percentage。
+- 04 必须消费 02 的 canonical `BaziDerivedFeatures`，删除/停用重复传统事实推导。
+- 数据库只保存 canonical 02 facts，不持久化第二套 Interpretation 命理事实。
+
+---
+
+## D-011 — Birth 已解析 UTC instant 是 DST overlap 的下游 source of truth
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+共享 `BirthProfile` 增加：
+
+- `resolvedBirthInstant?: ISODateTime`
+- `utcOffsetMinutesAtBirth?: number`
+
+03 Birth 一旦完成 DST overlap disambiguation，应写入这两个字段。
+
+02 收到 `resolvedBirthInstant` 后必须直接使用它，不能再次对 ambiguous civil time 自行选择 earlier/later occurrence。
+
+08 必须把两字段持久化并完整读取。
+
+### 原因
+
+Wave 1 检查发现 03 已经能解析 overlap 并得到 resolved instant / offset，但 shared BirthProfile 无法保存结果；02 因而会再次解析，并默认 earlier occurrence，可能改变用户已经确认的实际出生 instant。
+
+### 影响
+
+- `resolvedBirthInstant` 是下游 deterministic calculation 的 canonical instant。
+- `utcOffsetMinutesAtBirth` 作为 occurrence 与审计辅助信息。
+- unknown birth time / legacy records 允许字段缺失。
+
+---
+
+## D-012 — Shared Bazi calculation context 必须可完整持久化与读回
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+把以下类型提升到 shared Domain：
+
+- `BaziRelation`
+- `BaziLuckStructure`
+- `BaziCalculationContext`
+- `BaziCalculationResult`
+
+定义：
+
+```text
+BaziCalculationContext
+= BaziChart
++ BaziCalculationMetadata
++ BaziRelation[]
++ BaziLuckStructure
+
+BaziCalculationResult
+= BaziCalculationContext
++ BaziDerivedFeatures
+```
+
+`BaziChart` 保持纯命盘结构。
+
+08 必须保证保存路径和读取路径对称：metadata、relations、luck 不能“保存了但标准 API 读不回来”。
+
+### 原因
+
+Tier 3 AI Advisor 后续需要重载干支关系、大运方向、起运年龄、大运周期和 calculation metadata。模块本地类型会在 02 → 08 → 07 链路中丢失。
+
+### 影响
+
+- 02 删除或别名化 module-local relation/luck/result 类型，改用 shared Contract。
+- 08 为 `bazi_charts` 增加 relations / luck persistence，并提供 calculation context/result read path。
+- 07 后续只消费共享 result/context，不自己重算命理上下文。
+
+---
+
+## D-013 — Root npm test 聚合所有 Wave 1 模块测试
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+Root 测试入口统一：
+
+- `npm run test:birth`
+- `npm run test:bazi`
+- `npm run test:interpretation`
+- `npm run test:backend`
+- `npm test`：顺序执行以上全部测试
+
+CI 必须在 typecheck 后、build 前运行 `npm test`。
+
+各业务 feature PR 不得再把 root `test` 覆盖为只运行自己的测试套件。
+
+在 Wave 1 分支逐个整合期间，尚不存在的 `tests/<module>` 目录可以被 shared runner 明确 skip；目录一旦存在却没有可执行测试则 hard fail。
+
+### 原因
+
+PR #4、#5、#6 分别把同一个 root `npm test` 改成自己的模块测试，PR #3 则没有接入 root test。按任意顺序合并都会覆盖其他模块测试入口。
+
+### 影响
+
+所有 Wave 1 工程 PR 在最终 merge 前必须 rebase/merge 最新 integration baseline，并保留统一 root scripts。
+
+---
+
+## D-014 — V1 暂不扩大 shared PersonalityDimension
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+共享 `PersonalityDimension` V1 继续保持现有核心字段：
+
+- `key`
+- `label`
+- `score`
+- `confidence`
+- `evidenceKeys`
+
+04 提议的：
+
+- contributors
+- positiveExpression
+- stressExpression
+- explanationCodes
+
+暂时保留在 Interpretation module-local `dimensionDetails`，本轮不提升到 shared Contract。
+
+### 原因
+
+当前持久化与跨模块消费并未证明必须扩大公共 API。过早提升会增加 Report / DB / UI 的耦合面。
+
+### 影响
+
+若后续 Report 或数据库 first-class persistence 明确需要这些字段，再新增 Contract change 与 Decision Log；不得在单一窗口静默扩展共享 `PersonalityDimension`。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：

@@ -10,7 +10,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "npm run test:birth && npm run test:bazi && npm run test:interpretation && npm run test:backend",
+    "test:birth": "node scripts/run-test-suite.mjs birth",
+    "test:bazi": "node scripts/run-test-suite.mjs bazi",
+    "test:interpretation": "node scripts/run-test-suite.mjs interpretation",
+    "test:backend": "node scripts/run-test-suite.mjs backend"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
