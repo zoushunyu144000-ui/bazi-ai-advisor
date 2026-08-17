@@ -67,4 +67,20 @@
 - 不确定信息明确标注 `TBD`，禁止把猜测写成既定事实。
 - 文档与代码不一致时，优先核查真实代码并同步修正文档。
 
+## 7. 工程安全边界
+
+- 本仓库只用于 **Bazi AI Advisor / AI 命理与现代行为指导系统**。
+- 严禁修改、复制到、部署覆盖或重新绑定任何名为 `bible-library-complete`、`典外文库`、`Extra-Canonical Library` 或其他圣经/经外文献项目的仓库或 Vercel 项目。
+- Feature branch 不得直接部署 Production；Production 只允许从批准后的主线发布。
+- Secret 不得提交 Git。
+
+## 8. 架构不变量
+
+1. 原始出生信息必须先进入确定性八字 Engine，再进入解释层。
+2. LLM 不得从原始出生日期/时间自由计算四柱；LLM 只处理结构化结果的解释、报告和行为建议。
+3. `types/domain/` 是跨窗口共享 API，修改语义前必须明确协调影响面。
+4. 生成型数据必须保留版本字段：`engine_version`、`rule_profile_version`、`mapping_version`、`prompt_version`、`report_schema_version`。
+5. 金额使用整数 minor units；顾问次数使用整数 ledger，不使用浮点余额。
+6. 支付、钱包与账本写入必须在可信服务端执行并具备幂等性。
+
 最后更新：2026-08-17
