@@ -1,0 +1,33 @@
+name: bazi-lockgen
+
+on:
+  push:
+    branches:
+      - feature/bazi-engine-v1
+
+permissions:
+  contents: write
+
+jobs:
+  lockfile:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: feature/bazi-engine-v1
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Refresh exact npm lockfile
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit lockfile if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: refresh bazi dependency lock"
+            git push origin HEAD:feature/bazi-engine-v1
+          fi

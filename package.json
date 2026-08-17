@@ -10,7 +10,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "node -e \"require('node:fs').rmSync('.tmp/bazi-tests',{recursive:true,force:true})\" && tsc -p tests/bazi/tsconfig.json && node --test .tmp/bazi-tests/tests/bazi/*.test.js"
   },
   "dependencies": {
     "@supabase/ssr": "0.12.4",
@@ -20,7 +21,8 @@
     "next": "16.2.11",
     "react": "19.2.6",
     "react-dom": "19.2.6",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "tyme4ts": "1.5.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.0",
