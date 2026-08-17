@@ -33,7 +33,7 @@ jobs:
       - name: Commit generated lockfile
         if: github.event_name == 'push'
         run: |
-          if git diff --quiet -- package-lock.json; then
+          if [ -z "$(git status --porcelain -- package-lock.json)" ]; then
             echo "package-lock.json is already up to date"
             exit 0
           fi
