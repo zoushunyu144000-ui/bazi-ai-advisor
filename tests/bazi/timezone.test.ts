@@ -19,3 +19,9 @@ test('DST overlaps use an explicit deterministic earlier-instant rule',()=>{
   assert.equal(r.ambiguous,true);
   assert.equal(new Date(r.instantMs).toISOString(),'2024-11-03T05:30:00.000Z');
 });
+
+test('China 1990 summer civil time resolves with historical PRC DST (UTC+9)',()=>{
+  const r=localPartsToInstant({year:1990,month:6,day:1,hour:12,minute:0,second:0},'Asia/Shanghai');
+  assert.equal(new Date(r.instantMs).toISOString(),'1990-06-01T03:00:00.000Z');
+  assert.deepEqual(partsAtInstant(r.instantMs,'Asia/Shanghai'),{year:1990,month:6,day:1,hour:12,minute:0,second:0});
+});
