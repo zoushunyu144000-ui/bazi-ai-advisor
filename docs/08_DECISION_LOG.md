@@ -159,6 +159,44 @@ V1 Foundation 采用：
 
 ---
 
+## D-008 — Foundation 合并后统一以最新 main 作为 Wave 1 开发基线
+
+日期：2026-08-18
+状态：Approved / Active
+
+### 决定
+
+Foundation PR #1 已正式合并 `main`。
+
+核实基线：
+
+- Foundation branch：`foundation/mvp-v1`
+- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
+- Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
+- Foundation CI：通过
+
+自此项目进入 **Wave 1 并行开发**。
+
+所有后续开发窗口必须：
+
+1. 先同步最新 `main`。
+2. 从最新 `main` 创建各自独立的 `feature/*` branch。
+3. 不再从旧的 `foundation/mvp-v1` 分支开始新功能开发。
+4. 并行开发时继续遵守 `AGENTS.md`、共享 Domain Contracts 与项目记忆回写规则。
+
+### 原因
+
+Foundation 已成为正式主线的一部分。统一从最新 `main` 分叉可以保证所有并行窗口共享同一工程地基，减少因旧基线、重复实现或 Contract 漂移导致的冲突。
+
+### 影响
+
+- `foundation/mvp-v1` 转为已完成 Foundation 的历史分支/参考分支。
+- `main` 成为 Wave 1 所有新 feature branch 的唯一统一开发基线。
+- Wave 1 只表示开发阶段切换，不改变 D-001 的 V1 产品范围。
+- 具体 Wave 1 任务由 00 号总调度 / 用户分配，本决策不擅自新增业务功能。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
@@ -179,4 +217,4 @@ V1 Foundation 采用：
 ...
 ```
 
-最后更新：2026-08-17
+最后更新：2026-08-18
