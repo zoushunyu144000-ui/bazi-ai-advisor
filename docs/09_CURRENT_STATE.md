@@ -10,10 +10,16 @@
 - Visibility：Private
 - Default branch：`main`
 - Foundation branch：`foundation/mvp-v1`
-- Foundation PR：#1（Ready for review，尚未合并）
-- PR 最近确认：`mergeable: true`
+- Foundation PR：#1（**已合并 / closed**）
+- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
+- Merge Commit / 当前 Foundation 合并基线：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
+- PR #1 merged at：2026-08-17T16:34:25Z
 
-## 2. Foundation 已完成
+**Foundation 已正式进入 `main`。**
+
+截至本次状态同步前的 GitHub 核对，`main` HEAD 为上述 Merge Commit `f3b0fc9e0590b016d242031ffbcb00c5f7617306`。
+
+## 2. Foundation 已完成并进入 main
 
 ### 工程基础
 
@@ -51,7 +57,7 @@
 - `/advisor`
 - `/account`
 
-共享 Domain Contracts、版本字段规范、虚构 mock fixtures 与 `db/schema.sql` 已建立。
+共享 Domain Contracts、版本字段规范、虚构 mock fixtures 与 `db/schema.sql` 已建立并随 PR #1 合并进入 `main`。
 
 ### 依赖锁定
 
@@ -59,9 +65,22 @@
 - 已生成并提交 `package-lock.json`（lockfileVersion 3）。
 - CI 已切换为基于 lockfile 的 `npm ci`，不再使用未锁定的依赖安装作为验收路径。
 
-## 3. Foundation 验收状态
+## 3. Foundation 验收与合并状态
 
-真实 GitHub Actions 验收已完成，以下步骤均通过：
+PR #1：`foundation: initialize Bazi MVP architecture`
+
+状态：**Merged**
+
+GitHub 已核实：
+
+- PR state：`closed`
+- merged：`true`
+- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
+- Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
+
+Foundation HEAD 对应 GitHub Actions CI run 已完成，结论为 `success`。
+
+验收步骤均通过：
 
 - Install dependencies：`npm ci --no-audit --no-fund`
 - Lint：`npm run lint`
@@ -70,11 +89,23 @@
 
 CI workflow 位于 `.github/workflows/ci.yml`，使用 Node.js 22，并对 `foundation/**`、`feature/**`、`fix/**` push 以及面向 `main` 的 pull request 执行验证。
 
-此前用于辅助读取状态的自定义 commit-status 步骤已移除；CI 现在以 GitHub Actions 原生 check run 作为验收结果。
+此前“PR #1 Ready for review / 尚未合并 / 等待总指挥决定合并”的状态已经失效，不得继续作为当前项目状态引用。
 
-PR #1 已从 Draft 切换为 Ready for review。当前不自动合并，由总指挥 / 用户决定合并时机。
+## 4. 当前开发阶段：Wave 1 并行开发
 
-## 4. 项目治理 / 记忆系统
+**当前正式进入 Wave 1 并行开发。**
+
+统一分支基线规则：
+
+1. 后续所有开发窗口必须先同步最新 `main`。
+2. 所有新的业务/功能开发统一从最新 `main` 创建各自的 `feature/*` branch。
+3. 不得继续以旧的 `foundation/mvp-v1` 作为新功能开发基线。
+4. 各窗口继续遵守 `AGENTS.md`、共享 Domain Contracts 与项目记忆回写规则。
+5. 并行窗口如需修改 `types/domain/` 等共享 Contract，应先协调影响面，避免产生不兼容的平行定义。
+
+Wave 1 表示 Foundation 后的并行开发阶段，不代表扩大 V1 产品范围；V1 仍只聚焦八字。
+
+## 5. 项目治理 / 记忆系统
 
 项目治理体系继续保留：
 
@@ -82,11 +113,13 @@ PR #1 已从 Draft 切换为 Ready for review。当前不自动合并，由总�
 - `docs/00_PROJECT_INDEX.md` ～ `docs/11_CHATGPT_PROJECT_INSTRUCTIONS.md`
 - `docs/HANDOFF_TEMPLATE.md`
 
-Foundation 没有覆盖或删除其他窗口已经建立的项目记忆成果。
+Foundation 合并没有覆盖或删除项目记忆体系。
 
-## 5. 外部服务状态
+本文件、`docs/10_ROADMAP.md` 与 `docs/08_DECISION_LOG.md` 已在 PR #1 合并后同步真实状态。
 
-Foundation 验收不改变以下状态：
+## 6. 外部服务状态
+
+Foundation 合并不改变以下状态：
 
 - Vercel Project：未绑定 / 未部署 Production
 - Supabase Project：未连接真实实例，schema 尚未执行
@@ -96,7 +129,7 @@ Foundation 验收不改变以下状态：
 - AI Provider / model：TBD，未配置真实 Provider 或 Prompt
 - Analytics：PostHog 仅预留变量，未接入
 
-## 6. 本地开发与验证
+## 7. 本地开发与验证
 
 ```bash
 npm ci
@@ -111,9 +144,11 @@ npm run typecheck
 npm run build
 ```
 
-## 7. 下一步边界
+## 8. 下一步边界
 
-Foundation 工程地基已经完成验收。合并 `main` 后，后续窗口应从最新 `main` 创建各自 feature branch，并继续遵守：
+Foundation 工程地基已经完成验收并正式合并 `main`。
+
+后续窗口统一从最新 `main` 创建 feature branch，并继续遵守：
 
 - `AGENTS.md`
 - `types/domain/` 共享 Contract
