@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   BirthNormalizationError,
+  FunctionTimezoneResolver,
   IanaHintTimezoneResolver,
   StaticLocationProvider,
   normalizeBirthProfile,
@@ -78,7 +79,7 @@ const baseDeps = {
   createId: () => "11111111-1111-4111-8111-111111111111",
 };
 
-test("normalizes Chinese city input into a BirthProfile with bilingual location metadata", async () => {
+test("normalizes Chinese city input and persists replayable timezone facts", async () => {
   const result = await normalizeBirthProfile(
     {
       birthDate: "2003-06-09",
@@ -94,6 +95,8 @@ test("normalizes Chinese city input into a BirthProfile with bilingual location 
   assert.equal(result.profile.birthDate, "2003-06-09");
   assert.equal(result.profile.birthTime, "08:05:00");
   assert.equal(result.profile.timezone, "Asia/Shanghai");
+  assert.equal(result.profile.resolvedBirthInstant, "2003-06-09T00:05:00.000Z");
+  assert.equal(result.profile.utcOffsetMinutesAtBirth, 480);
   assert.equal(result.profile.birthPlace?.locality, "Wuhan");
   assert.equal(result.profile.birthPlace?.countryCode, "CN");
   assert.deepEqual(result.profile.birthPlace?.coordinates, { latitude: 30.5928, longitude: 114.3055 });
@@ -101,10 +104,10 @@ test("normalizes Chinese city input into a BirthProfile with bilingual location 
   assert.equal(result.metadata.location.city.en, "Wuhan");
   assert.equal(result.metadata.timezone.offsetMinutes, 480);
   assert.equal(result.metadata.timezone.isDst, false);
-  assert.equal(result.metadata.timezone.resolvedInstant, "2003-06-09T00:05:00.000Z");
+  assert.equal(result.metadata.timezone.resolvedInstant, result.profile.resolvedBirthInstant);
 });
 
-test("preserves unknown birth-time state without inventing an offset or instant", async () => {
+test("preserves unknown birth-time state without inventing replay fields", async () => {
   const result = await normalizeBirthProfile(
     {
       birthDate: "1990-07-01",
@@ -118,11 +121,82 @@ test("preserves unknown birth-time state without inventing an offset or instant"
   assert.equal(result.profile.birthTime, null);
   assert.equal(result.profile.birthTimePrecision, "unknown");
   assert.equal(result.profile.timezone, "Europe/London");
+  assert.equal(result.profile.resolvedBirthInstant, undefined);
+  assert.equal(result.profile.utcOffsetMinutesAtBirth, undefined);
   assert.equal(result.metadata.timezone.offsetMinutes, null);
   assert.equal(result.metadata.timezone.isDst, null);
   assert.equal(result.metadata.timezone.resolvedInstant, null);
   assert.equal(result.metadata.timezone.observesDstThisYear, true);
   assert.ok(result.metadata.warnings.some((warning) => warning.includes("unknown")));
+});
+
+test("persists the selected DST overlap occurrence for deterministic downstream replay", async () => {
+  const earlier = await normalizeBirthProfile(
+    {
+      birthDate: "2024-11-03",
+      birthTime: "01:30",
+      birthTimePrecision: "exact",
+      city: "NYC",
+      country: "US",
+      utcOffsetMinutes: -240,
+    },
+    baseDeps,
+  );
+  const later = await normalizeBirthProfile(
+    {
+      birthDate: "2024-11-03",
+      birthTime: "01:30",
+      birthTimePrecision: "exact",
+      city: "NYC",
+      country: "US",
+      utcOffsetMinutes: -300,
+    },
+    baseDeps,
+  );
+
+  assert.equal(earlier.profile.timezone, "America/New_York");
+  assert.equal(earlier.profile.birthTime, "01:30:00");
+  assert.equal(earlier.profile.utcOffsetMinutesAtBirth, -240);
+  assert.equal(earlier.profile.resolvedBirthInstant, "2024-11-03T05:30:00.000Z");
+
+  assert.equal(later.profile.timezone, "America/New_York");
+  assert.equal(later.profile.birthTime, "01:30:00");
+  assert.equal(later.profile.utcOffsetMinutesAtBirth, -300);
+  assert.equal(later.profile.resolvedBirthInstant, "2024-11-03T06:30:00.000Z");
+
+  assert.notEqual(earlier.profile.resolvedBirthInstant, later.profile.resolvedBirthInstant);
+  assert.equal(earlier.metadata.timezone.localTimeDisambiguation, "offset");
+  assert.equal(later.metadata.timezone.localTimeDisambiguation, "offset");
+});
+
+test("rejects successful-looking timezone results that cannot be replayed", async () => {
+  const incompleteResolver = new FunctionTimezoneResolver("fixture-incomplete", async () => ({
+    timezone: "Asia/Shanghai",
+    source: "fixture-incomplete",
+    offsetMinutes: null,
+    isDst: null,
+    observesDstThisYear: false,
+    localTimeDisambiguation: "unique",
+    resolvedInstant: null,
+    timezoneName: null,
+  }));
+
+  await assert.rejects(
+    () =>
+      normalizeBirthProfile(
+        {
+          birthDate: "2003-06-09",
+          birthTime: "08:05",
+          birthTimePrecision: "exact",
+          city: "武汉",
+          country: "中国",
+        },
+        { ...baseDeps, timezoneResolver: incompleteResolver },
+      ),
+    (error) =>
+      error instanceof BirthNormalizationError &&
+      error.code === "TIMEZONE_RESOLUTION_FAILED",
+  );
 });
 
 test("rejects impossible calendar dates", async () => {
@@ -202,5 +276,7 @@ test("normalizes representative birth locations across target overseas regions",
     );
     assert.equal(result.profile.timezone, timezone);
     assert.ok(result.profile.birthPlace?.coordinates);
+    assert.ok(result.profile.resolvedBirthInstant);
+    assert.equal(typeof result.profile.utcOffsetMinutesAtBirth, "number");
   }
 });
