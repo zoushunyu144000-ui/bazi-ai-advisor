@@ -44,7 +44,7 @@ jobs:
         run: npm run build
 
       - name: Verify static prototype preview
-        if: github.ref == 'refs/heads/feature/product-loop-v1'
+        if: github.ref == 'refs/heads/feature/product-loop-v1' || github.head_ref == 'feature/product-loop-v1'
         run: |
           base="https://bazi-ai-advisor-git-feature-product-loop-v1-zuriel144000.vercel.app"
           for path in "/" "/birth" "/result"; do
