@@ -60,6 +60,29 @@ export function localPartsToInstant(local:Parts,timeZone:string):{instantMs:numb
   return {instantMs:unique[0],ambiguous:unique.length>1};
 }
 
+function replayResolvedBirthInstant(profile:BirthProfile,local:Parts,known:boolean,warnings:string[]):ResolvedBirthInstant|null {
+  const hasInstant=profile.resolvedBirthInstant!==undefined;
+  const hasOffset=profile.utcOffsetMinutesAtBirth!==undefined;
+  if (!hasInstant && !hasOffset) return null;
+  if (!known) throw new Error('Resolved birth instant cannot be replayed when birth time is unknown');
+  if (!hasInstant || !hasOffset) throw new Error('resolvedBirthInstant and utcOffsetMinutesAtBirth must be provided together');
+
+  const instantMs=Date.parse(profile.resolvedBirthInstant!);
+  if (!Number.isFinite(instantMs)) throw new Error(`Invalid resolvedBirthInstant: ${profile.resolvedBirthInstant}`);
+  if (!Number.isInteger(profile.utcOffsetMinutesAtBirth)) throw new Error('utcOffsetMinutesAtBirth must be an integer minute offset');
+
+  const localAtInstant=partsAtInstant(instantMs,profile.timezone);
+  if (!sameParts(localAtInstant,local)) throw new Error('resolvedBirthInstant does not replay to the supplied local birth time and timezone');
+
+  const actualOffsetMinutes=(pseudoUtc(local)-instantMs)/60_000;
+  if (actualOffsetMinutes!==profile.utcOffsetMinutesAtBirth) {
+    throw new Error(`utcOffsetMinutesAtBirth does not match resolvedBirthInstant: expected ${actualOffsetMinutes}, got ${profile.utcOffsetMinutesAtBirth}`);
+  }
+
+  warnings.push('resolved_birth_instant_replayed_from_birth_profile');
+  return {instantMs,local,warnings,birthTimeKnown:true};
+}
+
 export function resolveBirthInstant(profile:BirthProfile):ResolvedBirthInstant {
   if (profile.calendar!=='gregorian') throw new Error(`Unsupported calendar: ${profile.calendar}`);
   const date=parseDate(profile.birthDate);
@@ -74,6 +97,10 @@ export function resolveBirthInstant(profile:BirthProfile):ResolvedBirthInstant {
     if (profile.birthTimePrecision==='approximate') warnings.push('birth_time_approximate_treated_as_supplied_civil_time');
   }
   const local={...date,...time};
+
+  const replayed=replayResolvedBirthInstant(profile,local,known,warnings);
+  if (replayed) return replayed;
+
   const resolved=localPartsToInstant(local,profile.timezone);
   if (resolved.ambiguous) warnings.push('ambiguous_local_time_resolved_to_earlier_instant');
   return {instantMs:resolved.instantMs,local,warnings,birthTimeKnown:known};
