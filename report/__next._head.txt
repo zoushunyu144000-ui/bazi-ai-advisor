@@ -1,0 +1,5 @@
+1:"$Sreact.fragment"
+2:I[97367,["/bazi-ai-advisor/_next/static/chunks/3rdqn8rx95pw7.js","/bazi-ai-advisor/_next/static/chunks/14mrh2-p_w84d.js"],"ViewportBoundary"]
+3:I[97367,["/bazi-ai-advisor/_next/static/chunks/3rdqn8rx95pw7.js","/bazi-ai-advisor/_next/static/chunks/14mrh2-p_w84d.js"],"MetadataBoundary"]
+4:"$Sreact.suspense"
+0:{"rsc":["$","$1","h",{"children":[null,["$","$L2",null,{"children":[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]}],["$","div",null,{"hidden":true,"children":["$","$L3",null,{"children":["$","$4",null,{"name":"Next.Metadata","children":[["$","title","0",{"children":"八字顾问 · Bazi AI Advisor"}],["$","meta","1",{"name":"description","content":"基于确定性排盘引擎的 AI 八字与现代行为指导。输入出生信息，即时生成四柱命盘、五行分布与大运走势。"}]]}]}]}],null]}],"isPartial":false,"staleTime":300,"varyParams":null,"buildId":"E-LWAZoUXet0nR1eaebIc"}

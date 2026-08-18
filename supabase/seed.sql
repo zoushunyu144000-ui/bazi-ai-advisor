@@ -1,3 +1,0 @@
--- No login-capable users or secrets are committed.
--- Create local Auth users through Supabase Studio or the Auth API when integration
--- testing requires authenticated identities.
