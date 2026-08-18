@@ -1,4 +1,11 @@
-import type { BaziCalculationMetadata, BaziChart, BirthProfile, StemBranchRef } from '../../types/domain';
+import type {
+  BaziCalculationContext,
+  BaziCalculationMetadata,
+  BaziCalculationResult,
+  BaziChart,
+  BirthProfile,
+  StemBranchRef,
+} from '../../types/domain';
 import { ENGINE_VERSION, RULE_PROFILE_VERSION } from './constants';
 import { dayPillarForCivilDate, solarTermInstantMs } from './adapters/tyme4ts-adapter';
 import { deriveFeatures } from './derived';
@@ -7,7 +14,6 @@ import { calculateLuckStructure } from './luck';
 import { calculateRelations } from './relations';
 import { elementOf, hourPillar, monthPillarFromOffset, pillarFromRef, polarityOf, yearPillarFromLiChunYear } from './rules';
 import { resolveBirthInstant } from './timezone';
-import type { BaziEngineResult } from './types';
 
 const MONTH_JIE:[number,number][]=[[3,0],[5,1],[7,2],[9,3],[11,4],[13,5],[15,6],[17,7],[19,8],[21,9],[23,10]];
 
@@ -27,12 +33,14 @@ function monthOffsetAt(instantMs:number,baziYear:number):number {
 function canonicalInput(profile:BirthProfile):string {
   return JSON.stringify({
     id:profile.id,calendar:profile.calendar,birthDate:profile.birthDate,birthTime:profile.birthTime,
-    birthTimePrecision:profile.birthTimePrecision,timezone:profile.timezone,sexForTraditionalRules:profile.sexForTraditionalRules,
+    birthTimePrecision:profile.birthTimePrecision,timezone:profile.timezone,
+    resolvedBirthInstant:profile.resolvedBirthInstant,utcOffsetMinutesAtBirth:profile.utcOffsetMinutesAtBirth,
+    sexForTraditionalRules:profile.sexForTraditionalRules,
     engine_version:ENGINE_VERSION,rule_profile_version:RULE_PROFILE_VERSION,
   });
 }
 
-export function calculateBazi(profile:BirthProfile):BaziEngineResult {
+export function calculateBazi(profile:BirthProfile):BaziCalculationResult {
   const resolved=resolveBirthInstant(profile);
   const {year,month,day,hour}=resolved.local;
   const baziYear=baziYearAt(resolved.instantMs,year);
@@ -59,8 +67,11 @@ export function calculateBazi(profile:BirthProfile):BaziEngineResult {
     calendarConversion:'gregorian_to_solar_terms',birthTimeWasKnown:resolved.birthTimeKnown,calculatedAt,
     warnings:[...resolved.warnings,'civil_time_rule_profile_no_true_solar_time_correction','late_zi_hour_uses_same_civil_day'],
   };
-  return {
-    engine_version:ENGINE_VERSION,rule_profile_version:RULE_PROFILE_VERSION,chart,calculationMetadata,derivedFeatures,relations,
+  const context:BaziCalculationContext={
+    chart,
+    calculationMetadata,
+    relations,
     luck:calculateLuckStructure(chart,profile,resolved.instantMs),
   };
+  return {...context,derivedFeatures};
 }
