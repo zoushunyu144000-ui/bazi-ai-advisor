@@ -1,10 +1,10 @@
-import type { BaziChart, BaziDerivedFeatures, FiveElement, TenGod } from '../../types/domain';
+import type { BaziChart, BaziDerivedFeatures, BaziRelation, FiveElement, TenGod } from '../../types/domain';
 import { ELEMENTS, ENGINE_VERSION, MAPPING_VERSION, RULE_PROFILE_VERSION, STEM_ELEMENT } from './constants';
 import { elementThatGenerates } from './rules';
-import type { BaziRelation } from './types';
 
 const TEN_GODS:TenGod[]=['bi_jian','jie_cai','shi_shen','shang_guan','pian_cai','zheng_cai','qi_sha','zheng_guan','pian_yin','zheng_yin'];
 const round=(n:number)=>Math.round(n*1_000_000)/1_000_000;
+const percentage=(value:number,total:number)=>round((value/total)*100);
 
 export function deriveFeatures(chart:BaziChart,relations:BaziRelation[],calculatedAt:string,birthTimeQuality:'exact'|'approximate'|'unknown'):BaziDerivedFeatures {
   const elementScores=Object.fromEntries(ELEMENTS.map(e=>[e,0])) as Record<FiveElement,number>;
@@ -23,8 +23,8 @@ export function deriveFeatures(chart:BaziChart,relations:BaziRelation[],calculat
   }
   const elementTotal=Object.values(elementScores).reduce((a,b)=>a+b,0);
   const tenGodTotal=Object.values(tenGodScores).reduce((a,b)=>a+b,0);
-  const elementDistribution=ELEMENTS.map(element=>({element,score:round(elementScores[element]/elementTotal)}));
-  const tenGodDistribution=TEN_GODS.map(tenGod=>({tenGod,score:round(tenGodScores[tenGod]/tenGodTotal)}));
+  const elementDistribution=ELEMENTS.map(element=>({element,score:percentage(elementScores[element],elementTotal)}));
+  const tenGodDistribution=TEN_GODS.map(tenGod=>({tenGod,score:percentage(tenGodScores[tenGod],tenGodTotal)}));
   const dm=chart.dayMaster.element;
   const resource=elementThatGenerates(dm);
   const support=(elementScores[dm]+elementScores[resource])/elementTotal;
