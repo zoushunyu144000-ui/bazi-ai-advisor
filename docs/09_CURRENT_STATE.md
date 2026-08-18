@@ -2,196 +2,200 @@
 
 最后更新：2026-08-18
 
-> 本文件描述“现在真实做到哪里”。只有实际存在于仓库/分支/PR/部署环境或已明确 Approved 的事项才写为已完成。
+> 本文件描述“现在真实做到哪里”。只有实际存在于仓库 / 分支 / PR / CI / 部署环境或已明确 Approved 的事项才写为已完成。
 
-## 1. Repository
+## 1. Repository / main 基线
 
 - GitHub：`zoushunyu144000-ui/bazi-ai-advisor`
 - Visibility：Private
 - Default branch：`main`
-- Foundation PR：#1（Merged / Closed）
-- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
-- Foundation Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- Wave 1.5 Contract Integration PR：#7（**Merged / Closed**）
-- PR #7 reviewed HEAD：`9553f606bdda8281e255dddd27b1dc0efcd738ea`
-- PR #7 Merge Commit：`c67bc8f1ab30ab177b30dd29511602f93b35c890`
+- Foundation PR #1：Merged / Closed
+- Wave 1.5 Contract Integration PR #7：Merged / Closed
+- 本次状态同步前 `main` HEAD：`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa`
+- 该提交为 PR #6 Supabase Core Merge Commit。
 
-**Wave 1.5 shared Contract、统一测试入口与 REUSE FIRST 治理规则已经正式进入 `main`。**
+## 2. Wave 1 核心技术链：已正式进入 main
 
-## 2. Wave 1 当前 PR 状态
-
-以下业务 PR 仍然开放，且本次没有合并：
-
-- #2 `design/product-visual-v1`
-- #3 `feature/interpretation-v1`
-- #4 `feature/birth-normalization-v1`
-- #5 `feature/bazi-engine-v1`
-- #6 `feature/supabase-core-v1`
-
-PR #7 合并后，02 / 03 / 04 / 08 对应窗口不得继续以 PR #7 之前的 `main` 或旧 feature baseline 作为最终适配基线。
-
-当前阶段从“Contract Integration Gate”进入 **Wave 1 adaptation / cumulative integration**。
-
-## 3. 已进入 main 的共享 Contract
-
-### Canonical Bazi facts
-
-02 Bazi Engine 是传统命理结构事实唯一来源：
+Wave 1 核心 deterministic / persistence 链已经完成 Merge：
 
 ```text
-BirthProfile
-→ BaziChart
-→ canonical BaziDerivedFeatures
+Birth
+→ Bazi Engine
+→ Interpretation
+→ Supabase Persistence
 ```
 
-04 Interpretation 不得重新建立第二套：
+### PR #4 — Birth normalization
 
-- 五行分布
-- 十神分布
-- 日主强弱
-- 季节结构
+状态：**Merged / Closed**
 
-### Score scale
+- Merge Commit：`41c7faa8c7f8b063dea8bf2ae8d5aa79422792f3`
+- Birth tests：**14/14 passed**
+- DST overlap / gap、resolved instant、UTC offset persistence contract 已覆盖。
+- provider adapter 仍保持 mockable / 非 live 调用边界。
 
-- `WeightedElementScore.score`：0–100 percentage
-- `WeightedTenGodScore.score`：0–100 percentage
-- `BaziDerivedFeatures.confidence`：0–1
+### PR #5 — Deterministic Bazi Engine V1
 
-### DST replay
+状态：**Merged / Closed**
 
-Shared `BirthProfile` 已包含：
+- Merge Commit：`de87b86e495aeac5a68a8e9c9a0de9433ec207d3`
+- Bazi tests：**22/22 passed**
+- LLM 不参与排盘。
+- `BaziDerivedFeatures` 继续是 canonical 五行分布、十神分布、日主强弱事实来源。
+- `tyme4ts@1.5.2` 继续通过 Adapter 隔离使用。
 
-- `resolvedBirthInstant?`
-- `utcOffsetMinutesAtBirth?`
+### PR #3 — Interpretation V0.2
 
-03 一旦完成 DST overlap disambiguation，02 必须使用已解析 instant，不得再次猜 occurrence。
+状态：**Merged / Closed**
 
-### Bazi calculation context
+- Merge Commit：`6806cc5514048121a3ff1cebf4123800162b4939`
+- Interpretation tests：**9/9 passed**
+- 当前 mapping：`personality-map/0.2.0`
+- 04 消费 `BaziChart + canonical BaziDerivedFeatures`，不重算第二套传统命理事实。
+- Stable archetype machine layer 已建立；最终视觉角色 / 热梗名称仍属于 05 表现层。
 
-Shared Domain 已包含：
+### PR #6 — Supabase Core Data Layer
 
-- `BaziRelation`
-- `BaziLuckStructure`
-- `BaziCalculationContext`
-- `BaziCalculationResult`
+状态：**Merged / Closed**
 
-目标是保证：
+- Merge Commit：`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa`
+- Backend tests：**19/19 passed**
+- migration history、Auth bootstrap、RLS、SSR/browser/server-only clients、user-scoped repositories 已进入 main。
+- BirthProfile 的 resolved instant / UTC offset 与完整 `BaziCalculationResult` 已有 persistence / read-back code path。
 
-```text
-02 计算
-→ 08 持久化
-→ 04 / 07 读取
-```
+## 3. Wave 1 验收汇总
 
-时不丢失 calculation metadata、relations、luck 或 canonical derived features。
+核心模块最终验收累计：
 
-### PersonalityDimension
+- Birth：**14/14 passed**
+- Bazi：**22/22 passed**
+- Interpretation：**9/9 passed**
+- Backend：**19/19 passed**
+- skipped：**0（Wave 1 核心链最终累计验收口径）**
 
-V1 暂不扩大 shared `PersonalityDimension`。
-
-`contributors`、`positiveExpression`、`stressExpression`、`explanationCodes` 继续留在 04 module-local `dimensionDetails`。
-
-## 4. 统一测试入口已进入 main
-
-Root scripts：
-
-```text
-npm run test:birth
-npm run test:bazi
-npm run test:interpretation
-npm run test:backend
-npm test
-```
-
-CI 标准顺序：
+相关最终 feature HEAD 均存在 GitHub Actions `success` 记录；统一 CI contract 为：
 
 ```text
 npm ci
-npm run lint
-npm run typecheck
-npm test
-npm run build
+→ npm run lint
+→ npm run typecheck
+→ npm test
+→ npm run build
 ```
 
-PR #7 最终 reviewed HEAD `9553f606bdda8281e255dddd27b1dc0efcd738ea` 的 GitHub Actions 已验证：
+本阶段验收结论：
 
-- Install dependencies：success
-- Lint：success
-- Typecheck：success
-- Test：success
-- Build：success
+- lint：success
+- typecheck：success
+- npm test：success
+- build：success
 
-所有 Wave 1 业务 PR 最终 merge 前必须吸收最新 `main` 并保留统一 root test / CI contract。
+说明：以上为 Wave 1 核心模块最终验收的累计结果，不把 Merge Commit 后不存在的额外 `main` 单次 workflow run 虚构为独立验收记录。
 
-## 5. REUSE FIRST 已进入 main
+## 4. Supabase 状态边界
 
-项目级规则：**Research Before Build / Reuse First**。
+**Supabase Core Code Layer 已完成。**
 
-重要模块开发或替换依赖前必须调查：
+已经进入 main 的是代码层能力，包括：
 
-1. GitHub / npm / API / MCP / skill / 平台原生能力
-2. License 与商业使用条件
-3. 维护活跃度
-4. 测试与文档
-5. 边界规则
-6. Adapter 可行性
-7. 风险与替代方案
+- migrations
+- Auth bootstrap
+- RLS
+- browser / SSR / server-only client boundary
+- repositories
+- Birth / Bazi calculation persistence contract
 
-优先级：
+但 **真实 Supabase Live Integration 尚未完成**。
 
-```text
-成熟可靠库直接复用
->
-Adapter 封装成熟实现
->
-参考成熟实现补齐少量业务逻辑
->
-最后才自行从零实现
-```
+仍需后续完成：
 
-长期登记表：`docs/12_REUSE_AND_REFERENCES.md`。
+- 创建 / 确认真实 Supabase Project
+- 配置 Project URL / publishable key / server secret
+- Auth redirect URLs / SMTP 等真实 Auth 配置
+- `supabase link`
+- remote migration apply / `supabase db push`
+- live RLS verification
+- live Auth verification
+- live CRUD / persistence round-trip verification
 
-Wave 1.5 详细返工规范：`docs/13_WAVE1_CONTRACT_INTEGRATION.md`。
+因此当前不得把 Supabase 状态描述为“已部署 / 已连接生产环境”。
 
-聊天窗口不得仅凭记忆选择重要依赖。
+## 5. Traditional Pattern / 格局研究
 
-## 6. 当前仍需完成的最小适配
+状态：**Research completed / Production algorithm not implemented**。
 
-- #4 Birth：把 resolved instant / UTC offset 写入 shared BirthProfile；同时按 REUSE FIRST 复核 DST 基础能力。
-- #5 Bazi：使用 resolved instant；canonical distribution 改为 0–100；使用 shared relations/luck/result；继续通过 Adapter 复用成熟历法能力。
-- #3 Interpretation：消费 #5 canonical `BaziDerivedFeatures`，停止重算传统命理事实。
-- #6 Supabase：持久化 Birth instant/offset、relations/luck，并提供完整 calculation context/result read path。
-- #2 Visual：独立视觉验收；不得因 #7 合并而自动 merge。
+GitHub 当前存在 Draft Research PR #9：
 
-## 7. 外部服务状态
+- branch：`research/traditional-pattern-taxonomy`
+- 只包含研究文档，不修改 `modules/bazi/**`、`modules/interpretation/**` 或 shared Domain Contract。
+- 已研究月令 / 子平格局 taxonomy、regular patterns、建禄/月劫、组合结构与未来 `TraditionalPatternResult` 责任边界。
 
-- Vercel Production：本轮未部署
-- Supabase Production：本轮未应用 migration
-- Payment provider：未接真实支付
-- AI Provider / Prompt：本轮未实现
-- Analytics：本轮未实现
+当前明确边界：
 
-## 8. 下一步
+- Traditional Pattern **尚未进入生产算法**。
+- 不得把 `max(Ten-God distribution)` 直接等同于传统格局。
+- 不得因为研究完成就自动升级 `personality-map/0.3.0`。
+- 若后续实现，传统格局事实原则上应由 deterministic Bazi layer 产生，再由 Interpretation 消费。
 
-推荐主线适配 / Merge 顺序：
+## 6. AI System 状态
 
-```text
-#4 Birth
-→ #5 Bazi
-→ #3 Interpretation
-→ #6 Supabase
-→ #2 Visual（视觉验收通过后）
-```
+状态：**Research completed / Formal AI System not implemented**。
 
-每个 PR 必须先同步 PR #7 后的最新 `main`，完成最小返工，再运行：
+GitHub 当前存在 Draft Research PR #8：
 
-```text
-npm run lint
-npm run typecheck
-npm test
-npm run build
-```
+- branch：`research/ai-bazi-benchmark`
+- 研究 Bazi AI / Skill / MCP / structured output / memory / report hierarchy / deterministic facts handoff。
+- 研究结论保持 Reuse First，并建议以 `BaziCalculationResult` 为 canonical source of truth。
 
-并要求 GitHub CI green 后才进入下一 Merge Gate。
+当前明确未完成：
 
-不得批量盲合 #2～#6。
+- `modules/ai/**` 正式生产实现
+- AI Provider live integration
+- Prompt v1 / scenario prompt system
+- structured output runtime validation
+- Advisor production flow
+- memory production flow
+
+因此不得把“AI research 完成”写成“AI System 已完成”。
+
+## 7. 05 Visual / UX
+
+05 仍在独立视觉迭代。
+
+- PR #2 `design/product-visual-v1` 当前仍为 Open / 未合并。
+- 视觉方向与角色语言继续独立验收。
+- 05 不得把 Traditional Pattern research taxonomy 硬编码成最终人格命名。
+- 最终角色绑定继续通过 stable `archetype_code` / approved pattern mapping 接入。
+
+## 8. 共享架构不变量
+
+继续生效：
+
+1. Birth 先完成 normalized / resolved birth facts。
+2. 02 Bazi Engine 是 canonical traditional Bazi facts 唯一 deterministic source。
+3. 04 Interpretation 消费 canonical facts，不重算第二套五行 / 十神 / 日主强弱。
+4. 08 Persistence 必须无损保存 deterministic result / relations / luck / metadata。
+5. LLM 不得从原始出生日期时间自由排盘。
+6. 重要依赖遵守 Research Before Build / Reuse First。
+7. shared `types/domain/**` 语义修改必须协调影响面。
+
+## 9. 当前阶段
+
+**Wave 1 核心技术链已完成并正式进入 main。**
+
+项目现在进入：
+
+# **Wave 2**
+
+Wave 2 的具体业务任务由 00 号总调度 / 用户分配；本次状态同步不擅自增加业务功能。
+
+当前主要未完成边界包括：
+
+- Supabase Live Integration
+- Traditional Pattern production algorithm
+- Formal AI System
+- 05 Visual acceptance / merge
+- real payment
+- production deployment / end-to-end live integration
+
+后续开发窗口仍必须先同步最新 `main`，再从最新 `main` 创建独立 feature branch。
