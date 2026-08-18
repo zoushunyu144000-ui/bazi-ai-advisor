@@ -16,6 +16,8 @@ export type TenGod =
   | "pian_yin"
   | "zheng_yin";
 
+export type BaziPillarPosition = "year" | "month" | "day" | "hour";
+
 export interface StemBranchRef {
   stem: HeavenlyStem;
   branch: EarthlyBranch;
@@ -64,16 +66,30 @@ export interface BaziCalculationMetadata {
 
 export type DayMasterStrength = "weak" | "balanced" | "strong" | "unknown";
 
+/**
+ * Semantic percentage on an inclusive 0-100 scale.
+ *
+ * TypeScript cannot encode the numeric bounds, so producers MUST validate the
+ * range in deterministic tests. Canonical element and Ten-God distributions
+ * must use this scale; 0-1 fractions are not valid for these fields.
+ */
+export type BaziPercentageScore = number;
+
 export interface WeightedElementScore {
   element: FiveElement;
-  score: number;
+  score: BaziPercentageScore;
 }
 
 export interface WeightedTenGodScore {
   tenGod: TenGod;
-  score: number;
+  score: BaziPercentageScore;
 }
 
+/**
+ * Canonical traditional-structure facts produced by the deterministic Bazi
+ * Engine. Interpretation consumes this object; it must not independently
+ * recalculate a second competing element/Ten-God/strength model.
+ */
 export interface BaziDerivedFeatures {
   id: UUID;
   chartId: UUID;
@@ -87,4 +103,62 @@ export interface BaziDerivedFeatures {
   structuralTags: string[];
   confidence: number;
   derivedAt: ISODateTime;
+}
+
+export type BaziRelationKind =
+  | "stem_combination"
+  | "branch_combination"
+  | "branch_clash"
+  | "branch_harm";
+
+interface BaziRelationBase {
+  leftPillar: BaziPillarPosition;
+  rightPillar: BaziPillarPosition;
+}
+
+export type BaziRelation =
+  | (BaziRelationBase & {
+      kind: "stem_combination";
+      left: HeavenlyStem;
+      right: HeavenlyStem;
+    })
+  | (BaziRelationBase & {
+      kind: "branch_combination" | "branch_clash" | "branch_harm";
+      left: EarthlyBranch;
+      right: EarthlyBranch;
+    });
+
+export type BaziLuckDirection = "forward" | "reverse" | "unknown";
+
+export interface BaziLuckCyclePeriod {
+  index: number;
+  pillar: StemBranchRef;
+  startAgeYears: number;
+  endAgeYears: number;
+}
+
+export interface BaziLuckStructure {
+  direction: BaziLuckDirection;
+  startAgeYears: number | null;
+  boundaryTerm: string | null;
+  boundaryInstant: ISODateTime | null;
+  method: "three_days_one_year";
+  cycles: BaziLuckCyclePeriod[];
+  warnings: string[];
+}
+
+/**
+ * Persistable calculation context that must survive the 02 -> 08 -> 07 path.
+ * Derived features live in their own canonical table but are joined back into
+ * BaziCalculationResult at the repository/service boundary.
+ */
+export interface BaziCalculationContext {
+  chart: BaziChart;
+  calculationMetadata: BaziCalculationMetadata;
+  relations: BaziRelation[];
+  luck: BaziLuckStructure;
+}
+
+export interface BaziCalculationResult extends BaziCalculationContext {
+  derivedFeatures: BaziDerivedFeatures;
 }
