@@ -43,6 +43,7 @@
 - `11_CHATGPT_PROJECT_INSTRUCTIONS.md`：ChatGPT 项目窗口协作规则
 - `12_REUSE_AND_REFERENCES.md`：重要外部依赖、开源/API/MCP/skill 研究、License、维护状态、采用方式、风险与替代方案
 - `13_WAVE1_CONTRACT_INTEGRATION.md`：Wave 1.5 shared Contract、测试入口、各工程窗口最小返工与 Merge Gate
+- `14_BILLING_CONTRACT_INTEGRATION.md`：Wave 2 Payment / entitlement / credits / Advisor reservation Shared Contract 与 implementation handoff
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口/阶段交接模板
 
 ## AI 工作协议
@@ -50,6 +51,8 @@
 所有 AI / GPT / Codex 在修改项目之前必须读取根目录 `AGENTS.md`。
 
 重要模块开发或依赖选型前还必须读取 `docs/12_REUSE_AND_REFERENCES.md`，执行 Research Before Build / Reuse First，不得仅凭聊天或模型记忆选择依赖。
+
+Billing / Payment / Advisor credit 相关实现还必须读取 `docs/14_BILLING_CONTRACT_INTEGRATION.md`，不得绕过 server-side authority、transaction 与 idempotency boundaries。
 
 原则：
 

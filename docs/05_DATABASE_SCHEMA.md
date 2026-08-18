@@ -1,6 +1,6 @@
 # 05 — Database Schema
 
-状态：Foundation schema 已存在于 `db/schema.sql`；Wave 1.5 已冻结 Birth / Bazi calculation persistence 的共享 Contract，**尚未应用到任何真实 Supabase / Production 数据库**。
+状态：Wave 1 Supabase Core schema / migrations 已进入 `main`；Wave 2 Billing Contract Gate 已冻结目标 DB Contract，但本 Gate **不修改 migration，也未应用到任何真实 Supabase / Production 数据库**。
 
 ## 1. 实现原则
 
@@ -9,8 +9,8 @@
 - 复杂命理结构允许 JSONB；用户、支付、消息、钱包、账本保持 relational schema。
 - AI 生成内容记录版本字段。
 - 金额使用整数 minor units，不使用浮点金额。
-- 顾问次数以整数 wallet + append-style credit ledger 追踪。
-- 敏感写入由可信服务端完成，客户端不直接修改钱包、账本或生成结果。
+- 顾问次数以 integer wallet projection + immutable credit ledger 追踪。
+- 敏感写入由可信服务端完成，客户端不直接修改订单 paid 状态、Purchase、entitlement、wallet、ledger 或 Advisor reservation。
 
 ## 2. Auth 与用户根记录
 
@@ -23,9 +23,9 @@ Supabase `auth.users` 作为认证身份的 canonical source。
 
 `handle_new_auth_user()` trigger 负责为新 Auth 用户初始化 `public.users`、`public.profiles`、`public.wallets`。
 
-## 3. Wave 1.5 Birth persistence contract
+## 3. Birth persistence contract
 
-`birth_profiles` 除 Foundation 字段外，必须能够保存并恢复：
+`birth_profiles` 必须能够保存并恢复：
 
 - `resolved_birth_instant timestamptz null`
 - `utc_offset_minutes_at_birth integer null`
@@ -35,139 +35,214 @@ Supabase `auth.users` 作为认证身份的 canonical source。
 - `BirthProfile.resolvedBirthInstant?`
 - `BirthProfile.utcOffsetMinutesAtBirth?`
 
-语义：
+当 Birth 已完成 DST overlap disambiguation 时，`resolved_birth_instant` 是 canonical UTC instant；mapper / repository 必须 round-trip 两字段。
 
-- 当 03 Birth 已经对 DST overlap 完成 disambiguation 时，`resolved_birth_instant` 是 canonical UTC instant。
-- `utc_offset_minutes_at_birth` 保存该 occurrence 当时的 UTC offset（minutes east of UTC）。
-- 08 的 mapper / repository 必须 round-trip 两字段，不允许只塞进临时 metadata 后丢失。
-- unknown birth time 或 legacy record 可以为 null。
+## 4. Bazi calculation persistence contract
 
-## 4. Wave 1.5 Bazi calculation persistence contract
-
-### `bazi_charts`
-
-除现有：
+`bazi_charts` 必须持久化：
 
 - `chart jsonb`
 - `calculation_metadata jsonb`
+- `relations jsonb`
+- `luck jsonb`
 - `engine_version`
 - `rule_profile_version`
 
-还必须持久化：
+`bazi_derived_features` 单独保存 canonical `BaziDerivedFeatures` 与 engine/rule/mapping versions。
 
-- `relations jsonb`：shared `BaziRelation[]`
-- `luck jsonb`：shared `BaziLuckStructure`
+Repository 标准 read path 必须能够恢复完整 `BaziCalculationContext` / `BaziCalculationResult`，不允许保存 metadata / relations / luck 后又在 read path 丢失。
 
-建议 migration 形态：
+## 5. 当前已进入 main 的核心表
 
-```sql
-relations jsonb not null default '[]'::jsonb,
-luck jsonb not null
-```
-
-当前没有 Production 数据，因此 Wave 1.5 不为历史线上数据设计复杂 backfill；真正 migration 仍由 08 Supabase 窗口在其 feature branch 完成并测试。
-
-### `bazi_derived_features`
-
-继续单独保存 canonical `BaziDerivedFeatures`，并保留：
-
-- `engine_version`
-- `rule_profile_version`
-- `mapping_version`
-
-其中：
-
-- `elementDistribution[].score` = 0–100 percentage
-- `tenGodDistribution[].score` = 0–100 percentage
-- `confidence` = 0–1
-
-禁止数据库中混存两种分布 scale。
-
-## 5. Repository read/write contract
-
-保存路径与读取路径必须对称。
-
-### Calculation context
-
-Repository 必须能 round-trip：
-
-```text
-BaziCalculationContext
-= BaziChart
-+ BaziCalculationMetadata
-+ BaziRelation[]
-+ BaziLuckStructure
-```
-
-最低要求：
-
-- 保存 chart 时一并保存 metadata / relations / luck
-- 标准 read path 能同时读回 metadata / relations / luck
-- 不再出现“数据库保存 calculation_metadata，但 `getById()` 永远只返回 `BaziChart`”的状态
-
-### Calculation result
-
-服务层 / repository 组合读取应能够恢复：
-
-```text
-BaziCalculationResult
-= BaziCalculationContext
-+ canonical BaziDerivedFeatures
-```
-
-这样未来 04 / 07 不需要重新推导数据库里已经保存的传统命理事实。
-
-## 6. 当前 Schema 表
-
-### `users`
-应用用户状态、locale、timezone。
-
-### `profiles`
-用户展示资料。
-
-### `birth_profiles`
-出生日期、出生时间精度、时区、地点、传统规则所需性别字段、已解析出生 instant / offset，以及原始输入 JSONB。
-
-### `bazi_charts`
-确定性排盘结果。命盘正文、calculation metadata、relations、luck 使用 JSONB，同时单独保存 engine/rule versions。
-
-### `bazi_derived_features`
-canonical 五行、十神、旺衰、季节结构、结构标签等派生特征 JSONB，同时保存 engine/rule/mapping versions。
-
-### `reports`
-人格/报告结构 JSONB，保存完整五类版本字段：
-
-- `engine_version`
-- `rule_profile_version`
-- `mapping_version`
-- `prompt_version`
-- `report_schema_version`
-
-### `conversations`
-AI 顾问会话元数据、模型信息、`prompt_version`。
-
-### `messages`
-会话消息、结构化 payload、模型信息、credit cost。
-
-### `user_memories`
-用于后续 Advisor 的用户偏好、目标、限制、事实与顾问笔记；值允许 JSONB，可撤销/编辑。
+- `users`
+- `profiles`
+- `birth_profiles`
+- `bazi_charts`
+- `bazi_derived_features`
+- `reports`
+- `conversations`
+- `messages`
+- `user_memories`
+- `wallets`
+- `credit_ledger`
+- `orders`
+- `purchases`
+- `analytics_events`
 
 ### `wallets`
-每位用户当前顾问次数、累计购买次数和乐观并发 `version`。
+
+当前保存 committed `advisor_credits`、累计购买 credits 与 optimistic `version`。
 
 ### `credit_ledger`
-每次购买、使用、退款、调整、奖励对应一条整数变动记录，并有唯一 `idempotency_key`。
+
+当前保存 `delta`、`balance_after`、`entry_type`、`idempotency_key` 以及 narrow order/message references。
 
 ### `orders`
-支付订单。金额为 `amount_minor bigint`，记录 provider、provider order id、状态、产品与幂等键。
+
+当前保存 provider、provider order id、ProductCode、状态、currency、integer `amount_minor` 与 idempotency key。
 
 ### `purchases`
-已形成的购买记录，与订单分离，并预留 entitlement JSONB 用于交付信息。
 
-### `analytics_events`
-产品事件与 JSONB properties，支持已登录 user 或 anonymous id。
+当前保存已形成的购买历史，`order_id` unique；现有 `entitlement jsonb` 在 Wave 2 后不再作为 report access authority。
 
-## 7. 关系与约束
+## 6. Wave 2 Billing DB Contract
+
+详细 source of truth：`docs/14_BILLING_CONTRACT_INTEGRATION.md`。
+
+### 6.1 `payment_provider_events` — NEW target
+
+用途：Webhook / Provider event durable inbox 与 replay gate。
+
+最低 identity：
+
+```text
+unique(provider, provider_event_id)
+```
+
+建议状态：
+
+```text
+received | processed | ignored | failed
+```
+
+Provider event 被标记 `processed` 与本地 fulfillment 必须在同一个 short DB transaction 内形成一致事实。普通 Browser 不获得 mutation authority。
+
+### 6.2 `report_entitlements` — NEW target
+
+Report access authority 使用稳定 relational identity：
+
+```text
+(user_id, product_code, resource_id)
+```
+
+其中 V1：
+
+```text
+product_code = personality_report
+resource_id = reports.id
+```
+
+目标唯一约束：
+
+```text
+unique(user_id, product_code, resource_id)
+```
+
+状态：
+
+```text
+active | revoked
+```
+
+Purchase 是历史购买事实；ReportEntitlement 是当前权限事实。不得再以 `purchases.entitlement jsonb` 模糊推断 access。
+
+### 6.3 `advisor_requests` — NEW target
+
+V1 选择 business-specific `advisor_requests`，不建立通用 `credit_reservations`。
+
+目标字段至少包括：
+
+- user / conversation / user message identity
+- optional assistant message identity
+- `credits_reserved = 1`
+- state：`reserved | committed | released`
+- `idempotency_key`
+- `reservation_expires_at`
+- optional committed ledger entry identity
+- release reason
+- timestamps
+
+关键约束：
+
+```text
+unique(user_id, idempotency_key)
+credits_reserved = 1
+```
+
+Wallet 不增加另一份 `reserved_credits` projection。Reserve 时在原子 DB operation 内按：
+
+```text
+available = wallet.advisor_credits - active non-expired reservations
+```
+
+检查可用额度。
+
+### 6.4 `purchases` — MODIFY target
+
+增加 relational `resource_id`：
+
+```text
+personality_report → resource_id required
+advisor_10         → resource_id null
+```
+
+`order_id unique` 继续作为 Purchase fulfillment 幂等底线。
+
+### 6.5 `credit_ledger` — MODIFY target
+
+保留现有 `entry_type`：
+
+```text
+purchase | usage | refund | adjustment | bonus
+```
+
+增加 canonical：
+
+```text
+reason
+reference_type
+reference_id
+```
+
+新 production fact 必须有 reason/reference/idempotency identity。
+
+Canonical reasons：
+
+```text
+purchase_grant
+advisor_usage
+refund_reversal
+manual_adjustment
+promo_bonus
+```
+
+Canonical reference types：
+
+```text
+purchase
+advisor_request
+order
+ledger_entry
+manual_adjustment
+promotion
+```
+
+Ledger 是 immutable fact stream；修正使用新的 reversal / adjustment row，不 update/delete 历史事实。
+
+### 6.6 `wallets` — committed projection
+
+`advisor_credits` 继续只代表 committed balance。只有 Advisor `reserved → committed` 时才在同一 transaction：
+
+1. append `usage/advisor_usage` ledger fact
+2. wallet `-1`
+3. advisor request → committed
+
+Reservation release 不产生补偿 ledger，因为 reservation 从未形成 committed debit。
+
+### 6.7 ProductCode storage
+
+Serialized ProductCode 正式冻结：
+
+```text
+personality_report
+advisor_10
+```
+
+不迁移为 uppercase 第二套 codes。价格不编码在 ProductCode；历史真实成交金额继续由 Order / Purchase 的 currency + integer minor amount 记录。
+
+## 7. 关键关系与唯一约束
+
+继续保留：
 
 - `birth_profiles.user_id → users.id`
 - `bazi_charts.birth_profile_id → birth_profiles.id`
@@ -175,54 +250,78 @@ AI 顾问会话元数据、模型信息、`prompt_version`。
 - `reports → chart + derived features`
 - `conversations → user + optional report`
 - `messages → conversation + user`
-- `credit_ledger → wallet + optional order/message`
-- `purchases → order`
+- `purchases.order_id unique`
+- `orders.idempotency_key unique`
+- `credit_ledger.idempotency_key unique`
+- `unique(provider, provider_order_id)`
 
-关键唯一约束继续包括：
+Wave 2 新增 target：
 
-- 同一 BirthProfile + engine/rule 版本不重复生成同一 chart
-- 同一 chart + mapping version 不重复派生
-- order / ledger 使用唯一 `idempotency_key`
-- provider + provider_order_id 唯一
-- 同一用户 active memory key 唯一
+- provider event：`unique(provider, provider_event_id)`
+- report entitlement：`unique(user_id, product_code, resource_id)`
+- advisor request：`unique(user_id, idempotency_key)`
 
-## 8. RLS 基线
+这些唯一约束是业务幂等的数据库底线，不能只依赖 application `SELECT` 后再 `INSERT`。
 
-Foundation 已为主要表开启 Row Level Security。
+## 8. RLS / trusted write boundary
 
-对以下敏感数据不开放直接客户端写权限：
+已进入 main 的基线继续有效：用户可以读取自己被允许读取的 wallet / ledger / order / purchase 等数据，但不能直接 mutation 敏感 billing state。
 
-- charts / derived features
-- reports
-- wallets / credit ledger
-- purchases
-- analytics ingestion
+Wave 2 新表同样遵守：
 
-这些写入应由可信服务端逻辑执行。
+- `report_entitlements`：用户可 select own；grant/revoke trusted server only
+- `advisor_requests`：如 UI 需要可 select own；reserve/commit/release trusted server/RPC only
+- `payment_provider_events`：默认 internal server table，不向用户暴露 provider payload / mutation
 
-## 9. Wave 1.5 对 PR #6 的最小返工要求
+Browser 永远不能通过 RLS policy 直接：set paid、grant/deduct credits、unlock report。
 
-08 Supabase 窗口在合并前必须：
+## 9. Transaction boundaries
 
-1. migration 添加 Birth resolved instant / offset 字段
-2. migration 添加 Bazi relations / luck 持久化
-3. `BirthProfileRow`、mapper、create/update repository round-trip 新 Birth 字段
-4. `ChartRow`、mapper、repository round-trip `BaziCalculationMetadata`、relations、luck
-5. 提供明确 calculation context/result read path
-6. 保留统一 root test scripts，不再覆盖 `npm test` 为 backend-only
-7. 增加 backend tests 证明 round-trip 不丢字段
+### Payment fulfillment
 
-## 10. 当前未冻结事项
+Provider signature verify / normalization 在事务外完成；本地 event/order/purchase/entitlement/ledger/wallet fulfillment 使用 short transaction / atomic RPC。
 
-以下内容仍保持 TBD：
+不得在 DB transaction 内等待 Provider 网络调用。
+
+### Advisor
+
+```text
+short reserve transaction
+→ AI outside transaction
+→ validation / persistence
+→ short commit transaction
+```
+
+失败：short release transaction。
+
+绝对禁止长 transaction 包住 LLM 调用。
+
+## 10. 08 Migration Ownership
+
+本 Billing Contract Gate 不修改 migration。08 后续负责：
+
+1. 基于当前 `supabase/migrations/**` 新增 forward-only migration，不重写既有 migration history。
+2. 实现 `payment_provider_events` / `report_entitlements` / `advisor_requests`。
+3. 修改 purchases / credit_ledger 到最终 Contract。
+4. RLS / indexes / constraints。
+5. 实现 atomic trusted RPC / DB primitives。
+6. 更新 rows / mappers / repositories，并把 local Purchase read model 收敛到 shared `Purchase`。
+7. 增加 replay、duplicate、concurrency、timeout 与 round-trip tests。
+
+## 11. 仍未冻结事项
+
+以下仍保持 Product / Operations TBD，不阻塞 Shared Billing Contract：
 
 - 匿名免费测试是否持久化
-- 支付 Provider Webhook 的最终事件审计表结构
-- Full Report entitlement 是否需要独立 relational table
+- Report refund 后具体访问/revoke 策略
+- Advisor credits expiry
+- Advisor pack stacking policy
+- 部分 credits 已消费后的 full-refund policy；当前 wallet 不允许负余额
 - 用户数据导出/删除策略
 - Advisor 对话保留期限
-- 生产数据库连接池与备份策略
+- Production DB 连接池 / 备份策略
+- 真实 Payment Provider merchant onboarding / category approval
 
-当支付窗口开始实现 Webhook 时，必须补足 Provider event id 的幂等审计结构，不能只依赖前端支付成功页。
+此前“Webhook event audit table 是否需要”“Full Report entitlement 是否需要独立 relational table”已经被 Wave 2 Billing Contract Gate 正式裁决，不再是 TBD。
 
 最后更新：2026-08-18

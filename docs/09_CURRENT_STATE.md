@@ -4,19 +4,19 @@
 
 > 本文件描述“现在真实做到哪里”。只有实际存在于仓库 / 分支 / PR / CI / 部署环境或已明确 Approved 的事项才写为已完成。
 
-## 1. Repository / main 基线
+## 1. Repository / current integration baseline
 
 - GitHub：`zoushunyu144000-ui/bazi-ai-advisor`
 - Visibility：Private
 - Default branch：`main`
-- Foundation PR #1：Merged / Closed
-- Wave 1.5 Contract Integration PR #7：Merged / Closed
-- 本次状态同步前 `main` HEAD：`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa`
-- 该提交为 PR #6 Supabase Core Merge Commit。
+- Wave 2 Billing Contract branch：`feature/billing-contract-integration`
+- Billing Contract Draft PR：#11 `arch: freeze Wave 2 billing contracts`
+- 本 branch 创建时最新 `main` HEAD：`1f13068e9f6d63e5c0692a94fcedb58f03693f95`
+- 该 `main` HEAD 为 PR #10 Payment / Credits Research Merge Commit。
 
-## 2. Wave 1 核心技术链：已正式进入 main
+PR #11 当前只做 Shared Contract / docs / contract tests，**尚未 merge main**，也不接真实 Payment Provider。
 
-Wave 1 核心 deterministic / persistence 链已经完成 Merge：
+## 2. Wave 1 核心技术链：已完成并进入 main
 
 ```text
 Birth
@@ -25,55 +25,22 @@ Birth
 → Supabase Persistence
 ```
 
-### PR #4 — Birth normalization
+已确认：
 
-状态：**Merged / Closed**
+- PR #4 Birth：Merged
+- PR #5 Bazi Engine：Merged
+- PR #3 Interpretation V0.2：Merged
+- PR #6 Supabase Core：Merged
 
-- Merge Commit：`41c7faa8c7f8b063dea8bf2ae8d5aa79422792f3`
-- Birth tests：**14/14 passed**
-- DST overlap / gap、resolved instant、UTC offset persistence contract 已覆盖。
-- provider adapter 仍保持 mockable / 非 live 调用边界。
+最终 Wave 1 累计验收口径：
 
-### PR #5 — Deterministic Bazi Engine V1
+- Birth：14/14 passed
+- Bazi：22/22 passed
+- Interpretation：9/9 passed
+- Backend：19/19 passed
+- skipped：0
 
-状态：**Merged / Closed**
-
-- Merge Commit：`de87b86e495aeac5a68a8e9c9a0de9433ec207d3`
-- Bazi tests：**22/22 passed**
-- LLM 不参与排盘。
-- `BaziDerivedFeatures` 继续是 canonical 五行分布、十神分布、日主强弱事实来源。
-- `tyme4ts@1.5.2` 继续通过 Adapter 隔离使用。
-
-### PR #3 — Interpretation V0.2
-
-状态：**Merged / Closed**
-
-- Merge Commit：`6806cc5514048121a3ff1cebf4123800162b4939`
-- Interpretation tests：**9/9 passed**
-- 当前 mapping：`personality-map/0.2.0`
-- 04 消费 `BaziChart + canonical BaziDerivedFeatures`，不重算第二套传统命理事实。
-- Stable archetype machine layer 已建立；最终视觉角色 / 热梗名称仍属于 05 表现层。
-
-### PR #6 — Supabase Core Data Layer
-
-状态：**Merged / Closed**
-
-- Merge Commit：`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa`
-- Backend tests：**19/19 passed**
-- migration history、Auth bootstrap、RLS、SSR/browser/server-only clients、user-scoped repositories 已进入 main。
-- BirthProfile 的 resolved instant / UTC offset 与完整 `BaziCalculationResult` 已有 persistence / read-back code path。
-
-## 3. Wave 1 验收汇总
-
-核心模块最终验收累计：
-
-- Birth：**14/14 passed**
-- Bazi：**22/22 passed**
-- Interpretation：**9/9 passed**
-- Backend：**19/19 passed**
-- skipped：**0（Wave 1 核心链最终累计验收口径）**
-
-相关最终 feature HEAD 均存在 GitHub Actions `success` 记录；统一 CI contract 为：
+统一 CI contract：
 
 ```text
 npm ci
@@ -83,119 +50,162 @@ npm ci
 → npm run build
 ```
 
-本阶段验收结论：
+共享不变量继续有效：Birth resolved facts → deterministic Bazi → canonical BaziDerivedFeatures → Interpretation；LLM 不参与原始排盘。
 
-- lint：success
-- typecheck：success
-- npm test：success
-- build：success
+## 3. Supabase 状态
 
-说明：以上为 Wave 1 核心模块最终验收的累计结果，不把 Merge Commit 后不存在的额外 `main` 单次 workflow run 虚构为独立验收记录。
+**Supabase Core Code Layer 已完成并进入 main。**
 
-## 4. Supabase 状态边界
+已包含：
 
-**Supabase Core Code Layer 已完成。**
-
-已经进入 main 的是代码层能力，包括：
-
-- migrations
+- migration history
 - Auth bootstrap
 - RLS
 - browser / SSR / server-only client boundary
-- repositories
-- Birth / Bazi calculation persistence contract
+- user-scoped repositories
+- Birth / Bazi calculation persistence and read-back
+- billing foundation tables：wallets / orders / purchases / credit_ledger
 
-但 **真实 Supabase Live Integration 尚未完成**。
+但 **Supabase Live Integration 仍未完成**：真实 Project link、remote migration apply、Auth/live RLS/live CRUD 验证仍属于后续工作。
 
-仍需后续完成：
+## 4. Research knowledge base
 
-- 创建 / 确认真实 Supabase Project
-- 配置 Project URL / publishable key / server secret
-- Auth redirect URLs / SMTP 等真实 Auth 配置
-- `supabase link`
-- remote migration apply / `supabase db push`
-- live RLS verification
-- live Auth verification
-- live CRUD / persistence round-trip verification
+### Traditional Pattern Research
 
-因此当前不得把 Supabase 状态描述为“已部署 / 已连接生产环境”。
+PR #9：**Merged / Closed**
 
-## 5. Traditional Pattern / 格局研究
+- Merge Commit：`a529e3c04d8b8fb8fd7f3f20c735cdc842d59b87`
+- Research 已进入知识库。
+- 不代表 Traditional Pattern production algorithm 已实现。
+- 不自动启用 `personality-map/0.3.0`。
 
-状态：**Research completed / Production algorithm not implemented**。
+### AI Benchmark Research
 
-GitHub 当前存在 Draft Research PR #9：
+PR #8：**Merged / Closed**
 
-- branch：`research/traditional-pattern-taxonomy`
-- 只包含研究文档，不修改 `modules/bazi/**`、`modules/interpretation/**` 或 shared Domain Contract。
-- 已研究月令 / 子平格局 taxonomy、regular patterns、建禄/月劫、组合结构与未来 `TraditionalPatternResult` 责任边界。
+- Merge Commit：`6a19acb7a0f1e3ed27d26084a4bc0299e0bb0bac`
+- AI / Skill / MCP benchmark 已进入知识库。
+- 不代表 `modules/ai/**` 正式 Production System 已完成。
 
-当前明确边界：
+### Payment / Credits Research
 
-- Traditional Pattern **尚未进入生产算法**。
-- 不得把 `max(Ten-God distribution)` 直接等同于传统格局。
-- 不得因为研究完成就自动升级 `personality-map/0.3.0`。
-- 若后续实现，传统格局事实原则上应由 deterministic Bazi layer 产生，再由 Interpretation 消费。
+PR #10：**Merged / Closed**
 
-## 6. AI System 状态
+- Merge Commit：`1f13068e9f6d63e5c0692a94fcedb58f03693f95`
+- Research 文档：`docs/research/PAYMENT_CREDIT_BENCHMARK.md`
+- Research 提出了 `CCR-09-001` ～ `CCR-09-006`。
+- 研究推荐 Stripe Checkout 仅为 conditional candidate；尚未选择/接入真实 Provider，也未完成 merchant/category approval。
 
-状态：**Research completed / Formal AI System not implemented**。
+## 5. Wave 2 Billing Contract Gate
 
-GitHub 当前存在 Draft Research PR #8：
+状态：**Shared Contract implemented on Draft PR #11 / not merged**。
 
-- branch：`research/ai-bazi-benchmark`
-- 研究 Bazi AI / Skill / MCP / structured output / memory / report hierarchy / deterministic facts handoff。
-- 研究结论保持 Reuse First，并建议以 `BaziCalculationResult` 为 canonical source of truth。
+当前正式裁决：
 
-当前明确未完成：
+- CCR-09-001：APPROVED — Provider Event Inbox，unique `(provider, provider_event_id)`
+- CCR-09-002：APPROVED — relational ReportEntitlement identity `(user_id, product_code, resource_id)`
+- CCR-09-003：MODIFIED — V1 使用 `advisor_requests`；`reserved → committed | released`
+- CCR-09-004：MODIFIED — 保留现有 ledger `entry_type`，新增 reason/reference vocabulary
+- CCR-09-005：APPROVED — first-class shared `Purchase` read model
+- CCR-09-006：REJECTED rename — ProductCode 保持 `personality_report` / `advisor_10`
 
-- `modules/ai/**` 正式生产实现
-- AI Provider live integration
-- Prompt v1 / scenario prompt system
-- structured output runtime validation
-- Advisor production flow
-- memory production flow
+Shared Domain branch 已新增：
 
-因此不得把“AI research 完成”写成“AI System 已完成”。
+- `Purchase`
+- `ReportEntitlement`
+- `AdvisorRequest`
+- `CreditLedgerReason`
+- `CreditLedgerReferenceType`
+- `CreditLedgerFactInput`
+- stable runtime vocabulary constants
 
-## 7. 05 Visual / UX
+详细 source of truth：`docs/14_BILLING_CONTRACT_INTEGRATION.md`。
 
-05 仍在独立视觉迭代。
+本 Gate **没有**：
 
-- PR #2 `design/product-visual-v1` 当前仍为 Open / 未合并。
-- 视觉方向与角色语言继续独立验收。
-- 05 不得把 Traditional Pattern research taxonomy 硬编码成最终人格命名。
-- 最终角色绑定继续通过 stable `archetype_code` / approved pattern mapping 接入。
+- 修改 Supabase migration
+- 实现 BillingService
+- 实现 Provider Adapter
+- 接 Stripe / PayPal
+- 写 Checkout UI
+- 修改 Bazi / Interpretation
 
-## 8. 共享架构不变量
+## 6. Billing architecture frozen by Gate
 
-继续生效：
+### Payment
 
-1. Birth 先完成 normalized / resolved birth facts。
-2. 02 Bazi Engine 是 canonical traditional Bazi facts 唯一 deterministic source。
-3. 04 Interpretation 消费 canonical facts，不重算第二套五行 / 十神 / 日主强弱。
-4. 08 Persistence 必须无损保存 deterministic result / relations / luck / metadata。
-5. LLM 不得从原始出生日期时间自由排盘。
-6. 重要依赖遵守 Research Before Build / Reuse First。
-7. shared `types/domain/**` 语义修改必须协调影响面。
+```text
+Verified Provider Event
+→ Provider Event Inbox
+→ Order
+→ Purchase
+→ ReportEntitlement OR Credit Grant
+```
 
-## 9. 当前阶段
+Browser success / return page 不是 fulfillment authority。
 
-**Wave 1 核心技术链已完成并正式进入 main。**
+### Advisor
 
-项目现在进入：
+```text
+reserve 1 credit capacity
+→ AI outside DB transaction
+→ validate
+→ commit -1
+```
 
-# **Wave 2**
+Terminal failure：
 
-Wave 2 的具体业务任务由 00 号总调度 / 用户分配；本次状态同步不擅自增加业务功能。
+```text
+reserved → released
+```
 
-当前主要未完成边界包括：
+Reservation 不是 ledger debit；release 不产生 compensating `+1`。
 
+Ledger 是 immutable committed fact stream；Wallet 是 committed projection。
+
+## 7. Ownership after Billing Contract Gate
+
+### 01 Architecture
+
+负责 Shared Contract、DB target、transaction/idempotency boundaries；不实现 Provider / migration。
+
+### 08 Supabase / DB
+
+待 PR #11 合并后：实现 forward migration、RLS、constraints/indexes 与 atomic billing RPC / transaction primitives。
+
+### 09 Billing / Payment
+
+待 PR #11 + 08 DB primitives：实现 BillingService、Provider Adapter、webhook verify/normalize、fulfillment flow。
+
+### 07 AI Advisor
+
+待 reservation API：在 LLM 前 reserve，成功后 commit，terminal failure release；不得直接写 Wallet / Ledger。
+
+## 8. 05 Visual / UX
+
+PR #2 仍独立处理视觉验收；不因 Billing Contract Gate 自动获得 merge 资格。
+
+## 9. 当前仍未完成
+
+- PR #11 Billing Contract 尚未 merge
+- 08 Billing DB migration / RPC
+- 09 real Billing service / Provider integration
+- 07 Formal AI Advisor runtime
 - Supabase Live Integration
 - Traditional Pattern production algorithm
-- Formal AI System
 - 05 Visual acceptance / merge
-- real payment
-- production deployment / end-to-end live integration
+- Production deployment / end-to-end live commercial flow
 
-后续开发窗口仍必须先同步最新 `main`，再从最新 `main` 创建独立 feature branch。
+## 10. Blocking product decisions
+
+没有产品决策阻塞 **Shared Billing Contract Gate 本身**。
+
+真实支付/退款上线前仍需冻结：
+
+- Report refund 后 entitlement revoke / historical access policy
+- Advisor credit expiry
+- credit pack stacking
+- 已消费部分 credits 后全额退款策略；当前 wallet 不允许负余额
+- Production merchant / Provider onboarding 与 product-category approval
+
+当前阶段：**Wave 2 Active — Billing Contract Draft Gate**。

@@ -433,6 +433,43 @@ Wave 1 已完成 deterministic input → calculation → interpretation → pers
 
 ---
 
+## D-017 — Wave 2 Billing Contract Gate
+
+日期：2026-08-18
+状态：Approved Contract / Implementation Pending
+
+### 决定
+
+Payment / Credits Research 中 `CCR-09-001` ～ `CCR-09-006` 正式裁决如下：
+
+1. **CCR-09-001 APPROVED**：新增 durable Provider Event Inbox，唯一 identity 为 `(provider, provider_event_id)`；Browser return page 永远不是 fulfillment authority。
+2. **CCR-09-002 APPROVED**：Full Report 使用 first-class relational `ReportEntitlement`，稳定 identity 为 `(user_id, product_code, resource_id)`，不得依赖 JSONB 模糊 gating。
+3. **CCR-09-003 MODIFIED**：V1 使用 `advisor_requests` 作为 request + reservation aggregate，状态 `reserved → committed | released`；不增加通用 `credit_reservations` 表，不用长 DB transaction 包住 LLM。
+4. **CCR-09-004 MODIFIED**：保留现有 ledger `entry_type = purchase|usage|refund|adjustment|bonus`，新增 canonical `reason + reference_type + reference_id`；ledger immutable，wallet 是 committed projection。
+5. **CCR-09-005 APPROVED**：`Purchase` 升为 first-class shared Domain read model；Report gating 读取 `ReportEntitlement`。
+6. **CCR-09-006 REJECTED rename**：serialized ProductCode 正式冻结为 `personality_report` / `advisor_10`，不引入 `REPORT_FULL` / `ADVISOR_10_CREDITS` 第二套 codes。
+
+Advisor V1 的 billing semantics 同时冻结：verified `advisor_10` purchase 每 quantity grant `+10` credits；一次成功且 committed 的 Advisor request 消耗 exactly `1` credit；terminal failure release reservation，不造成永久 credit loss。
+
+详细 Contract、transaction、idempotency、DB target 与 handoff 见 `docs/14_BILLING_CONTRACT_INTEGRATION.md`。
+
+### 原因
+
+Wave 1 已有 wallet / ledger / order / purchase 基础，但 Payment Research 证明仅靠 Order idempotency、JSONB entitlement 和“请求结束后再扣 credit”不足以保证 webhook replay、并发多标签页、AI timeout/retry 和报告权限的一致性。
+
+同时，现有 ProductCode 与 ledger coarse vocabulary 已进入 shared Domain、schema 与 migration history；无收益重命名只会增加迁移和 API 兼容成本。
+
+### 影响
+
+- 01 负责 Shared Domain / architecture contract，不实现 Provider 或 migration。
+- 08 负责 forward DB migration、RLS、constraints、indexes 与 atomic RPC / transaction primitives。
+- 09 负责 BillingService、Provider Adapter、webhook verify/normalize 与 payment fulfillment orchestration。
+- 07 负责 Advisor runtime，通过 trusted reserve / commit / release API 消费 credit，不直接写 Wallet / Ledger。
+- Browser 不得 set paid、grant/deduct credits 或 unlock/revoke report。
+- 真实 Provider 仍需独立 Reuse First / merchant onboarding 验证；本决策不等于已选择或接入 Stripe。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：

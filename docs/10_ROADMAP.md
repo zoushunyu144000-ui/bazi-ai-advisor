@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**V1 Roadmap — Wave 1 Core Chain Complete / Wave 2 Active**
+状态：**V1 Roadmap — Wave 1 Core Chain Complete / Wave 2 Active / Billing Contract Gate Draft**
 
 最后更新：2026-08-18
 
@@ -17,6 +17,7 @@
 - ChatGPT Project Instructions / Handoff
 - `docs/12_REUSE_AND_REFERENCES.md`
 - `docs/13_WAVE1_CONTRACT_INTEGRATION.md`
+- `docs/14_BILLING_CONTRACT_INTEGRATION.md`（当前 Draft PR #11）
 
 项目级 **Research Before Build / Reuse First** 持续生效。
 
@@ -62,19 +63,15 @@ Birth
 - PR #3 Interpretation V0.2 — Merged
 - PR #6 Supabase Core — Merged
 
-最终主线合并顺序完成至：
-
-`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa` — PR #6 Supabase Core Merge Commit。
-
-### Wave 1 cumulative acceptance
+Wave 1 cumulative acceptance：
 
 - Birth：14/14 passed
 - Bazi：22/22 passed
 - Interpretation：9/9 passed
 - Backend：19/19 passed
-- skipped：0（Wave 1 核心链最终累计验收口径）
+- skipped：0
 
-相关最终 feature HEAD 的 GitHub Actions 均为 success，统一验收流程：
+统一验收流程：
 
 ```text
 npm ci
@@ -88,90 +85,115 @@ npm ci
 
 状态：**Active**
 
-Wave 2 从已经进入 main 的核心 deterministic / persistence 链继续向真实产品闭环推进。
-
-本 Roadmap 只记录已经明确的边界；具体任务由 00 号总调度 / 用户分配，不在本文件擅自扩张范围。
+Wave 2 从已经进入 main 的 deterministic / persistence 核心链继续向真实产品闭环推进。
 
 ### A. Supabase Live Integration
 
 状态：**Pending**
 
-Supabase Core **Code Layer 已完成**，但真实 Supabase 项目尚未完成 live integration。
-
-Wave 2 后续需要：
-
-- 创建 / 确认 Supabase Project
-- 配置真实 env / server secrets
-- link project
-- apply migrations
-- Auth live configuration
-- RLS live verification
-- CRUD / Birth / Bazi persistence end-to-end verification
+Supabase Core Code Layer 已完成，但真实 Supabase Project 尚未完成：link / remote migration apply / Auth / RLS / live CRUD / end-to-end verification。
 
 完成这些之前，不得把 backend 描述为 Production-connected。
 
 ### B. Traditional Pattern / 格局
 
-状态：**Research complete / Production implementation pending**
+状态：**Research merged / Production implementation pending**
 
-Draft Research PR #9 已完成 taxonomy 与 ownership research。
+PR #9 已合并知识库：
 
-当前 Gate：
-
-- 不自动合并研究结论为生产算法。
-- 不使用 `max(Ten-God distribution)` 代替传统格局判断。
-- `TraditionalPatternResult` 若进入生产，应走 deterministic fact ownership + explicit rule profile。
-- `personality-map/0.3.0` 不因 research 完成自动启用。
+- taxonomy / ownership research 已归档
+- 不自动变成 production algorithm
+- 不使用 `max(Ten-God distribution)` 直接等同传统格局
+- `TraditionalPatternResult` 若实现，应由 deterministic Bazi layer 产生并带 explicit rule profile
+- `personality-map/0.3.0` 不因 research merge 自动启用
 
 ### C. AI System
 
-状态：**Research complete / Formal implementation pending**
+状态：**Research merged / Formal implementation pending**
 
-Draft Research PR #8 已完成 Bazi AI / Skill / MCP benchmark。
+PR #8 已合并知识库。
 
-下一阶段正式 AI System 仍需单独实现并验收：
+正式 AI System 仍需单独实现：provider/gateway、versioned prompt、context assembler、structured validation、report runtime、Advisor runtime、memory、failure/retry/safety。
 
-- provider / gateway boundary
-- versioned scenario prompts
-- context assembler
-- structured output validation
-- report generation runtime
-- advisor runtime
-- memory boundary
-- failure / retry / safety handling
-
-`BaziCalculationResult` 继续作为 deterministic source of truth；LLM 不排盘。
+`BaziCalculationResult` 继续是 deterministic source of truth；LLM 不排盘。
 
 ### D. 05 Visual / UX
 
 状态：**Independent iteration / acceptance pending**
 
-PR #2 仍 Open / 未合并。
-
-05 继续：
-
-- 视觉方向
-- 角色画风
-- archetype presentation layer
-- mobile / desktop product UI
-
-但不得把 Draft Traditional Pattern research 直接硬编码成最终人格体系。
+PR #2 仍独立视觉验收，不因技术或 Billing Contract 自动 merge。
 
 ### E. Payment / Commercial Entitlement
 
-状态：**Pending**
+状态：**Research merged → Shared Contract Gate Draft**
 
-仍需完成：
+Payment / Credits Research PR #10 已合并知识库。
 
-- payment provider selection
-- order / webhook idempotency
-- ¥9.9 等值 full report entitlement
-- ¥29.9 等值 10-advisor-credit entitlement
-- wallet / ledger atomic server-side operations
+当前进行：
+
+```text
+PR #11
+feature/billing-contract-integration
+```
+
+本 Gate 已冻结：
+
+- Provider Event Inbox：unique `(provider, provider_event_id)`
+- relational ReportEntitlement：`(user_id, product_code, resource_id)`
+- Advisor request reservation：`reserved → committed | released`
+- immutable ledger + committed wallet projection
+- stable ledger reason/reference vocabulary
+- first-class shared Purchase read model
+- serialized ProductCode 保持 `personality_report` / `advisor_10`
+- Browser 不能 set paid / grant/deduct credits / unlock report
+- AI 调用不能被长 DB transaction 包住
+
+PR #11 不写 migration、不接 Stripe、不写 Checkout / Provider implementation。
+
+#### Billing Contract Gate 后的实现顺序
+
+建议：
+
+```text
+Billing Contract PR #11
+↓
+08 Billing DB migration / RLS / atomic RPC
+↓
+09 BillingService / Provider Adapter / payment fulfillment
+↓
+07 Advisor runtime consume reserve/commit/release API
+↓
+06/UI consume ReportEntitlement / billing read models
+```
+
+08 / 09 / 07 不得互相越权复制职责。
+
+### E1. Billing Contract Gate acceptance
+
+PR #11 合并前至少要求：
+
+- shared Domain compile
+- billing contract tests
+- `npm run lint`
+- `npm run typecheck`
+- `npm test`
+- `npm run build`
+- CI success
+- Draft review confirms no Provider / migration / Checkout implementation sneaked into Gate
+
+### E2. Real Payment launch decisions still pending
+
+这些不阻塞 Shared Contract，但上线前必须冻结：
+
+- Report refund 后 entitlement revoke / historical access policy
+- Advisor credit expiry
+- pack stacking
+- partial-consumption + full-refund policy；当前 wallet 不允许负余额
+- production Provider merchant onboarding / product-category approval
 
 ## Phase 2 — Free Bazi Test Product Loop
 
-目标：让真实用户完成：
+目标：
 
 ```text
 Birth input
@@ -181,44 +203,39 @@ Birth input
 → result UI
 ```
 
-核心 Engine / Interpretation 已具备主线能力；Wave 2 需要把真实 UI、live persistence 与端到端流程接起来。
+核心 Engine / Interpretation 已进入 main；仍需真实 UI、live persistence 与端到端流程。
 
-关键验收：
-
-- 可复现
-- Mobile / Desktop 可用
-- 结果内容与 canonical facts 一致
-- 无 LLM 自由排盘
+验收：可复现、Mobile/Desktop 可用、内容与 canonical facts 一致、无 LLM 自由排盘。
 
 ## Phase 3 — Paid Full Personality Report
-
-目标：形成第一笔真实商业交付。
 
 商业基准：¥9.9 等值。
 
 仍需：
 
-- Full Report Schema
-- formal AI report generation
-- payment
-- entitlement
-- locked / unlocked UI
-- failure recovery
+- Full Report Schema / formal AI report generation
+- 08 ReportEntitlement persistence
+- 09 payment fulfillment
+- locked/unlocked UI 只消费 trusted entitlement read path
+- refund/failure recovery
 
-## Phase 4 — AI Advisor 10-use Pack
+## Phase 4 — AI Advisor 10-credit Pack
 
-目标：完成第二层付费产品。
+商业基准：¥29.9 等值 / 10 credits。
 
-商业基准：¥29.9 等值 / 10 次。
+已冻结的 Billing 语义：
+
+- verified `advisor_10` Purchase 每 quantity grant +10
+- one successful committed Advisor request consumes -1
+- reserve before AI
+- terminal failure release
 
 仍需：
 
-- Advisor production UI
-- structured deterministic context injection
-- conversation persistence
-- credit ledger
-- atomic deduction / compensation
-- memory / safety / retry boundary
+- 08 atomic reservation / commit / release persistence
+- 09 trusted Billing API
+- 07 Advisor production runtime / UI / context / structured validation
+- conversation / memory / safety / retry integration
 
 ## Phase 5 — Analytics / Conversion Optimization
 
@@ -234,14 +251,15 @@ Birth input
 
 状态：Pending
 
-验收至少包括：
+至少验收：
 
 - live Supabase / Auth
 - production payment
 - permissions / RLS
 - Mobile / Desktop
 - report generation recovery
-- advisor credit accuracy
+- advisor credit accuracy under concurrency/retry
+- provider event replay safety
 - privacy / terms
 - monitoring
 - Vercel production deployment
