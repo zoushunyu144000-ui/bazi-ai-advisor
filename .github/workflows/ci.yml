@@ -42,3 +42,17 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Verify static prototype preview
+        if: github.ref == 'refs/heads/feature/product-loop-v1'
+        run: |
+          base="https://bazi-ai-advisor-git-feature-product-loop-v1-zuriel144000.vercel.app"
+          for path in "/" "/birth" "/result"; do
+            code=$(curl --silent --show-error --location --output /tmp/preview-body --write-out '%{http_code}' "$base$path")
+            echo "$path -> HTTP $code"
+            if [ "$code" != "200" ]; then
+              echo "Preview smoke check failed for $path"
+              cat /tmp/preview-body
+              exit 1
+            fi
+          done
