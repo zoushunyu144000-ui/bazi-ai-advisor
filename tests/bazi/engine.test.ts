@@ -1,11 +1,21 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import type { BaziCalculationResult } from '../../types/domain';
 import { calculateBazi, solarTermInstantMs } from '../../modules/bazi';
 import { profileAtInstant } from './helpers';
 
 function withoutIdentity(result:ReturnType<typeof calculateBazi>) {
   return JSON.parse(JSON.stringify(result));
 }
+
+test('calculateBazi conforms to the shared BaziCalculationResult contract',()=>{
+  const result:BaziCalculationResult=calculateBazi(profileAtInstant(Date.parse('2005-12-23T08:37:00Z')));
+  assert.ok(result.chart);
+  assert.ok(result.calculationMetadata);
+  assert.ok(result.derivedFeatures);
+  assert.ok(Array.isArray(result.relations));
+  assert.ok(result.luck);
+});
 
 test('Li Chun exact instant switches BaZi year and Yin month',()=>{
   const liChun=solarTermInstantMs(2024,3);
@@ -71,10 +81,15 @@ test('basic luck cycles use explicit forward/reverse rule and 3-days-per-year pr
   assert.equal(female.luck.cycles.length,8);
 });
 
-test('derived distributions are normalized and carry versions',()=>{
+test('derived distributions use the shared 0-100 percentage scale and carry versions',()=>{
   const r=calculateBazi(profileAtInstant(Date.parse('2000-02-29T12:00:00Z')));
   const elementTotal=r.derivedFeatures.elementDistribution.reduce((s,x)=>s+x.score,0);
-  assert.ok(Math.abs(elementTotal-1)<0.00001);
-  assert.equal(r.engine_version,r.calculationMetadata.engine_version);
-  assert.equal(r.rule_profile_version,r.derivedFeatures.rule_profile_version);
+  const tenGodTotal=r.derivedFeatures.tenGodDistribution.reduce((s,x)=>s+x.score,0);
+  assert.ok(Math.abs(elementTotal-100)<0.00001);
+  assert.ok(Math.abs(tenGodTotal-100)<0.00001);
+  assert.ok(r.derivedFeatures.elementDistribution.every(x=>x.score>=0&&x.score<=100));
+  assert.ok(r.derivedFeatures.tenGodDistribution.every(x=>x.score>=0&&x.score<=100));
+  assert.equal(r.calculationMetadata.engine_version,r.derivedFeatures.engine_version);
+  assert.equal(r.calculationMetadata.rule_profile_version,r.derivedFeatures.rule_profile_version);
+  assert.ok(r.derivedFeatures.confidence>=0&&r.derivedFeatures.confidence<=1);
 });
