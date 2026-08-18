@@ -1,211 +1,253 @@
 # 10 — Roadmap
 
-状态：V1 Roadmap — Wave 1.5 Contract Integration Merged / Wave 1 Adaptation Active
+状态：**V1 Roadmap — Wave 1 Core Chain Complete / Wave 2 Active**
 
 最后更新：2026-08-18
 
 ## Phase 0 — 项目记忆与工程治理
 
-目标：保证多 GPT 窗口长期协作不会因上下文压缩而失控。
+状态：**Completed / continuously maintained**
 
-状态：**已建立基础体系，持续维护。**
+已建立：
 
-包含：
-- 项目索引
-- 总蓝图
-- 产品规格
-- 设计系统
-- 技术架构
-- 数据库模型
-- AI 系统
-- 商业规则
-- 决策日志
-- 当前状态
-- AI 工作协议
-- Handoff 模板
-- `docs/12_REUSE_AND_REFERENCES.md` 外部依赖与参考项目登记表
-
-项目级 **Research Before Build / Reuse First** 已正式进入 `main`。
-
-## Phase 1 — Web 基础工程 / Foundation
-
-目标：形成可部署、可迭代的基础网站。
-
-状态：**已完成并正式合并 `main`。**
-
-关键 GitHub 状态：
-
-- Foundation PR：#1
-- PR 状态：Merged / Closed
-- Foundation branch：`foundation/mvp-v1`
-- Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
-- Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- Foundation CI：通过
-
-Foundation 后仍属于后续 Web / 部署工作的事项：
-
-- Vercel Preview project 独立绑定本仓库
-- 基础 error boundary / loading strategy
-
-**不得把本仓库连接或部署覆盖到任何其他既有 Vercel 项目。**
-
-## Wave 1 — Foundation 后并行开发
-
-状态：**第一轮实现已完成；PR #2～#6 仍开放，进入基于新 shared Contract 的适配阶段。**
-
-当前 Wave 1 PR：
-
-- #2 Visual / UX
-- #3 Interpretation
-- #4 Birth normalization
-- #5 Bazi Engine
-- #6 Supabase core
-
-这些 PR 尚未因为 Wave 1.5 Gate 完成而自动获得 merge 资格。
-
-## Wave 1.5 — Contract Integration Gate
-
-状态：**Completed / Merged**
-
-关键 GitHub 状态：
-
-- PR：#7 `arch: integrate Wave 1 shared contracts`
-- Reviewed HEAD：`9553f606bdda8281e255dddd27b1dc0efcd738ea`
-- Merge Commit：`c67bc8f1ab30ab177b30dd29511602f93b35c890`
-- CI：`npm ci` / lint / typecheck / `npm test` / build 全部通过
-
-### 已进入 main 的 Contract
-
-1. 02 Bazi Engine 是 canonical `BaziDerivedFeatures` 唯一传统命理事实来源。
-2. `WeightedElementScore.score` / `WeightedTenGodScore.score` = 0–100 percentage。
-3. `BirthProfile` 保存 `resolvedBirthInstant?` + `utcOffsetMinutesAtBirth?`。
-4. shared Domain 已提升 `BaziRelation`、`BaziLuckStructure`、`BaziCalculationContext`、`BaziCalculationResult`。
-5. 08 必须能够完整保存并读回 calculation metadata / relations / luck。
-6. shared `PersonalityDimension` V1 暂不扩大。
-7. root `npm test` 聚合 Birth / Bazi / Interpretation / Backend 四套测试。
-8. CI 在 typecheck 后、build 前执行 `npm test`。
-9. REUSE FIRST 成为项目级 Architecture / Governance 规则。
-
-详细规范：
-
+- `AGENTS.md`
+- 项目索引 / Blueprint / Product Spec / Design System
+- Tech Architecture / Database / AI / Business Rules
+- Decision Log / Current State / Roadmap
+- ChatGPT Project Instructions / Handoff
 - `docs/12_REUSE_AND_REFERENCES.md`
 - `docs/13_WAVE1_CONTRACT_INTEGRATION.md`
 
-## Wave 1 Adaptation / Merge Gates
+项目级 **Research Before Build / Reuse First** 持续生效。
+
+## Phase 1 — Foundation
+
+状态：**Completed / Merged**
+
+- Foundation PR #1 已进入 `main`。
+- Next.js / TypeScript / App Router / Tailwind / shadcn/ui 基础工程已建立。
+- PostgreSQL / Supabase foundation schema、shared Domain Contracts、CI 与版本字段体系已建立。
+
+## Wave 1.5 — Shared Contract Integration
+
+状态：**Completed / Merged**
+
+PR #7 已完成 shared Contract 收敛：
+
+- canonical `BaziDerivedFeatures`
+- Birth resolved instant / UTC offset
+- shared calculation context / result
+- unified root test contract
+- Reuse First governance
+
+Wave 1.5 已完成历史使命，不再是当前开发 Gate。
+
+## Wave 1 — Core Technical Chain
+
+状态：**Completed / Merged to main**
+
+核心链：
+
+```text
+Birth
+→ Bazi Engine
+→ Interpretation
+→ Supabase Persistence
+```
+
+### Completed merges
+
+- PR #4 Birth normalization — Merged
+- PR #5 Bazi Engine V1 — Merged
+- PR #3 Interpretation V0.2 — Merged
+- PR #6 Supabase Core — Merged
+
+最终主线合并顺序完成至：
+
+`63aa9f5d32947ceb6b5a491a4aed77b0eba448fa` — PR #6 Supabase Core Merge Commit。
+
+### Wave 1 cumulative acceptance
+
+- Birth：14/14 passed
+- Bazi：22/22 passed
+- Interpretation：9/9 passed
+- Backend：19/19 passed
+- skipped：0（Wave 1 核心链最终累计验收口径）
+
+相关最终 feature HEAD 的 GitHub Actions 均为 success，统一验收流程：
+
+```text
+npm ci
+→ lint
+→ typecheck
+→ npm test
+→ build
+```
+
+## Wave 2 — Integration / Productization
 
 状态：**Active**
 
-所有 02 / 03 / 04 / 08 工程窗口必须先同步 PR #7 后最新 `main`，再做最小适配；不得继续以旧 shared Contract 为最终实现基线。
+Wave 2 从已经进入 main 的核心 deterministic / persistence 链继续向真实产品闭环推进。
 
-### 推荐依赖顺序
+本 Roadmap 只记录已经明确的边界；具体任务由 00 号总调度 / 用户分配，不在本文件擅自扩张范围。
+
+### A. Supabase Live Integration
+
+状态：**Pending**
+
+Supabase Core **Code Layer 已完成**，但真实 Supabase 项目尚未完成 live integration。
+
+Wave 2 后续需要：
+
+- 创建 / 确认 Supabase Project
+- 配置真实 env / server secrets
+- link project
+- apply migrations
+- Auth live configuration
+- RLS live verification
+- CRUD / Birth / Bazi persistence end-to-end verification
+
+完成这些之前，不得把 backend 描述为 Production-connected。
+
+### B. Traditional Pattern / 格局
+
+状态：**Research complete / Production implementation pending**
+
+Draft Research PR #9 已完成 taxonomy 与 ownership research。
+
+当前 Gate：
+
+- 不自动合并研究结论为生产算法。
+- 不使用 `max(Ten-God distribution)` 代替传统格局判断。
+- `TraditionalPatternResult` 若进入生产，应走 deterministic fact ownership + explicit rule profile。
+- `personality-map/0.3.0` 不因 research 完成自动启用。
+
+### C. AI System
+
+状态：**Research complete / Formal implementation pending**
+
+Draft Research PR #8 已完成 Bazi AI / Skill / MCP benchmark。
+
+下一阶段正式 AI System 仍需单独实现并验收：
+
+- provider / gateway boundary
+- versioned scenario prompts
+- context assembler
+- structured output validation
+- report generation runtime
+- advisor runtime
+- memory boundary
+- failure / retry / safety handling
+
+`BaziCalculationResult` 继续作为 deterministic source of truth；LLM 不排盘。
+
+### D. 05 Visual / UX
+
+状态：**Independent iteration / acceptance pending**
+
+PR #2 仍 Open / 未合并。
+
+05 继续：
+
+- 视觉方向
+- 角色画风
+- archetype presentation layer
+- mobile / desktop product UI
+
+但不得把 Draft Traditional Pattern research 直接硬编码成最终人格体系。
+
+### E. Payment / Commercial Entitlement
+
+状态：**Pending**
+
+仍需完成：
+
+- payment provider selection
+- order / webhook idempotency
+- ¥9.9 等值 full report entitlement
+- ¥29.9 等值 10-advisor-credit entitlement
+- wallet / ledger atomic server-side operations
+
+## Phase 2 — Free Bazi Test Product Loop
+
+目标：让真实用户完成：
 
 ```text
-#4 Birth
-→ #5 Bazi
-→ #3 Interpretation
-→ #6 Supabase
-→ #2 Visual（仅在视觉验收通过后）
+Birth input
+→ normalization
+→ deterministic Bazi
+→ interpretation
+→ result UI
 ```
 
-说明：
+核心 Engine / Interpretation 已具备主线能力；Wave 2 需要把真实 UI、live persistence 与端到端流程接起来。
 
-- #4 先把已解析 DST instant / offset 真正落进 shared BirthProfile，并完成 REUSE FIRST timezone/DST 复核。
-- #5 消费 Birth canonical instant，产出唯一 canonical Bazi facts / relations / luck / result，并统一 distribution 0–100。
-- #3 消费 #5 canonical facts，移除第二套传统命理事实计算。
-- #6 等 Birth + Bazi shared data contract 稳定后完成 migration / repository round-trip 与 calculation context/result read path。
-- #2 不依赖命理 Contract，但必须独立通过视觉验收，不因工程 Gate 通过而自动 merge。
+关键验收：
 
-每个 Merge Gate 必须：
+- 可复现
+- Mobile / Desktop 可用
+- 结果内容与 canonical facts 一致
+- 无 LLM 自由排盘
 
-```text
-同步当时最新 main
-→ 完成必要适配
-→ npm run lint
-→ npm run typecheck
-→ npm test
-→ npm run build
-→ GitHub CI green
-```
+## Phase 3 — Paid Full Personality Report
 
-同时遵守 `docs/12_REUSE_AND_REFERENCES.md`，重要依赖不得仅凭聊天记忆选择。
+目标：形成第一笔真实商业交付。
 
-## Phase 2 — 免费八字测试闭环
+商业基准：¥9.9 等值。
 
-目标：用户可输入出生信息并得到正确、可理解的免费结果。
+仍需：
 
-任务：
-- 出生信息表单
-- 时区/地点策略
-- 八字确定性排盘
-- 结构化命盘数据
-- 免费报告生成
-- 免费结果页
-- 基础 QA 测试样本
-
-关键验收：排盘必须可复现，不由 LLM 自行猜测四柱；成熟历法/节气/时区基础能力优先复用成熟实现并通过 Adapter 接入。
-
-## Phase 3 — 完整人格报告付费闭环
-
-目标：实现第一笔可真实交付的付费产品。
-
-任务：
-- 用户/身份方案落地
-- Supabase database/migrations
 - Full Report Schema
-- Prompt v1
-- 支付供应商
-- 订单/Webhook 幂等审计
-- Full Report entitlement
-- 锁定/解锁 UI
-- 支付成功/失败恢复流程
+- formal AI report generation
+- payment
+- entitlement
+- locked / unlocked UI
+- failure recovery
 
-商业基准：¥9.9 等值价格。
-
-## Phase 4 — AI 顾问 10 次包
+## Phase 4 — AI Advisor 10-use Pack
 
 目标：完成第二层付费产品。
 
-任务：
-- Advisor UI
-- 命盘/报告上下文注入
-- 次数权益
-- 原子扣减
-- 模型错误补偿
-- 对话历史
-- AI 安全边界
-- 复购入口
+商业基准：¥29.9 等值 / 10 次。
 
-商业基准：¥29.9 等值价格 / 10 次。
+仍需：
 
-## Phase 5 — 数据与转化优化
+- Advisor production UI
+- structured deterministic context injection
+- conversation persistence
+- credit ledger
+- atomic deduction / compensation
+- memory / safety / retry boundary
 
-目标：从“能卖”进入“提高转化”。
+## Phase 5 — Analytics / Conversion Optimization
 
-任务：
-- Analytics
-- 漏斗事件
-- 首页 CTA 测试
-- 免费报告内容比例实验
-- 价格/展示实验
-- 支付失败分析
-- 顾问使用与复购分析
+状态：Pending
 
-## Phase 6 — V1 稳定上线
+- funnel events
+- report conversion
+- payment failure
+- advisor usage / repurchase
+- CTA / pricing / content experiments
 
-目标：确保真实用户可稳定完成全链路。
+## Phase 6 — V1 Stable Launch
 
-验收：
+状态：Pending
+
+验收至少包括：
+
+- live Supabase / Auth
+- production payment
+- permissions / RLS
 - Mobile / Desktop
-- 多语言/本地化基础（如 V1 需要）
-- 支付回调稳定
-- 权限无绕过
-- 报告生成失败可恢复
-- 顾问次数准确
-- 基础隐私与条款页面
-- 错误监控
+- report generation recovery
+- advisor credit accuracy
+- privacy / terms
+- monitoring
+- Vercel production deployment
 
-## V1 之后
+## V1 范围不变
 
-在商业漏斗得到数据验证之前，不提前承诺开发紫微、奇门、塔罗、社区或真人大师平台。
+当前仍只做：**八字**。
 
-新增品类必须通过新的 Decision Log 决策进入 Roadmap。
+在商业闭环得到数据验证前，不提前加入紫微、奇门、塔罗、面相、手相、风水、社区或真人大师平台。
