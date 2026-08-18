@@ -1,10 +1,5 @@
-import { RouteShell } from "@/app/_components/route-shell";
+import Link from "next/link";
 
-export default function HomePage() {
-  return (
-    <RouteShell
-      title="AI 命理与现代行为指导系统"
-      description="第一版只聚焦八字。当前页面仅为工程路由壳，不代表最终首页设计。"
-    />
-  );
-}
+function CharacterArt(){return <svg viewBox="0 0 420 520" role="img" aria-label="年轻东方人格角色插画"><g fill="none" stroke="#211d19" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M210 96c-32 0-58 27-58 61 0 31 23 57 52 60 32 3 62-23 64-58 2-34-23-63-58-63Z" fill="#fffaf3"/><path d="M159 148c6-42 29-68 58-68 26 0 44 13 55 37-16-11-31-13-46-10-10 2-19 7-29 7-12 1-25-6-38 14Z" fill="#211d19"/><path d="M183 164c6 3 11 3 16 0M229 164c6 3 11 3 16 0M206 179c4 3 8 3 12 0M194 198c13 8 27 8 40 0"/><path d="M187 216v35M235 214v37"/><path d="M129 300c8-33 30-51 58-56 14 12 31 17 48 2 30 5 53 24 62 55l30 139H96l33-140Z" fill="#f8efe7"/><path d="M166 254c9 19 22 30 45 30 22 0 37-11 47-32"/><path d="M211 286v151"/><path d="M111 353c28 8 52 11 73 8M239 361c26 0 50-4 75-11"/><path d="M96 440h232"/><path d="M160 432l-16 48M263 432l18 48M143 480h-35M281 480h37"/></g><path d="M278 239c18-17 33-38 43-64" fill="none" stroke="#df4a36" strokeWidth="3"/><path d="M319 175c-5 15 7 18 10 29 10-10 12-21 5-32-2 9-6 11-9 13-1-7-1-11 0-17-6 3-9 5-11 10" fill="#df4a36"/><circle cx="161" cy="229" r="6" fill="#df4a36"/><path d="M256 113c8 9 13 20 15 34" fill="none" stroke="#df4a36" strokeWidth="3"/></svg>}
+
+export default function HomePage(){return <main className="site-shell"><header className="topbar"><Link className="brand" href="/"><span className="brand-mark"/>八字人格研究所</Link><nav className="nav-mini"><Link href="/birth">开始测试</Link><Link href="/result">示例档案</Link></nav></header><div className="container"><section className="hero-home"><div><div className="eyebrow">BAZI × PERSONALITY</div><h1 className="serif">看见你的<br/>性格底色</h1><p>不是传统算命摊，也不是一句话标签。我们把八字结构翻译成现代、可理解的人格语言，帮你看见驱动力、行为模式与压力下的另一面。</p><div className="cta-row"><Link className="btn btn-primary" href="/birth">开始测试 →</Link><Link className="btn btn-ghost" href="/result">先看示例结果</Link></div><div className="micro">V1 可视化原型 · 当前页面使用示例数据，仅用于确认产品方向</div></div><div className="hero-art"><div className="sun-disc"/><div className="figure-card"><CharacterArt/><div className="stamp">人格档案</div></div></div></section><section className="home-strip"><div><b>01</b><span>输入出生日期、时间、地点与时区，先建立你的基础资料。</span></div><div><b>02</b><span>未来接入确定性八字引擎，把传统结构转换成稳定、可解释的事实。</span></div><div><b>03</b><span>用现代人格语言展示优势、卡点、工作、学习、关系与压力模式。</span></div></section></div><div className="prototype-note">STATIC PROTOTYPE · NOT LIVE CALCULATION</div></main>}
