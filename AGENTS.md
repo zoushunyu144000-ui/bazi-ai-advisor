@@ -12,6 +12,7 @@
 2. `docs/09_CURRENT_STATE.md`
 3. 与当前任务相关的专题文档
 4. 若涉及已有决策，读取 `docs/08_DECISION_LOG.md`
+5. 若涉及新依赖、外部项目、算法库、API、MCP、skill 或重要模块实现，必须读取 `docs/12_REUSE_AND_REFERENCES.md`
 
 不得仅凭聊天历史推测项目当前状态。
 
@@ -33,6 +34,7 @@
 - `docs/09_CURRENT_STATE.md`：当前完成度、正在进行、阻塞项、环境状态
 - `docs/08_DECISION_LOG.md`：新增或变更的重要产品/技术/商业决策
 - `docs/10_ROADMAP.md`：里程碑与下一步
+- `docs/12_REUSE_AND_REFERENCES.md`：新增/替换的重要外部依赖、参考项目、API、MCP、skill 与研究结论
 - 对应专题文档：产品、设计、架构、数据库、AI、商业规则
 
 重要信息不得只留在聊天窗口中。
@@ -64,6 +66,7 @@
 - 稳定方向写入 Blueprint / Architecture / Design System。
 - 可变状态写入 Current State / Roadmap。
 - 决策及原因写入 Decision Log。
+- 外部依赖、参考项目及采用证据写入 `docs/12_REUSE_AND_REFERENCES.md`。
 - 不确定信息明确标注 `TBD`，禁止把猜测写成既定事实。
 - 文档与代码不一致时，优先核查真实代码并同步修正文档。
 
@@ -82,6 +85,7 @@
 4. 生成型数据必须保留版本字段：`engine_version`、`rule_profile_version`、`mapping_version`、`prompt_version`、`report_schema_version`。
 5. 金额使用整数 minor units；顾问次数使用整数 ledger，不使用浮点余额。
 6. 支付、钱包与账本写入必须在可信服务端执行并具备幂等性。
+7. 重要模块遵守 **Research Before Build / Reuse First**，不得为了“代码归自己”而重复实现已有成熟能力。
 
 ## 9. 跨窗口转发格式
 
@@ -94,5 +98,49 @@
 5. 用户说“给我转发内容 / 发给某窗口 / 我去复制给它 / 给我提示词去另一个窗口”等语义时，默认应用本规则。
 
 目的：确保移动端和网页端可以一键复制，减少跨窗口传递时的遗漏、格式破坏和人工整理成本。
+
+## 10. Research Before Build / Reuse First
+
+开发任何重要模块、引入新基础能力或替换现有实现之前，必须先做外部复用调查，不得仅凭模型记忆选库。
+
+至少调查并记录：
+
+1. GitHub 是否已有成熟开源实现。
+2. npm 是否已有成熟库。
+3. 是否存在可复用 API / MCP / skill / 平台能力。
+4. License 是否允许本项目的商业使用与分发方式。
+5. 项目是否仍活跃维护，最近 release / commit / security 状态是否可接受。
+6. 是否有足够测试、文档、边界规则与可验证样例。
+7. 是否可以通过 Adapter 接入，避免把第三方数据结构泄漏到 shared Domain。
+8. 失败/停更/许可变化时的替代方案是什么。
+
+决策优先级固定为：
+
+```text
+成熟可靠库直接复用
+>
+Adapter 封装成熟实现
+>
+参考成熟实现补齐少量业务逻辑
+>
+最后才自行从零实现
+```
+
+尤其禁止无研究依据地自行重写已经成熟解决的：
+
+- 历法
+- 节气
+- 干支
+- 时区 / DST 数据与基础转换
+- 基础排盘能力
+- 常见 UI primitives
+- 认证
+- 数据库基础能力
+
+如果最终仍决定自研，PR / Handoff 必须写明：调查过哪些方案、为何不适用、License/维护/正确性或产品边界上的具体原因，以及自研部分如何测试。
+
+所有重要外部依赖与参考项目必须登记到 `docs/12_REUSE_AND_REFERENCES.md`，至少包含：名称、URL/Package、用途、License、维护状态、是否采用、采用方式、风险、替代方案、版本、最后核查日期。
+
+**聊天窗口不得仅凭记忆选择依赖。** 每次重要依赖决策必须重新检查官方来源，并把证据落到仓库。
 
 最后更新：2026-08-18

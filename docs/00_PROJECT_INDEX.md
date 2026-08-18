@@ -33,18 +33,23 @@
 - `01_MASTER_BLUEPRINT.md`：项目总蓝图与稳定原则
 - `02_PRODUCT_SPEC.md`：产品需求、页面与核心用户流程
 - `03_DESIGN_SYSTEM.md`：品牌、UI/UX 与视觉约束
-- `04_TECH_ARCHITECTURE.md`：技术架构、服务边界与部署原则
+- `04_TECH_ARCHITECTURE.md`：技术架构、服务边界、Reuse First 与部署原则
 - `05_DATABASE_SCHEMA.md`：数据模型与数据库约定
 - `06_AI_SYSTEM.md`：AI 八字报告与顾问系统设计
 - `07_BUSINESS_RULES.md`：价格、权益、付费与商业规则
 - `08_DECISION_LOG.md`：重要决定、原因与状态
 - `09_CURRENT_STATE.md`：项目当前真实状态
 - `10_ROADMAP.md`：阶段路线图与下一步
+- `11_CHATGPT_PROJECT_INSTRUCTIONS.md`：ChatGPT 项目窗口协作规则
+- `12_REUSE_AND_REFERENCES.md`：重要外部依赖、开源/API/MCP/skill 研究、License、维护状态、采用方式、风险与替代方案
+- `13_WAVE1_CONTRACT_INTEGRATION.md`：Wave 1.5 shared Contract、测试入口、各工程窗口最小返工与 Merge Gate
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口/阶段交接模板
 
 ## AI 工作协议
 
 所有 AI / GPT / Codex 在修改项目之前必须读取根目录 `AGENTS.md`。
+
+重要模块开发或依赖选型前还必须读取 `docs/12_REUSE_AND_REFERENCES.md`，执行 Research Before Build / Reuse First，不得仅凭聊天或模型记忆选择依赖。
 
 原则：
 
@@ -52,4 +57,4 @@
 
 重要信息必须回写仓库，不得只存在于聊天记录中。
 
-最后更新：2026-08-17
+最后更新：2026-08-18
