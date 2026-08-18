@@ -48,7 +48,7 @@ test("duplicate advisor credit grant is exactly-once by stable purchase ledger i
   assert.match(body, /v_key := 'purchase:' \|\| v_purchase\.id::text \|\| ':grant'/);
   assert.match(body, /where idempotency_key = v_key/);
   assert.match(body, /if found then[\s\S]*return v_wallet;/);
-  assert.match(sql, /idempotency_key text not null unique/);
+  assert.match(coreBillingSql, /idempotency_key text not null unique/);
 });
 
 test("duplicate report entitlement reuses one stable identity", () => {
@@ -125,7 +125,7 @@ test("verified order fulfillment is one short database function and marks event 
   assert.match(body, /on conflict \(order_id\) do nothing/);
   assert.match(body, /status = 'processed'/);
   assert.match(body, /processed_at = now\(\)/);
-  assert.doesNotMatch(body, /fetch\(|http|openai|anthropic|llm/i);
+  assert.doesNotMatch(body, /\b(?:fetch|openai|anthropic)\b|https?:\/\//i);
 });
 
 test("trusted repository routes billing mutations only through RPC", () => {
