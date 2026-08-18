@@ -199,6 +199,33 @@ Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button�
 
 当前 `ai` package 只是 provider-agnostic foundation；具体模型 Provider 尚未因本文件自动批准。
 
+### 9.1 07 Research — Bazi AI / Skill / MCP benchmark candidates
+
+完整研究：[`docs/research/AI_BAZI_BENCHMARK.md`](research/AI_BAZI_BENCHMARK.md)
+
+本节只登记候选，不批准任何正式 AI Provider / MCP / Skill 生产接入。
+
+| 名称 | 官方来源 | 用途 / 可借鉴边界 | License 筛查 | 维护信号（2026-08-18） | 决策 |
+|---|---|---|---|---|---|
+| `mingyu-core` | https://github.com/Brhiza/mingyu / `mingyu-core` | typed Bazi result → sectioned prompt；evidence bundle；fortune scope；可作为 isolated compatibility spike 候选 | `packages/core` 明确 MIT；repo root 未识别统一 License，路径级采用前需复核 | main 2026-08-17 仍有提交 | **ADAPT / Conditional evaluation** |
+| `jinchenma94/bazi-skill` | https://github.com/jinchenma94/bazi-skill | deterministic script first；AI 服从已计算结果；交互式信息确认流程 | MIT | 2026-08-17 有 push；高 stars/forks | **Reference / adapt workflow only** |
+| `xuemian168/bazi-skill` | https://github.com/xuemian168/bazi-skill | evidence packet、planner / specialist / validator、structured report workflow | 未发现 License | 2026-08-17 有 repo 更新信号 | **REFERENCE ONLY；禁止复制代码/Prompt** |
+| `cantian-ai/bazi-mcp` | https://github.com/cantian-ai/bazi-mcp | MCP + Zod typed tools；Bazi JSON / reverse lookup | ISC | stars/forks 较高；last push 2025-10-11，维护新鲜度需谨慎 | **REFERENCE ONLY** |
+| `openfate-ai/openfate-mcp` | https://github.com/openfate-ai/openfate-mcp | deterministic core → thin MCP → stable JSON；calculation policy first-class | MIT | 2026-08 有更新信号 | **ADAPT tool/MCP boundary；V1 internal path 不接入** |
+| `shunshi-ai/bazi-reader-mcp` | https://github.com/shunshi-ai/bazi-reader-mcp | TS core + thin MCP；production parity tests；true-solar-time benchmark | MIT | 2026-08 有更新信号 | **Reference / oracle candidate** |
+| `gaoxin492/bazi-skill` | https://github.com/gaoxin492/bazi-skill | calculation 与 local chart persistence 分离，可参考 memory boundary | 未发现 License | last push 2026-03 | **REFERENCE ONLY；禁止复制代码** |
+| 测测 | https://www2.cece.com/product/ | 只研究 report → contextual AI Q&A → suggested questions 与公开 AI/context data flow | Proprietary | 当前产品/协议页面已核查 | **Product reference only** |
+| 问真相关公开 App Store listings | Apple App Store public listings | 只研究 chart workspace、主题分析、Da Yun / year / month / day 时间层级 | Proprietary；且当前同名 listing publisher provenance 存在歧义 | 2026-08 当前 listing 已核查 | **Product pattern reference only** |
+
+07 Research 当前结论：
+
+- 不引入“巨大 System Prompt”作为核心架构；
+- 不让 LLM 从 raw birth datetime 重新排盘；
+- 未来优先采用 `BaziCalculationResult + Interpretation evidence + scoped luck + relevant memory + current question` 的 ContextAssembler；
+- MCP 只作为未来 external-agent adapter 候选，不作为 V1 网站内部 02/08 → 07 的必经层；
+- 未声明 License 的公开 Skill 只允许研究架构，不允许复制进商业代码库；
+- 本研究没有批准任何具体模型 Provider，也没有开始 Provider 接入。
+
 ## 10. 新依赖登记模板
 
 ```md
