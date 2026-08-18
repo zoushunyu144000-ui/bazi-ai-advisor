@@ -1,12 +1,11 @@
-import type { BaziChart, BirthProfile } from '../../types/domain';
+import type { BaziChart, BaziLuckDirection, BaziLuckStructure, BirthProfile } from '../../types/domain';
 import { STEM_POLARITY } from './constants';
 import { nearbyJieBoundaries } from './adapters/tyme4ts-adapter';
 import { sexagenaryFromIndex, sexagenaryIndex } from './rules';
-import type { BaziLuckStructure, LuckDirection } from './types';
 
 const DAY_MS=86_400_000;
 
-function directionFor(chart:BaziChart,profile:BirthProfile):LuckDirection {
+function directionFor(chart:BaziChart,profile:BirthProfile):BaziLuckDirection {
   const sex=profile.sexForTraditionalRules;
   if(sex==='unspecified') return 'unknown';
   const yang=STEM_POLARITY[chart.pillars.year.stem]==='yang';
