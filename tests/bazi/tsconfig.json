@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "allowImportingTsExtensions": false,
+    "noEmit": false,
+    "isolatedModules": false,
+    "incremental": false,
+    "rootDir": "../..",
+    "outDir": "../../.tmp/bazi-tests"
+  },
+  "include": ["../../modules/bazi/**/*.ts", "../../types/domain/**/*.ts", "./**/*.ts"]
+}

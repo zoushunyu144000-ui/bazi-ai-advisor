@@ -87,18 +87,85 @@ License 字段记录上游项目声明，仅用于工程选型筛查，不替代
 - 是否采用：是，当前 Birth / Bazi feature PR 已使用平台 `Intl` 能力。
 - 采用方式：平台 API；不得自行维护一份世界时区规则数据库。
 - 风险：不同 runtime/ICU/tzdata 版本可能影响历史 timezone 边界；DST overlap/gap 的 disambiguation 策略必须显式测试和版本化。
-- 替代方案：**尚未决定**。在继续扩展自研 DST 解析前，应调查 Temporal / 官方 polyfill / 活跃 timezone library，比较 disambiguation API、Node 22/Next 支持、bundle 成本、License、维护状态。
+- 替代方案：Temporal / `@js-temporal/polyfill` 已完成 Reuse First 复核，见下文。
 - 最后核查：2026-08-18。
 
-### Wave 1 风险标记
+### TC39 Temporal / `@js-temporal/polyfill`
 
-PR #4 与 #5 当前含有一定自研 DST overlap/gap 搜索/解析逻辑。根据本项目新规则，**最终 Merge Gate 前必须做一次专门 Reuse First 复核**：
+- 官方规范/状态：https://github.com/tc39/proposal-temporal / https://tc39.es/proposal-temporal/docs/timezone.html
+- npm：https://www.npmjs.com/package/@js-temporal/polyfill
+- 用途：对 local wall time → exact instant 的 overlap / gap 提供 first-class `disambiguation` 与 offset 语义。
+- License：Temporal proposal/spec 以官方仓库声明为准；`@js-temporal/polyfill` npm 当前声明 ISC。
+- 维护/实现状态：Temporal 已 Stage 4；官方 implementation status 列出 Node 26 ships native Temporal。当前仓库基线仍是 Node 22。
+- 决定：**Reference Only for PR #4**，不新增 runtime dependency。
+- 原因：Node 22 不能依赖原生 Temporal；polyfill 当前包文档仍列有“Release production version”未完成项。PR #4 已把 timezone database 与基本转换交给平台 `Intl`/IANA，只保留产品语义的 reject/offset disambiguation；现有边界测试足以覆盖 V1 目标时段。
+- 退出路径：仓库升级 Node 26+ 后优先重新评估 native Temporal，或在历史边界测试发现现有策略不足时评估 polyfill Adapter。
+- 最后核查：2026-08-18。
 
-1. 能由平台/成熟库可靠承担的 timezone database 与基础转换不得继续自研；
-2. 项目只保留确属产品语义的 disambiguation policy、输入验证、warning 与 Adapter glue；
-3. 如保留自研算法，必须在 PR/Handoff 记录研究过的替代方案及不采用原因，并增加 DST boundary/golden tests。
+### Wave 1 Reuse First 复核结论
 
-## 6. Auth / Database 复用边界
+PR #4 不维护全球 timezone database，也不从外部 Provider 的“当前 DST/offset”推断历史出生时刻。保留的自有逻辑仅用于：
+
+1. 输入验证；
+2. 枚举 runtime IANA 下可能的 occurrence；
+3. 产品 policy：gap 必须 reject，overlap 必须由用户/调用方显式选择 offset；
+4. 把选中的 exact instant + offset 写入 `BirthProfile`。
+
+DST regression tests 必须在 PR #4 Merge Gate 保持 green。
+
+## 6. Birth Location / Timezone Provider 复用登记
+
+详细矩阵：`modules/birth/PROVIDER_BENCHMARK.md`。
+
+### OpenCage Geocoding
+
+- URL：https://opencagedata.com/api / https://opencagedata.com/pricing
+- Purpose：城市/国家 → canonical candidate + WGS84 coordinates + IANA timezone annotation。
+- License / terms：API 返回数据允许永久存储；底层数据 attribution 依具体数据源要求处理。
+- Maintenance / docs：官方 API、pricing、privacy、timezone 文档持续维护。
+- Decision：**Conditional Adopt / primary V1 candidate**。
+- Integration：`OpenCageLocationProvider` Adapter；Secret 只从 runtime config 注入。
+- Risks：forward geocoding 不是 fuzzy autocomplete；language 仅 best-effort；必须做中文/英文真实 fixture benchmark 后才能宣布 production-ready。
+- Privacy：Adapter 默认 `no_record=1`，减少 query-content retention。
+- Alternative：GeoNames；商业搜索 UX benchmark 为 TomTom。
+- Last verified：2026-08-18。
+
+### GeoNames Web Services
+
+- URL：https://www.geonames.org/export/
+- Purpose：城市名搜索 + 经纬度；必要时通过 `timezoneJSON` 取得 IANA/Olson timezone id。
+- License：CC-BY；commercial usage allowed；使用数据/服务需 attribution。
+- Decision：**Conditional Adopt / fallback**。
+- Integration：`GeoNamesLocationProvider` + `GeoNamesTimezoneResolver` Adapter；不把全球 GeoNames dump 纳入仓库。
+- Risks：public free service 无 SLA；两次调用时 credit 成本为 search 1 + timezone 1；production-critical 场景应评估 premium。
+- Alternative：OpenCage；TomTom commercial search。
+- Last verified：2026-08-18。
+
+### TomTom Search / Geocoding
+
+- URL：https://docs.tomtom.com/pricing / https://developer.tomtom.com/search-api/documentation/search-service/fuzzy-search
+- Purpose：多语言 fuzzy city/place search、coordinates、可选 IANA timezone。
+- Decision：**Reference / commercial-quality benchmark**，PR #4 不接 live Adapter。
+- Strengths：显式支持 `zh-CN`、`zh-TW`、English、`ms-MY`；Search 可 `timeZone=iana`；China 有 city-level coverage。
+- Risks：Developer Portal terms、region-specific content 与持久化权利需在保存 birth coordinates 前单独法律/商业条款复核。
+- Last verified：2026-08-18。
+
+### Google Maps Platform Geocoding + Time Zone
+
+- URL：https://developers.google.com/maps/billing-and-pricing/pricing / https://developers.google.com/maps/documentation/geocoding/policies
+- Decision：**Reference Only**。
+- Reason：搜索/覆盖成熟，但 Geocoding content 的 caching/storage 一般受限，place ID 是明确可无限期保存的例外；与本产品“持久保存 Birth coordinates / exact facts”的目标有明显合同摩擦。
+- Credentials：API key/OAuth + billing required。
+- Last verified：2026-08-18。
+
+### Mapbox Geocoding
+
+- URL：https://docs.mapbox.com/api/search/geocoding/ / https://www.mapbox.com/pricing
+- Decision：**Reject as V1 primary / reference only**。
+- Reason：temporary results 不可持久保存；permanent geocoding 单独计费且需要 permanent usage rights；当前 Geocoding 文档还要求响应与 Mapbox map 结合使用；IANA timezone 需另一个 resolver。
+- Last verified：2026-08-18。
+
+## 7. Auth / Database 复用边界
 
 V1 已选择 Supabase，因此：
 
@@ -108,7 +175,7 @@ V1 已选择 Supabase，因此：
 
 若未来要替换 Supabase，必须先在本文件增加候选方案的 License、维护状态、迁移成本、锁定风险与替代方案对比，再进入实现。
 
-## 7. UI primitives 复用边界
+## 8. UI primitives 复用边界
 
 Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button、Dialog、Sheet、Form、Tabs、Tooltip、Select 等）前：
 
@@ -117,7 +184,7 @@ Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button�
 3. 只有产品视觉/交互确实特殊时才写定制 primitive；
 4. 不允许另开一套不兼容的 Button/Dialog/Form 基础组件体系。
 
-## 8. AI / MCP / Skill 规则
+## 9. AI / MCP / Skill 规则
 
 新增 AI Provider、MCP、skill、外部 API 前，同样必须登记：
 
@@ -132,7 +199,7 @@ Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button�
 
 当前 `ai` package 只是 provider-agnostic foundation；具体模型 Provider 尚未因本文件自动批准。
 
-## 9. 新依赖登记模板
+## 10. 新依赖登记模板
 
 ```md
 ### <Name>
@@ -151,7 +218,7 @@ Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button�
 - Decision / PR link:
 ```
 
-## 10. Merge Gate
+## 11. Merge Gate
 
 任何“重要基础能力”PR 若新增第三方依赖或自研已有成熟能力，最终合并前必须满足：
 
