@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**V1 Roadmap — Wave 1 Core Chain Complete / Wave 2 Active / Billing Contract Gate Draft**
+状态：**V1 Roadmap — Wave 1 Core Chain Complete / Wave 2 Active / Billing DB Hardening Draft**
 
 最后更新：2026-08-18
 
@@ -17,7 +17,7 @@
 - ChatGPT Project Instructions / Handoff
 - `docs/12_REUSE_AND_REFERENCES.md`
 - `docs/13_WAVE1_CONTRACT_INTEGRATION.md`
-- `docs/14_BILLING_CONTRACT_INTEGRATION.md`（当前 Draft PR #11）
+- `docs/14_BILLING_CONTRACT_INTEGRATION.md`
 
 项目级 **Research Before Build / Reuse First** 持续生效。
 
@@ -89,9 +89,16 @@ Wave 2 从已经进入 main 的 deterministic / persistence 核心链继续向�
 
 ### A. Supabase Live Integration
 
-状态：**Pending**
+状态：**Pending / external configuration required**
 
-Supabase Core Code Layer 已完成，但真实 Supabase Project 尚未完成：link / remote migration apply / Auth / RLS / live CRUD / end-to-end verification。
+Supabase Core Code Layer 已完成；Billing DB Hardening 当前在 Draft PR #12，但真实 hosted Supabase Project 尚未完成：
+
+- project link
+- remote migration apply
+- Auth live verification
+- RLS live verification
+- CRUD smoke
+- end-to-end verification
 
 完成这些之前，不得把 backend 描述为 Production-connected。
 
@@ -121,22 +128,19 @@ PR #8 已合并知识库。
 
 状态：**Independent iteration / acceptance pending**
 
-PR #2 仍独立视觉验收，不因技术或 Billing Contract 自动 merge。
+PR #2 继续独立视觉验收，不因技术或 Billing integration 自动 merge。
 
 ### E. Payment / Commercial Entitlement
 
-状态：**Research merged → Shared Contract Gate Draft**
+状态：**Contract merged → DB hardening Draft**
 
 Payment / Credits Research PR #10 已合并知识库。
 
-当前进行：
+Billing Contract Integration PR #11 已正式合并 main：
 
-```text
-PR #11
-feature/billing-contract-integration
-```
+- Merge Commit：`94a16b4ec1bfd4c3699f32d8b51a0264a9895539`
 
-本 Gate 已冻结：
+已冻结：
 
 - Provider Event Inbox：unique `(provider, provider_event_id)`
 - relational ReportEntitlement：`(user_id, product_code, resource_id)`
@@ -148,18 +152,60 @@ feature/billing-contract-integration
 - Browser 不能 set paid / grant/deduct credits / unlock report
 - AI 调用不能被长 DB transaction 包住
 
-PR #11 不写 migration、不接 Stripe、不写 Checkout / Provider implementation。
+#### E1. 08 Billing DB Hardening
 
-#### Billing Contract Gate 后的实现顺序
+状态：**Draft PR #12 / CI green / not merged**
 
-建议：
+Branch：`feature/billing-db-live-v1`
+
+已实现 Draft code layer：
+
+- `payment_provider_events`
+- `report_entitlements`
+- `advisor_requests`
+- Purchase resource identity hardening
+- ledger `reason / reference_type / reference_id`
+- immutable ledger trigger
+- service-role-only transactional RPC
+- billing own-row RLS + sensitive write revoke
+- ordinary read repository + trusted RPC repository boundary
+
+RPC：
+
+- `record_payment_provider_event`
+- `mark_payment_provider_event_verified`
+- `mark_payment_provider_event_failed`
+- `grant_advisor_credits`
+- `reserve_advisor_credit`
+- `commit_advisor_credit`
+- `release_advisor_credit`
+- `grant_report_entitlement`
+- `revoke_report_entitlement`
+- `fulfill_verified_payment_event`
+
+PR #12 cumulative CI #191：
+
+- Birth 14/14
+- Bazi 22/22
+- Interpretation 9/9
+- Backend 36/36
+- skipped 0
+- lint / typecheck / build passed
+
+**注意：** 以上只代表 branch / PR code layer 通过 CI，不代表 migration 已应用到 hosted Supabase。
+
+#### E2. Billing implementation order
+
+当前顺序：
 
 ```text
-Billing Contract PR #11
+PR #11 Billing Contract — Merged
 ↓
-08 Billing DB migration / RLS / atomic RPC
+PR #12 / 08 Billing DB migration + RLS + RPC — Draft
 ↓
-09 BillingService / Provider Adapter / payment fulfillment
+Supabase Live apply / verification
+↓
+09 BillingService / Provider Adapter / webhook verification
 ↓
 07 Advisor runtime consume reserve/commit/release API
 ↓
@@ -168,22 +214,9 @@ Billing Contract PR #11
 
 08 / 09 / 07 不得互相越权复制职责。
 
-### E1. Billing Contract Gate acceptance
+#### E3. Real Payment launch decisions still pending
 
-PR #11 合并前至少要求：
-
-- shared Domain compile
-- billing contract tests
-- `npm run lint`
-- `npm run typecheck`
-- `npm test`
-- `npm run build`
-- CI success
-- Draft review confirms no Provider / migration / Checkout implementation sneaked into Gate
-
-### E2. Real Payment launch decisions still pending
-
-这些不阻塞 Shared Contract，但上线前必须冻结：
+这些不阻塞 Billing DB code layer，但上线前必须冻结：
 
 - Report refund 后 entitlement revoke / historical access policy
 - Advisor credit expiry
@@ -214,7 +247,7 @@ Birth input
 仍需：
 
 - Full Report Schema / formal AI report generation
-- 08 ReportEntitlement persistence
+- PR #12 ReportEntitlement persistence merge + live apply
 - 09 payment fulfillment
 - locked/unlocked UI 只消费 trusted entitlement read path
 - refund/failure recovery
@@ -230,12 +263,14 @@ Birth input
 - reserve before AI
 - terminal failure release
 
-仍需：
+当前 Draft DB primitives 已存在于 PR #12，但仍需评审/merge/live apply。
 
-- 08 atomic reservation / commit / release persistence
-- 09 trusted Billing API
-- 07 Advisor production runtime / UI / context / structured validation
+之后仍需：
+
+- 09 trusted Billing API / Provider orchestration
+- 07 Advisor production runtime / context / structured validation
 - conversation / memory / safety / retry integration
+- UI
 
 ## Phase 5 — Analytics / Conversion Optimization
 
