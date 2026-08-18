@@ -16,6 +16,11 @@ const suites = {
     mode: "strip-types",
     extensions: [".test.ts", ".test.mjs"],
   },
+  ai: {
+    directory: "tests/ai",
+    mode: "strip-types",
+    extensions: [".test.ts", ".test.mjs"],
+  },
   backend: {
     directory: "tests/backend",
     mode: "strip-types",
@@ -35,9 +40,9 @@ if (!(suite in suites)) {
 const config = suites[suite];
 const suiteDirectory = resolve(root, config.directory);
 
-// Wave 1 feature branches are intentionally merged one at a time. A suite
-// whose feature directory is not present yet is skipped; once the directory
-// exists, an empty or broken suite is a hard failure.
+// Feature branches are intentionally merged one at a time. A suite whose
+// feature directory is not present yet is skipped; once the directory exists,
+// an empty or broken suite is a hard failure.
 if (!existsSync(suiteDirectory)) {
   console.log(`[test:${suite}] skipped: ${config.directory} is not present on this branch.`);
   process.exit(0);
