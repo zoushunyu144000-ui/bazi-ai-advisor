@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：V1 Roadmap — Wave 1 Active
+状态：V1 Roadmap — Wave 1.5 Contract Integration Merged / Wave 1 Adaptation Active
 
 最后更新：2026-08-18
 
@@ -23,6 +23,9 @@
 - 当前状态
 - AI 工作协议
 - Handoff 模板
+- `docs/12_REUSE_AND_REFERENCES.md` 外部依赖与参考项目登记表
+
+项目级 **Research Before Build / Reuse First** 已正式进入 `main`。
 
 ## Phase 1 — Web 基础工程 / Foundation
 
@@ -37,26 +40,7 @@
 - Foundation branch：`foundation/mvp-v1`
 - Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
 - Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- Foundation CI：`npm ci` / lint / typecheck / build 全部通过
-
-Foundation 已完成：
-
-- Next.js / TypeScript / App Router 初始化
-- Tailwind CSS 与 shadcn/ui 基础配置
-- 基础页面 route shell
-- 模块目录边界
-- `.env.example`
-- Domain Contracts 与版本字段
-- PostgreSQL / Supabase foundation schema
-- 共享 mock fixtures
-- README / AGENTS / CI workflow
-- `package-lock.json` 生成并提交
-- CI 改为 `npm ci` 锁定依赖安装
-- `npm run lint` 通过
-- `npm run typecheck` 通过
-- `npm run build` 通过
-
-此前“PR #1 等待合并 main”的 Roadmap 状态已经完成，不再是阻塞项。
+- Foundation CI：通过
 
 Foundation 后仍属于后续 Web / 部署工作的事项：
 
@@ -67,20 +51,83 @@ Foundation 后仍属于后续 Web / 部署工作的事项：
 
 ## Wave 1 — Foundation 后并行开发
 
+状态：**第一轮实现已完成；PR #2～#6 仍开放，进入基于新 shared Contract 的适配阶段。**
+
+当前 Wave 1 PR：
+
+- #2 Visual / UX
+- #3 Interpretation
+- #4 Birth normalization
+- #5 Bazi Engine
+- #6 Supabase core
+
+这些 PR 尚未因为 Wave 1.5 Gate 完成而自动获得 merge 资格。
+
+## Wave 1.5 — Contract Integration Gate
+
+状态：**Completed / Merged**
+
+关键 GitHub 状态：
+
+- PR：#7 `arch: integrate Wave 1 shared contracts`
+- Reviewed HEAD：`9553f606bdda8281e255dddd27b1dc0efcd738ea`
+- Merge Commit：`c67bc8f1ab30ab177b30dd29511602f93b35c890`
+- CI：`npm ci` / lint / typecheck / `npm test` / build 全部通过
+
+### 已进入 main 的 Contract
+
+1. 02 Bazi Engine 是 canonical `BaziDerivedFeatures` 唯一传统命理事实来源。
+2. `WeightedElementScore.score` / `WeightedTenGodScore.score` = 0–100 percentage。
+3. `BirthProfile` 保存 `resolvedBirthInstant?` + `utcOffsetMinutesAtBirth?`。
+4. shared Domain 已提升 `BaziRelation`、`BaziLuckStructure`、`BaziCalculationContext`、`BaziCalculationResult`。
+5. 08 必须能够完整保存并读回 calculation metadata / relations / luck。
+6. shared `PersonalityDimension` V1 暂不扩大。
+7. root `npm test` 聚合 Birth / Bazi / Interpretation / Backend 四套测试。
+8. CI 在 typecheck 后、build 前执行 `npm test`。
+9. REUSE FIRST 成为项目级 Architecture / Governance 规则。
+
+详细规范：
+
+- `docs/12_REUSE_AND_REFERENCES.md`
+- `docs/13_WAVE1_CONTRACT_INTEGRATION.md`
+
+## Wave 1 Adaptation / Merge Gates
+
 状态：**Active**
 
-进入条件：Foundation PR #1 已成功合并 `main`，CI 验收通过。
+所有 02 / 03 / 04 / 08 工程窗口必须先同步 PR #7 后最新 `main`，再做最小适配；不得继续以旧 shared Contract 为最终实现基线。
 
-统一协作规则：
+### 推荐依赖顺序
 
-1. 所有后续开发窗口先同步最新 `main`。
-2. 每个开发窗口从最新 `main` 创建独立 `feature/*` branch。
-3. `foundation/mvp-v1` 作为已完成的 Foundation 历史分支，不再作为新功能开发基线。
-4. 各窗口可并行推进，但必须遵守 `AGENTS.md` 与共享 Contract 边界。
-5. 对 `types/domain/`、数据库公共 schema、版本字段等共享接口的语义改动需要协调影响面。
-6. Wave 1 不扩大 V1 产品范围；当前仍只开发八字。
+```text
+#4 Birth
+→ #5 Bazi
+→ #3 Interpretation
+→ #6 Supabase
+→ #2 Visual（仅在视觉验收通过后）
+```
 
-Wave 1 的具体窗口任务由 00 号总调度 / 用户分配。本 Roadmap 只记录阶段与统一工程基线，不在此处擅自新增业务功能范围。
+说明：
+
+- #4 先把已解析 DST instant / offset 真正落进 shared BirthProfile，并完成 REUSE FIRST timezone/DST 复核。
+- #5 消费 Birth canonical instant，产出唯一 canonical Bazi facts / relations / luck / result，并统一 distribution 0–100。
+- #3 消费 #5 canonical facts，移除第二套传统命理事实计算。
+- #6 等 Birth + Bazi shared data contract 稳定后完成 migration / repository round-trip 与 calculation context/result read path。
+- #2 不依赖命理 Contract，但必须独立通过视觉验收，不因工程 Gate 通过而自动 merge。
+
+每个 Merge Gate 必须：
+
+```text
+同步当时最新 main
+→ 完成必要适配
+→ npm run lint
+→ npm run typecheck
+→ npm test
+→ npm run build
+→ GitHub CI green
+```
+
+同时遵守 `docs/12_REUSE_AND_REFERENCES.md`，重要依赖不得仅凭聊天记忆选择。
 
 ## Phase 2 — 免费八字测试闭环
 
@@ -95,7 +142,7 @@ Wave 1 的具体窗口任务由 00 号总调度 / 用户分配。本 Roadmap 只
 - 免费结果页
 - 基础 QA 测试样本
 
-关键验收：排盘必须可复现，不由 LLM 自行猜测四柱。
+关键验收：排盘必须可复现，不由 LLM 自行猜测四柱；成熟历法/节气/时区基础能力优先复用成熟实现并通过 Adapter 接入。
 
 ## Phase 3 — 完整人格报告付费闭环
 
