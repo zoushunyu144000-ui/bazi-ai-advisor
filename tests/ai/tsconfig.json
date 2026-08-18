@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "allowImportingTsExtensions": true,
+    "rewriteRelativeImportExtensions": true,
+    "noEmit": false,
+    "isolatedModules": false,
+    "incremental": false,
+    "rootDir": "../..",
+    "outDir": "../../.tmp/ai-tests"
+  },
+  "include": ["../../modules/ai/**/*.ts", "../../types/domain/**/*.ts", "./**/*.ts"]
+}
