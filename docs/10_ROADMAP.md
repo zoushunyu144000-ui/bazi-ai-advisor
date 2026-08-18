@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：V1 Roadmap — Wave 1.5 Contract Integration Active
+状态：V1 Roadmap — Wave 1.5 Contract Integration Merged / Wave 1 Adaptation Active
 
 最后更新：2026-08-18
 
@@ -23,6 +23,9 @@
 - 当前状态
 - AI 工作协议
 - Handoff 模板
+- `docs/12_REUSE_AND_REFERENCES.md` 外部依赖与参考项目登记表
+
+项目级 **Research Before Build / Reuse First** 已正式进入 `main`。
 
 ## Phase 1 — Web 基础工程 / Foundation
 
@@ -37,7 +40,7 @@
 - Foundation branch：`foundation/mvp-v1`
 - Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
 - Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- Foundation CI：`npm ci` / lint / typecheck / build 全部通过
+- Foundation CI：通过
 
 Foundation 后仍属于后续 Web / 部署工作的事项：
 
@@ -48,7 +51,7 @@ Foundation 后仍属于后续 Web / 部署工作的事项：
 
 ## Wave 1 — Foundation 后并行开发
 
-状态：**第一轮实现已完成，当前开放 PR #2～#6；尚未 merge。**
+状态：**第一轮实现已完成；PR #2～#6 仍开放，进入基于新 shared Contract 的适配阶段。**
 
 当前 Wave 1 PR：
 
@@ -58,43 +61,46 @@ Foundation 后仍属于后续 Web / 部署工作的事项：
 - #5 Bazi Engine
 - #6 Supabase core
 
-第一轮跨 PR 检查发现共享 Contract 与测试入口漂移，因此在任何批量 merge 前插入 Wave 1.5 Integration Gate。
+这些 PR 尚未因为 Wave 1.5 Gate 完成而自动获得 merge 资格。
 
 ## Wave 1.5 — Contract Integration Gate
 
-状态：**Active**
+状态：**Completed / Merged**
 
-目标：在 Wave 1 PR 进入主线前，先统一跨模块 API、canonical facts ownership、DST replay、持久化 read path 与 root test contract。
+关键 GitHub 状态：
 
-### 已冻结 Contract
+- PR：#7 `arch: integrate Wave 1 shared contracts`
+- Reviewed HEAD：`9553f606bdda8281e255dddd27b1dc0efcd738ea`
+- Merge Commit：`c67bc8f1ab30ab177b30dd29511602f93b35c890`
+- CI：`npm ci` / lint / typecheck / `npm test` / build 全部通过
+
+### 已进入 main 的 Contract
 
 1. 02 Bazi Engine 是 canonical `BaziDerivedFeatures` 唯一传统命理事实来源。
 2. `WeightedElementScore.score` / `WeightedTenGodScore.score` = 0–100 percentage。
 3. `BirthProfile` 保存 `resolvedBirthInstant?` + `utcOffsetMinutesAtBirth?`。
-4. shared Domain 提升 `BaziRelation`、`BaziLuckStructure`、`BaziCalculationContext`、`BaziCalculationResult`。
+4. shared Domain 已提升 `BaziRelation`、`BaziLuckStructure`、`BaziCalculationContext`、`BaziCalculationResult`。
 5. 08 必须能够完整保存并读回 calculation metadata / relations / luck。
 6. shared `PersonalityDimension` V1 暂不扩大。
-7. root `npm test` 必须聚合 Birth / Bazi / Interpretation / Backend 四套测试。
-8. CI 必须执行 `npm test`。
+7. root `npm test` 聚合 Birth / Bazi / Interpretation / Backend 四套测试。
+8. CI 在 typecheck 后、build 前执行 `npm test`。
+9. REUSE FIRST 成为项目级 Architecture / Governance 规则。
 
-### Integration branch
+详细规范：
 
-`feature/wave1-contract-integration`
+- `docs/12_REUSE_AND_REFERENCES.md`
+- `docs/13_WAVE1_CONTRACT_INTEGRATION.md`
 
-### Merge Gate
+## Wave 1 Adaptation / Merge Gates
 
-在 Contract Integration 合并前：
+状态：**Active**
 
-- 不 merge #2～#6
-- 不要求业务窗口各自发明新的 shared Contract
-
-Contract Integration 合并后，各业务 PR 必须同步最新 `main` 并只做必要返工。
+所有 02 / 03 / 04 / 08 工程窗口必须先同步 PR #7 后最新 `main`，再做最小适配；不得继续以旧 shared Contract 为最终实现基线。
 
 ### 推荐依赖顺序
 
 ```text
-Contract Integration
-→ #4 Birth
+#4 Birth
 → #5 Bazi
 → #3 Interpretation
 → #6 Supabase
@@ -103,11 +109,25 @@ Contract Integration
 
 说明：
 
-- #4 先落地 resolved instant 生产端。
-- #5 随后消费 Birth instant 并产出 canonical Bazi facts / result。
-- #3 依赖 #5 canonical facts，必须在 #5 后完成最终返工。
-- #6 需要最终 Birth + Bazi shared Contract 才能稳定 migration/repository round-trip，因此放在 #4/#5 后；可与 #3 的最终验收并行，但主线 merge 建议在 shared data contract 已稳定后进行。
-- #2 不依赖命理 Contract，但它有独立视觉验收门槛，不应因为工程 Contract 通过就自动 merge。
+- #4 先把已解析 DST instant / offset 真正落进 shared BirthProfile，并完成 REUSE FIRST timezone/DST 复核。
+- #5 消费 Birth canonical instant，产出唯一 canonical Bazi facts / relations / luck / result，并统一 distribution 0–100。
+- #3 消费 #5 canonical facts，移除第二套传统命理事实计算。
+- #6 等 Birth + Bazi shared data contract 稳定后完成 migration / repository round-trip 与 calculation context/result read path。
+- #2 不依赖命理 Contract，但必须独立通过视觉验收，不因工程 Gate 通过而自动 merge。
+
+每个 Merge Gate 必须：
+
+```text
+同步当时最新 main
+→ 完成必要适配
+→ npm run lint
+→ npm run typecheck
+→ npm test
+→ npm run build
+→ GitHub CI green
+```
+
+同时遵守 `docs/12_REUSE_AND_REFERENCES.md`，重要依赖不得仅凭聊天记忆选择。
 
 ## Phase 2 — 免费八字测试闭环
 
@@ -122,7 +142,7 @@ Contract Integration
 - 免费结果页
 - 基础 QA 测试样本
 
-关键验收：排盘必须可复现，不由 LLM 自行猜测四柱。
+关键验收：排盘必须可复现，不由 LLM 自行猜测四柱；成熟历法/节气/时区基础能力优先复用成熟实现并通过 Adapter 接入。
 
 ## Phase 3 — 完整人格报告付费闭环
 
