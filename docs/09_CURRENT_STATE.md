@@ -12,13 +12,15 @@
 - Foundation PR：#1（Merged / Closed）
 - Foundation HEAD：`ee37eba0c65a70da13365bbe354954457df2819c`
 - Foundation Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
-- Wave 1 shared integration branch：`feature/wave1-contract-integration`
+- Wave 1.5 Contract Integration PR：#7（**Merged / Closed**）
+- PR #7 reviewed HEAD：`9553f606bdda8281e255dddd27b1dc0efcd738ea`
+- PR #7 Merge Commit：`c67bc8f1ab30ab177b30dd29511602f93b35c890`
 
-Foundation 已正式进入 `main`。Foundation 后还有项目治理文档提交进入 `main`；因此不得再把 Foundation Merge Commit 误写成“当前 main HEAD”。
+**Wave 1.5 shared Contract、统一测试入口与 REUSE FIRST 治理规则已经正式进入 `main`。**
 
-## 2. Wave 1 第一轮开发真实状态
+## 2. Wave 1 当前 PR 状态
 
-当前开放 PR：
+以下业务 PR 仍然开放，且本次没有合并：
 
 - #2 `design/product-visual-v1`
 - #3 `feature/interpretation-v1`
@@ -26,17 +28,15 @@ Foundation 已正式进入 `main`。Foundation 后还有项目治理文档提交
 - #5 `feature/bazi-engine-v1`
 - #6 `feature/supabase-core-v1`
 
-这些 PR **尚未合并**。
+PR #7 合并后，02 / 03 / 04 / 08 对应窗口不得继续以 PR #7 之前的 `main` 或旧 feature baseline 作为最终适配基线。
 
-总指挥跨 PR 检查后发现共享测试入口、canonical Bazi facts ownership、DST replay、Bazi relations/luck persistence 与 calculation metadata read path 存在需要统一的 Contract 问题。
+当前阶段从“Contract Integration Gate”进入 **Wave 1 adaptation / cumulative integration**。
 
-因此当前进入 **Wave 1.5 Contract Integration Gate**。
-
-## 3. Wave 1.5 已冻结的共享决定
+## 3. 已进入 main 的共享 Contract
 
 ### Canonical Bazi facts
 
-02 Bazi Engine 是传统命理结构事实唯一来源，负责：
+02 Bazi Engine 是传统命理结构事实唯一来源：
 
 ```text
 BirthProfile
@@ -44,7 +44,7 @@ BirthProfile
 → canonical BaziDerivedFeatures
 ```
 
-04 Interpretation 不再独立计算第二套：
+04 Interpretation 不得重新建立第二套：
 
 - 五行分布
 - 十神分布
@@ -55,27 +55,35 @@ BirthProfile
 
 - `WeightedElementScore.score`：0–100 percentage
 - `WeightedTenGodScore.score`：0–100 percentage
-- `confidence`：仍为 0–1
+- `BaziDerivedFeatures.confidence`：0–1
 
 ### DST replay
 
-`BirthProfile` 已在 integration branch 增加：
+Shared `BirthProfile` 已包含：
 
 - `resolvedBirthInstant?`
 - `utcOffsetMinutesAtBirth?`
 
-03 一旦完成 DST overlap disambiguation，02 必须使用 resolved instant，不得再次猜 occurrence。
+03 一旦完成 DST overlap disambiguation，02 必须使用已解析 instant，不得再次猜 occurrence。
 
 ### Bazi calculation context
 
-shared Domain 已在 integration branch 设计：
+Shared Domain 已包含：
 
 - `BaziRelation`
 - `BaziLuckStructure`
 - `BaziCalculationContext`
 - `BaziCalculationResult`
 
-目标是保证 02 → 08 → 04/07 链路不丢 metadata、relations、luck 或 canonical derived features。
+目标是保证：
+
+```text
+02 计算
+→ 08 持久化
+→ 04 / 07 读取
+```
+
+时不丢失 calculation metadata、relations、luck 或 canonical derived features。
 
 ### PersonalityDimension
 
@@ -83,9 +91,9 @@ V1 暂不扩大 shared `PersonalityDimension`。
 
 `contributors`、`positiveExpression`、`stressExpression`、`explanationCodes` 继续留在 04 module-local `dimensionDetails`。
 
-## 4. 统一测试入口
+## 4. 统一测试入口已进入 main
 
-integration branch 已定义统一 root scripts：
+Root scripts：
 
 ```text
 npm run test:birth
@@ -95,9 +103,7 @@ npm run test:backend
 npm test
 ```
 
-`npm test` 顺序运行四个模块测试。
-
-CI 统一为：
+CI 标准顺序：
 
 ```text
 npm ci
@@ -107,48 +113,85 @@ npm test
 npm run build
 ```
 
-Wave 1 feature PR 最终 merge 前必须吸收这一统一测试入口，不得继续覆盖 root `npm test` 为单模块测试。
+PR #7 最终 reviewed HEAD `9553f606bdda8281e255dddd27b1dc0efcd738ea` 的 GitHub Actions 已验证：
 
-## 5. 当前仍未完成
+- Install dependencies：success
+- Lint：success
+- Typecheck：success
+- Test：success
+- Build：success
 
-Wave 1.5 integration branch 只负责 shared Contract / integration specification，不代表 #2～#6 已完成返工。
+所有 Wave 1 业务 PR 最终 merge 前必须吸收最新 `main` 并保留统一 root test / CI contract。
 
-在各 PR 最终 merge 前仍需要：
+## 5. REUSE FIRST 已进入 main
 
-- #4 Birth：把 resolved instant / UTC offset 写入 shared BirthProfile
-- #5 Bazi：使用 resolved instant；canonical distribution 改为 0–100；shared relations/luck/result
-- #3 Interpretation：消费 #5 canonical BaziDerivedFeatures；停止重算传统命理事实
-- #6 Supabase：持久化 Birth instant/offset、relations/luck，并提供完整 calculation context/result read path
-- #2 Visual：按独立视觉验收结论处理，不因 Contract Integration 自动 merge
+项目级规则：**Research Before Build / Reuse First**。
 
-具体返工清单见 `docs/12_WAVE1_CONTRACT_INTEGRATION.md`。
+重要模块开发或替换依赖前必须调查：
 
-## 6. 外部服务状态
+1. GitHub / npm / API / MCP / skill / 平台原生能力
+2. License 与商业使用条件
+3. 维护活跃度
+4. 测试与文档
+5. 边界规则
+6. Adapter 可行性
+7. 风险与替代方案
 
-- Vercel Production：未由本 Contract Integration 部署
-- Supabase Production：未由本 Contract Integration 应用 migration
+优先级：
+
+```text
+成熟可靠库直接复用
+>
+Adapter 封装成熟实现
+>
+参考成熟实现补齐少量业务逻辑
+>
+最后才自行从零实现
+```
+
+长期登记表：`docs/12_REUSE_AND_REFERENCES.md`。
+
+Wave 1.5 详细返工规范：`docs/13_WAVE1_CONTRACT_INTEGRATION.md`。
+
+聊天窗口不得仅凭记忆选择重要依赖。
+
+## 6. 当前仍需完成的最小适配
+
+- #4 Birth：把 resolved instant / UTC offset 写入 shared BirthProfile；同时按 REUSE FIRST 复核 DST 基础能力。
+- #5 Bazi：使用 resolved instant；canonical distribution 改为 0–100；使用 shared relations/luck/result；继续通过 Adapter 复用成熟历法能力。
+- #3 Interpretation：消费 #5 canonical `BaziDerivedFeatures`，停止重算传统命理事实。
+- #6 Supabase：持久化 Birth instant/offset、relations/luck，并提供完整 calculation context/result read path。
+- #2 Visual：独立视觉验收；不得因 #7 合并而自动 merge。
+
+## 7. 外部服务状态
+
+- Vercel Production：本轮未部署
+- Supabase Production：本轮未应用 migration
 - Payment provider：未接真实支付
 - AI Provider / Prompt：本轮未实现
 - Analytics：本轮未实现
 
-## 7. 工程边界
-
-Wave 1.5 不新增：
-
-- 八字算法业务扩展
-- 支付功能
-- AI Prompt / Advisor 业务
-- 网页视觉改动
-- 新命理品类
-
-本轮只统一 shared contracts、tests、CI 与 integration docs。
-
 ## 8. 下一步
 
-1. 合并 Contract Integration PR 到 `main`（需总指挥批准）
-2. #4 / #5 / #3 / #6 分别吸收最新 `main` 并做最小返工
-3. 每个返工 PR 运行统一 CI + cumulative `npm test`
-4. 按依赖顺序逐个 merge，不批量盲合
-5. #2 按视觉验收单独决定
+推荐主线适配 / Merge 顺序：
 
-最后更新：2026-08-18
+```text
+#4 Birth
+→ #5 Bazi
+→ #3 Interpretation
+→ #6 Supabase
+→ #2 Visual（视觉验收通过后）
+```
+
+每个 PR 必须先同步 PR #7 后的最新 `main`，完成最小返工，再运行：
+
+```text
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+并要求 GitHub CI green 后才进入下一 Merge Gate。
+
+不得批量盲合 #2～#6。
