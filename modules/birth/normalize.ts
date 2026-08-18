@@ -113,6 +113,42 @@ function validateTraditionalRuleSex(value: TraditionalRuleSex): TraditionalRuleS
   return value;
 }
 
+function assertReplayableResolution(
+  birthTime: string | null,
+  resolution: TimezoneResolution,
+): void {
+  if (birthTime == null) {
+    return;
+  }
+  if (resolution.resolvedInstant == null || resolution.offsetMinutes == null) {
+    throw new BirthNormalizationError(
+      "TIMEZONE_RESOLUTION_FAILED",
+      "Known birth time requires both a resolved UTC instant and UTC offset for deterministic replay.",
+      {
+        details: {
+          resolver: resolution.source,
+          resolvedInstant: resolution.resolvedInstant,
+          offsetMinutes: resolution.offsetMinutes,
+        },
+      },
+    );
+  }
+  if (!Number.isInteger(resolution.offsetMinutes)) {
+    throw new BirthNormalizationError(
+      "TIMEZONE_RESOLUTION_FAILED",
+      "Resolved UTC offset must be an integer number of minutes.",
+      { details: { offsetMinutes: resolution.offsetMinutes } },
+    );
+  }
+  if (!Number.isFinite(Date.parse(resolution.resolvedInstant))) {
+    throw new BirthNormalizationError(
+      "TIMEZONE_RESOLUTION_FAILED",
+      "Resolved birth instant must be a valid ISO datetime.",
+      { details: { resolvedInstant: resolution.resolvedInstant } },
+    );
+  }
+}
+
 function assertBirthNotInFuture(
   birthDate: string,
   timezone: string,
@@ -178,6 +214,7 @@ export async function normalizeBirthProfile(
   }
 
   const timezone = canonicalizeIanaTimeZone(resolution.timezone);
+  assertReplayableResolution(birthTime, resolution);
   assertCoordinates(location.coordinates);
   const countryCode = normalizeCountryCode(location.countryCode);
   const nowDate = (dependencies.now ?? (() => new Date()))();
@@ -212,6 +249,12 @@ export async function normalizeBirthProfile(
     birthTime,
     birthTimePrecision: input.birthTimePrecision,
     timezone,
+    ...(resolution.resolvedInstant != null
+      ? { resolvedBirthInstant: resolution.resolvedInstant }
+      : {}),
+    ...(resolution.offsetMinutes != null
+      ? { utcOffsetMinutesAtBirth: resolution.offsetMinutes }
+      : {}),
     birthPlace: {
       label: birthPlaceLabel(location),
       countryCode,
