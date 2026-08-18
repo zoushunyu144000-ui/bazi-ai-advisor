@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：V1 Roadmap — Wave 1 Active
+状态：V1 Roadmap — Wave 1.5 Contract Integration Active
 
 最后更新：2026-08-18
 
@@ -39,25 +39,6 @@
 - Merge Commit：`f3b0fc9e0590b016d242031ffbcb00c5f7617306`
 - Foundation CI：`npm ci` / lint / typecheck / build 全部通过
 
-Foundation 已完成：
-
-- Next.js / TypeScript / App Router 初始化
-- Tailwind CSS 与 shadcn/ui 基础配置
-- 基础页面 route shell
-- 模块目录边界
-- `.env.example`
-- Domain Contracts 与版本字段
-- PostgreSQL / Supabase foundation schema
-- 共享 mock fixtures
-- README / AGENTS / CI workflow
-- `package-lock.json` 生成并提交
-- CI 改为 `npm ci` 锁定依赖安装
-- `npm run lint` 通过
-- `npm run typecheck` 通过
-- `npm run build` 通过
-
-此前“PR #1 等待合并 main”的 Roadmap 状态已经完成，不再是阻塞项。
-
 Foundation 后仍属于后续 Web / 部署工作的事项：
 
 - Vercel Preview project 独立绑定本仓库
@@ -67,20 +48,66 @@ Foundation 后仍属于后续 Web / 部署工作的事项：
 
 ## Wave 1 — Foundation 后并行开发
 
+状态：**第一轮实现已完成，当前开放 PR #2～#6；尚未 merge。**
+
+当前 Wave 1 PR：
+
+- #2 Visual / UX
+- #3 Interpretation
+- #4 Birth normalization
+- #5 Bazi Engine
+- #6 Supabase core
+
+第一轮跨 PR 检查发现共享 Contract 与测试入口漂移，因此在任何批量 merge 前插入 Wave 1.5 Integration Gate。
+
+## Wave 1.5 — Contract Integration Gate
+
 状态：**Active**
 
-进入条件：Foundation PR #1 已成功合并 `main`，CI 验收通过。
+目标：在 Wave 1 PR 进入主线前，先统一跨模块 API、canonical facts ownership、DST replay、持久化 read path 与 root test contract。
 
-统一协作规则：
+### 已冻结 Contract
 
-1. 所有后续开发窗口先同步最新 `main`。
-2. 每个开发窗口从最新 `main` 创建独立 `feature/*` branch。
-3. `foundation/mvp-v1` 作为已完成的 Foundation 历史分支，不再作为新功能开发基线。
-4. 各窗口可并行推进，但必须遵守 `AGENTS.md` 与共享 Contract 边界。
-5. 对 `types/domain/`、数据库公共 schema、版本字段等共享接口的语义改动需要协调影响面。
-6. Wave 1 不扩大 V1 产品范围；当前仍只开发八字。
+1. 02 Bazi Engine 是 canonical `BaziDerivedFeatures` 唯一传统命理事实来源。
+2. `WeightedElementScore.score` / `WeightedTenGodScore.score` = 0–100 percentage。
+3. `BirthProfile` 保存 `resolvedBirthInstant?` + `utcOffsetMinutesAtBirth?`。
+4. shared Domain 提升 `BaziRelation`、`BaziLuckStructure`、`BaziCalculationContext`、`BaziCalculationResult`。
+5. 08 必须能够完整保存并读回 calculation metadata / relations / luck。
+6. shared `PersonalityDimension` V1 暂不扩大。
+7. root `npm test` 必须聚合 Birth / Bazi / Interpretation / Backend 四套测试。
+8. CI 必须执行 `npm test`。
 
-Wave 1 的具体窗口任务由 00 号总调度 / 用户分配。本 Roadmap 只记录阶段与统一工程基线，不在此处擅自新增业务功能范围。
+### Integration branch
+
+`feature/wave1-contract-integration`
+
+### Merge Gate
+
+在 Contract Integration 合并前：
+
+- 不 merge #2～#6
+- 不要求业务窗口各自发明新的 shared Contract
+
+Contract Integration 合并后，各业务 PR 必须同步最新 `main` 并只做必要返工。
+
+### 推荐依赖顺序
+
+```text
+Contract Integration
+→ #4 Birth
+→ #5 Bazi
+→ #3 Interpretation
+→ #6 Supabase
+→ #2 Visual（仅在视觉验收通过后）
+```
+
+说明：
+
+- #4 先落地 resolved instant 生产端。
+- #5 随后消费 Birth instant 并产出 canonical Bazi facts / result。
+- #3 依赖 #5 canonical facts，必须在 #5 后完成最终返工。
+- #6 需要最终 Birth + Bazi shared Contract 才能稳定 migration/repository round-trip，因此放在 #4/#5 后；可与 #3 的最终验收并行，但主线 merge 建议在 shared data contract 已稳定后进行。
+- #2 不依赖命理 Contract，但它有独立视觉验收门槛，不应因为工程 Contract 通过就自动 merge。
 
 ## Phase 2 — 免费八字测试闭环
 
