@@ -206,8 +206,8 @@ test("advisor success follows reserve -> AI -> persist assistant -> commit and w
   assert.deepEqual(billing.events, ["reserve", "commit"]);
   assert.deepEqual(persistence.events, ["load", "user", "assistant", "summary"]);
   assert.ok((persistence.summary?.length ?? 0) <= 2_000);
-  assert.equal(provider.requests[0].prompt.includes("message content 1"), false);
-  assert.equal(provider.requests[0].prompt.includes("message content 12"), true);
+  assert.equal(provider.requests[0].prompt.includes('"content": "message content 1"'), false);
+  assert.equal(provider.requests[0].prompt.includes('"content": "message content 12"'), true);
 });
 
 test("provider failure is retried once then releases reservation without commit", async () => {
