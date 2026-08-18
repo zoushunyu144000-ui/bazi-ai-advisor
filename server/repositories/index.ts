@@ -6,6 +6,10 @@ import { createSupabaseAdminClient } from "@/lib/supabase/admin";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { requireCurrentUser } from "@/server/auth/auth-service";
 
+import {
+  BillingReadRepository,
+  TrustedBillingRepository,
+} from "./billing-repository";
 import { BirthProfileRepository } from "./birth-profile-repository";
 import { ChartRepository } from "./chart-repository";
 import { ConversationRepository } from "./conversation-repository";
@@ -17,6 +21,7 @@ import { ReportRepository } from "./report-repository";
 import { WalletRepository } from "./wallet-repository";
 
 export {
+  BillingReadRepository,
   BirthProfileRepository,
   ChartRepository,
   ConversationRepository,
@@ -25,10 +30,16 @@ export {
   ProfileRepository,
   PurchaseRepository,
   ReportRepository,
+  TrustedBillingRepository,
   WalletRepository,
 };
 
-export type { Purchase, UserProfile } from "./models";
+export type { UserProfile } from "./models";
+export type {
+  PaymentProviderEvent,
+  RecordProviderEventInput,
+  ReserveAdvisorCreditInput,
+} from "./billing-repository";
 
 export interface RepositorySet {
   profile: ProfileRepository;
@@ -40,6 +51,7 @@ export interface RepositorySet {
   wallet: WalletRepository;
   orders: OrderRepository;
   purchases: PurchaseRepository;
+  billing: BillingReadRepository;
 }
 
 export function createRepositories(
@@ -56,6 +68,7 @@ export function createRepositories(
     wallet: new WalletRepository(client, userId),
     orders: new OrderRepository(client, userId),
     purchases: new PurchaseRepository(client, userId),
+    billing: new BillingReadRepository(client, userId),
   };
 }
 
@@ -76,4 +89,8 @@ export async function createCurrentUserRepositories(): Promise<{
 
 export function createAdminRepositoriesForUser(userId: string): RepositorySet {
   return createRepositories(createSupabaseAdminClient(), userId);
+}
+
+export function createTrustedBillingRepository(): TrustedBillingRepository {
+  return new TrustedBillingRepository(createSupabaseAdminClient());
 }
