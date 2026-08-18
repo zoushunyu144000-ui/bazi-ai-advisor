@@ -26,7 +26,7 @@ test("rejects a nonexistent spring-forward local time", () => {
   );
 });
 
-test("requires an explicit offset for an ambiguous fall-back local time", () => {
+test("requires an explicit offset and resolves both fall-back occurrences", () => {
   assert.throws(
     () => resolveIanaLocalDateTime("2024-11-03", "01:30:00", "America/New_York"),
     (error) =>
@@ -36,6 +36,16 @@ test("requires an explicit offset for an ambiguous fall-back local time", () => 
       error.details.validOffsets.includes(-240) &&
       error.details.validOffsets.includes(-300),
   );
+
+  const daylightTime = resolveIanaLocalDateTime(
+    "2024-11-03",
+    "01:30:00",
+    "America/New_York",
+    -240,
+  );
+  assert.equal(daylightTime.offsetMinutes, -240);
+  assert.equal(daylightTime.resolvedInstant, "2024-11-03T05:30:00.000Z");
+  assert.equal(daylightTime.localTimeDisambiguation, "offset");
 
   const standardTime = resolveIanaLocalDateTime(
     "2024-11-03",
