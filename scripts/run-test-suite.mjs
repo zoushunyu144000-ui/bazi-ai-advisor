@@ -16,6 +16,10 @@ const suites = {
     mode: "strip-types",
     extensions: [".test.ts", ".test.mjs"],
   },
+  ai: {
+    directory: "tests/ai",
+    mode: "compiled-typescript",
+  },
   backend: {
     directory: "tests/backend",
     mode: "strip-types",
@@ -35,16 +39,16 @@ if (!(suite in suites)) {
 const config = suites[suite];
 const suiteDirectory = resolve(root, config.directory);
 
-// Wave 1 feature branches are intentionally merged one at a time. A suite
-// whose feature directory is not present yet is skipped; once the directory
-// exists, an empty or broken suite is a hard failure.
+// Feature branches are intentionally merged one at a time. A suite whose
+// feature directory is not present yet is skipped; once the directory exists,
+// an empty or broken suite is a hard failure.
 if (!existsSync(suiteDirectory)) {
   console.log(`[test:${suite}] skipped: ${config.directory} is not present on this branch.`);
   process.exit(0);
 }
 
 if (config.mode === "compiled-typescript") {
-  runCompiledBaziSuite(suiteDirectory);
+  runCompiledTypeScriptSuite(suite, suiteDirectory);
 } else {
   const testFiles = findFiles(suiteDirectory, config.extensions);
   if (testFiles.length === 0) {
@@ -55,31 +59,31 @@ if (config.mode === "compiled-typescript") {
   run(process.execPath, ["--experimental-strip-types", "--test", ...testFiles]);
 }
 
-function runCompiledBaziSuite(directory) {
+function runCompiledTypeScriptSuite(suiteName, directory) {
   const tsconfig = join(directory, "tsconfig.json");
   if (!existsSync(tsconfig)) {
-    console.error("[test:bazi] tests/bazi exists but tsconfig.json is missing.");
+    console.error(`[test:${suiteName}] ${directory} exists but tsconfig.json is missing.`);
     process.exit(1);
   }
 
-  const outputRoot = resolve(root, ".tmp/bazi-tests");
+  const outputRoot = resolve(root, `.tmp/${suiteName}-tests`);
   rmSync(outputRoot, { recursive: true, force: true });
 
   const tscBin = resolve(root, "node_modules/typescript/bin/tsc");
   if (!existsSync(tscBin)) {
-    console.error("[test:bazi] TypeScript compiler is not installed. Run npm ci first.");
+    console.error(`[test:${suiteName}] TypeScript compiler is not installed. Run npm ci first.`);
     process.exit(1);
   }
 
   run(process.execPath, [tscBin, "-p", tsconfig]);
 
-  const compiledDirectory = resolve(outputRoot, "tests/bazi");
+  const compiledDirectory = resolve(outputRoot, `tests/${suiteName}`);
   const compiledTests = existsSync(compiledDirectory)
     ? findFiles(compiledDirectory, [".test.js"])
     : [];
 
   if (compiledTests.length === 0) {
-    console.error("[test:bazi] compilation succeeded but produced no .test.js files.");
+    console.error(`[test:${suiteName}] compilation succeeded but produced no .test.js files.`);
     process.exit(1);
   }
 
