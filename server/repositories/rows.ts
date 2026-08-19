@@ -1,8 +1,13 @@
 import type {
-  JsonValue,
-  ProductCode,
-  OrderStatus,
+  AdvisorRequestReleaseReason,
+  AdvisorRequestState,
   CreditLedgerEntryType,
+  CreditLedgerReason,
+  CreditLedgerReferenceType,
+  JsonValue,
+  OrderStatus,
+  ProductCode,
+  ReportEntitlementStatus,
 } from "@/types/domain";
 
 export interface ProfileRow {
@@ -137,6 +142,9 @@ export interface LedgerRow {
   delta: number;
   balance_after: number;
   entry_type: CreditLedgerEntryType;
+  reason: CreditLedgerReason;
+  reference_type: CreditLedgerReferenceType;
+  reference_id: string;
   idempotency_key: string;
   order_id: string | null;
   message_id: string | null;
@@ -169,6 +177,61 @@ export interface PurchaseRow {
   quantity: number;
   currency: string;
   unit_amount_minor: number | string;
+  resource_id: string | null;
   entitlement: JsonValue;
   created_at: string;
+}
+
+export interface ReportEntitlementRow {
+  id: string;
+  user_id: string;
+  product_code: "personality_report";
+  resource_id: string;
+  source_purchase_id: string;
+  status: ReportEntitlementStatus;
+  granted_at: string;
+  revoked_at: string | null;
+  updated_at: string;
+}
+
+export interface AdvisorRequestRow {
+  id: string;
+  user_id: string;
+  conversation_id: string;
+  user_message_id: string;
+  assistant_message_id: string | null;
+  credits_reserved: 1;
+  state: AdvisorRequestState;
+  idempotency_key: string;
+  reservation_expires_at: string;
+  commit_ledger_entry_id: string | null;
+  release_reason: AdvisorRequestReleaseReason | null;
+  created_at: string;
+  updated_at: string;
+  committed_at: string | null;
+  released_at: string | null;
+}
+
+export type PaymentProviderEventStatus =
+  | "received"
+  | "verified"
+  | "processed"
+  | "ignored"
+  | "failed";
+
+export interface PaymentProviderEventRow {
+  id: string;
+  provider: string;
+  provider_event_id: string;
+  event_type: string;
+  status: PaymentProviderEventStatus;
+  order_id: string | null;
+  normalized_payload: JsonValue;
+  received_at: string;
+  verified_at: string | null;
+  processed_at: string | null;
+  failed_at: string | null;
+  retry_count: number;
+  last_error: string | null;
+  updated_at: string;
 }

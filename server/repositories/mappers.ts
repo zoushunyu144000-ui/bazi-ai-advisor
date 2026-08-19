@@ -1,4 +1,5 @@
 import type {
+  AdvisorRequest,
   BaziChart,
   BaziDerivedFeatures,
   BirthProfile,
@@ -7,14 +8,17 @@ import type {
   CreditLedgerEntry,
   Order,
   PersonalityProfile,
+  Purchase,
   Report,
+  ReportEntitlement,
   ReportSection,
   UserMemory,
   Wallet,
 } from "@/types/domain";
 
-import type { Purchase, UserProfile } from "./models";
+import type { UserProfile } from "./models";
 import type {
+  AdvisorRequestRow,
   BirthProfileRow,
   ChartRow,
   ConversationRow,
@@ -25,6 +29,7 @@ import type {
   OrderRow,
   ProfileRow,
   PurchaseRow,
+  ReportEntitlementRow,
   ReportRow,
   WalletRow,
 } from "./rows";
@@ -83,6 +88,12 @@ export function mapBirthProfileRow(row: BirthProfileRow): BirthProfile {
     birthTime: row.birth_time,
     birthTimePrecision: row.birth_time_precision,
     timezone: row.timezone,
+    ...(row.resolved_birth_instant !== null
+      ? { resolvedBirthInstant: row.resolved_birth_instant }
+      : {}),
+    ...(row.utc_offset_minutes_at_birth !== null
+      ? { utcOffsetMinutesAtBirth: row.utc_offset_minutes_at_birth }
+      : {}),
     ...(hasPlace
       ? {
           birthPlace: {
@@ -221,6 +232,9 @@ export function mapLedgerRow(row: LedgerRow): CreditLedgerEntry {
     delta: row.delta,
     balanceAfter: row.balance_after,
     type: row.entry_type,
+    reason: row.reason,
+    referenceType: row.reference_type,
+    referenceId: row.reference_id,
     idempotencyKey: row.idempotency_key,
     orderId: toOptional(row.order_id),
     messageId: toOptional(row.message_id),
@@ -247,18 +261,105 @@ export function mapOrderRow(row: OrderRow): Order {
 }
 
 export function mapPurchaseRow(row: PurchaseRow): Purchase {
-  return {
+  const base = {
     id: row.id,
     userId: row.user_id,
     orderId: row.order_id,
-    productCode: row.product_code,
     quantity: row.quantity,
     currency: row.currency,
     unitAmountMinor: toSafeInteger(
       row.unit_amount_minor,
       "unit_amount_minor",
     ),
-    entitlement: row.entitlement,
     createdAt: row.created_at,
+  };
+
+  if (row.product_code === "personality_report") {
+    if (row.resource_id === null) {
+      throw new Error("personality_report purchase requires resource_id.");
+    }
+
+    return {
+      ...base,
+      productCode: "personality_report",
+      resourceId: row.resource_id,
+    };
+  }
+
+  if (row.resource_id !== null) {
+    throw new Error("advisor_10 purchase must not have resource_id.");
+  }
+
+  return {
+    ...base,
+    productCode: "advisor_10",
+  };
+}
+
+export function mapReportEntitlementRow(
+  row: ReportEntitlementRow,
+): ReportEntitlement {
+  return {
+    id: row.id,
+    userId: row.user_id,
+    productCode: "personality_report",
+    resourceId: row.resource_id,
+    sourcePurchaseId: row.source_purchase_id,
+    status: row.status,
+    grantedAt: row.granted_at,
+    revokedAt: toOptional(row.revoked_at),
+    updatedAt: row.updated_at,
+  };
+}
+
+export function mapAdvisorRequestRow(row: AdvisorRequestRow): AdvisorRequest {
+  const base = {
+    id: row.id,
+    userId: row.user_id,
+    conversationId: row.conversation_id,
+    userMessageId: row.user_message_id,
+    creditsReserved: 1 as const,
+    idempotencyKey: row.idempotency_key,
+    reservationExpiresAt: row.reservation_expires_at,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+
+  if (row.state === "reserved") {
+    return {
+      ...base,
+      state: "reserved",
+      assistantMessageId: toOptional(row.assistant_message_id),
+    };
+  }
+
+  if (row.state === "committed") {
+    if (
+      row.assistant_message_id === null ||
+      row.commit_ledger_entry_id === null ||
+      row.committed_at === null
+    ) {
+      throw new Error("committed advisor request is missing commit fields.");
+    }
+
+    return {
+      ...base,
+      state: "committed",
+      assistantMessageId: row.assistant_message_id,
+      commitLedgerEntryId: row.commit_ledger_entry_id,
+      committedAt: row.committed_at,
+    };
+  }
+
+  if (row.release_reason === null || row.released_at === null) {
+    throw new Error("released advisor request is missing release fields.");
+  }
+
+  return {
+    ...base,
+    state: "released",
+    assistantMessageId: toOptional(row.assistant_message_id),
+    releaseReason: row.release_reason,
+    releasedAt: row.released_at,
   };
 }
