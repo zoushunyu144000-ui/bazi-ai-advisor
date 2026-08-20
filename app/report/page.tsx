@@ -1,88 +1,16 @@
-"use client";
-import { useEffect, useState } from "react";
-import { calculateBazi } from "@/modules/bazi";
-import { interpretBaziChart } from "@/modules/interpretation";
-import { selectArchetypeCandidate } from "@/modules/interpretation/archetypes";
-import type { ArchetypeCandidate, InterpretationResult } from "@/modules/interpretation";
-import type { ArchetypePatternFamily } from "@/modules/interpretation/archetypes";
-import { computeTraditional } from "@/modules/bazi/traditional";
-import type { BaziCalculationResult, BirthProfile } from "@/types/domain";
-import { PersonalitySheet } from "@/app/_components/personality-sheet";
-import { ELEMENT_META, ARCHETYPES } from "@/lib/personality-archetypes";
 import Link from "next/link";
 
-interface Bundle {
-  result: BaziCalculationResult;
-  interpretation: InterpretationResult;
-  archetype: ArchetypeCandidate;
-  traditional: ReturnType<typeof computeTraditional>;
-}
-
 export default function ReportPage() {
-  const [bundle, setBundle] = useState<Bundle | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-      try {
-        const raw = window.sessionStorage.getItem("bazi:last");
-        if (!raw) { setError("没有找到上次的排盘记录"); return; }
-        const { profile } = JSON.parse(raw) as { profile: BirthProfile };
-        const result = calculateBazi(profile);
-        const interpretation = interpretBaziChart(result.chart, result.derivedFeatures);
-        const archetype = selectArchetypeCandidate(result.chart, result.derivedFeatures, interpretation.signals, interpretation.dimensionDetails);
-        const monthElement = result.chart.pillars.month.branchElement;
-        const traditional = computeTraditional(result.chart, result.chart.pillars.year.stem, result.chart.pillars.year.branch, monthElement);
-        setBundle({ result, interpretation, archetype, traditional });
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "读取失败");
-      }
-  }, []);
-
-  if (error) {
-    return (
-      <main className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <p className="text-sm font-semibold tracking-[0.2em] text-cinnabar">人格报告</p>
-        <h1 className="display-lg mt-3">需要先排盘</h1>
-        <p className="mt-4 leading-relaxed text-soft">{error}。请先在排盘页录入出生信息。</p>
-        <Link href="/birth" className="btn-primary mt-8 inline-flex">去排盘 →</Link>
-      </main>
-    );
-  }
-
-  if (!bundle) {
-    return (
-      <main className="mx-auto max-w-2xl px-5 py-24 text-center">
-        <p className="text-sm text-muted">加载中…</p>
-      </main>
-    );
-  }
-
-  const element = bundle.archetype.archetype_seed.day_master_element;
-  const family = bundle.archetype.archetype_seed.dominant_family as ArchetypePatternFamily;
-  const archetypeData = ARCHETYPES[`${element}_${family}` as keyof typeof ARCHETYPES];
-
   return (
-    <main className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
-      <header>
-        <p className="text-sm font-semibold tracking-[0.2em] text-cinnabar">人格报告</p>
-        <h1 className="display-lg mt-3">你的人格 IP 设定卡</h1>
-        <p className="mt-4 leading-relaxed text-soft">基于上次的排盘结果，自动生成属于你的人格原型。</p>
-      </header>
-      <div className="mt-10">
-        {archetypeData ? (
-          <PersonalitySheet
-            archetype={archetypeData}
-            elementMeta={ELEMENT_META[element]}
-            element={element}
-            dayMasterStem={bundle.result.chart.dayMaster.stem}
-            family={family}
-          />
-        ) : (
-          <p className="text-muted">未找到匹配的原型。</p>
-        )}
-      </div>
-      <div className="mt-10 text-center">
-        <Link href="/birth" className="btn-ghost">返回排盘重新生成</Link>
+    <main className="mx-auto max-w-3xl px-5 py-24 text-center">
+      <p className="text-xs font-bold tracking-[.24em] text-cinnabar">DEEP REPORT · COMING SOON</p>
+      <h1 className="mt-4 font-display text-4xl font-bold tracking-tight sm:text-5xl">深度人格报告即将开放。</h1>
+      <p className="mx-auto mt-5 max-w-2xl leading-8 text-soft">
+        今晚的免费人格体验已经完整开放。旧版 25 个 experimental archetypes 已退出公网人格判断，不再通过这个页面生成正式结果；正式付费报告会在支付与 AI 系统完成后再接入。
+      </p>
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <Link href="/birth" className="btn-primary">先测免费人格 →</Link>
+        <Link href="/result" className="btn-ghost">查看我的结果</Link>
       </div>
     </main>
   );
