@@ -148,6 +148,7 @@ export default function ResultPage() {
   }
 
   async function saveCard(format: "feed" | "story") {
+    if (!bundle) return;
     try {
       setShareStatus("正在生成人格卡…");
       const blob = await renderShareCard(bundle, format);
