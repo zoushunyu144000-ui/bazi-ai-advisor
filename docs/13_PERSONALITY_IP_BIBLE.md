@@ -1,7 +1,27 @@
 # 13 — Personality IP Bible V1
 
-状态：**V1 Product Convergence LOCKED / Character Visual Asset Gate OPEN**  
+状态：**V1 Release Freeze / Product LOCKED / Character Style LOCKED**  
 最后更新：2026-08-21
+
+## 0. Governance / Source of Truth precedence
+
+V1 项目治理优先级固定为：
+
+1. `docs/13_PERSONALITY_IP_BIBLE.md`
+2. `docs/09_CURRENT_STATE.md`
+3. `docs/10_ROADMAP.md`
+4. older docs / experiments / historical research
+
+如果旧文档、试制记录、历史研究与本文件冲突，**以 Personality IP Bible 为准**。
+
+文档职责固定：
+
+- Personality IP Bible：锁定产品定义、人格体系、Character contract 与 V1 边界；
+- Current State：只描述**现在真实做到哪里**；
+- Roadmap：只描述**接下来做什么**；
+- older docs / experiments：只作为历史上下文，不得重新覆盖已锁定决策。
+
+除非 Product Owner 明确发布新的正式版本，不得由其他文档重新定义 Public Personality 名称、Character Style 或 V1 核心产品方向。
 
 ## 1. 产品定位
 
@@ -16,6 +36,7 @@ V1 是 **八字版 SBTI**，不是传统命理专业站，也不是复杂预测�
 → Interpretation personality-map/0.2.0
 → 10 Public Personalities
 → Personality Dossier
+→ formal Character
 → Share Card
 ```
 
@@ -40,7 +61,9 @@ V1 是 **八字版 SBTI**，不是传统命理专业站，也不是复杂预测�
 
 以上 display name 在 V1 公网期间禁止自行改名。
 
-`shi_shen → 享乐主义` 已替代旧试制名“好吃懒做”。正式文案与视觉必须表达会享受、生活感、体验优先、审美、松弛和快乐恢复力；不得把食神塑造成废宅、懒汉、肥胖或不上进。
+`shi_shen → 享乐主义` 已替代旧试制名“好吃懒做”。旧名称已 **retired**，不得继续出现在 Current State、Roadmap、正式 Production Task、正式角色资产或公网文案中。
+
+正式文案与视觉必须表达会享受、生活感、体验优先、审美、松弛和快乐恢复力；不得把食神塑造成废宅、懒汉、肥胖或不上进。
 
 ### Proxy boundary
 
@@ -132,23 +155,21 @@ Canonical implementation：`lib/public-personalities.ts`。
 
 ### 5.2 Character Style — LOCKED
 
-Style Pilot 阶段已经完成。Product Owner 已锁定唯一 V1 母版与风格：
+Style Pilot / Style selection 阶段已经完成。Product Owner 已锁定唯一 V1 母版与风格：
 
 - `docs/assets/character-style-master-v1.webp`
 - `docs/15_CHARACTER_STYLE_LOCK_V1.md`
+- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
 - 主风格：**Bold Graphic Character / Flat Editorial Character**
 - 世界观：**City Observation Editorial / 城市观察体**
 
-硬规则：**动作可以重新设计；画风不得重新解释。**
+硬规则：**pose may be redesigned; style may not be reinterpreted.**
 
-正式生产先完成 4 个 Production Pilot：
+当前阶段是：**Style LOCKED → formal Character Production**。
 
-1. 享乐主义 · male
-2. 天生反骨 · female
-3. 狠人 · male
-4. 道长 · female
+不得重新开启 3 套 Style Pilot，不得等待新的 Character Style 选择，不得用旧试制名“好吃懒做”作为正式生产身份。
 
-4 个通过同一画风、一致面部语言和纯黑剪影辨识检查后，再扩展 10 × male/female = 20 张。
+正式生产可按 `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md` 的 Production Pilot / identity-pair gate 执行，但这些 gate 只验证锁定画风的一致性，**不是重新选画风**。
 
 ### 5.3 Asset contract
 
@@ -161,9 +182,11 @@ Style Pilot 阶段已经完成。Product Owner 已锁定唯一 V1 母版与风�
 {ten_god}-female.webp
 ```
 
+共 10 personalities × male/female = **20 formal assets**。
+
 必须 20 / 20 到位后才能解除 Production Visual Gate。
 
-Character code 不允许在正式资产缺失时回退到 CSS / SVG / placeholder。
+Character code 不允许在正式资产缺失时回退到 CSS / SVG / placeholder / silhouette / legacy 25 archetype character。
 
 ## 6. Result Dossier Contract
 
@@ -215,21 +238,54 @@ V1 Result 至少包含：
 
 不得伪造支付成功。
 
-## 9. Tonight deferred systems
+## 9. V1 Release Freeze
 
-以下不阻塞免费 V1 RC：
+当前正式进入：**V1 Release Freeze**。
 
-- Supabase Live
-- Auth / Account
-- Stripe / PayPal
-- Credits
+V1 唯一发布目标是让陌生用户完整完成：
+
+```text
+Homepage
+→ Birth
+→ deterministic Bazi
+→ Interpretation
+→ 10 Public Personalities
+→ full Personality Dossier
+→ formal Character
+→ Share Card
+→ friend can open the website and test
+```
+
+只要这条链路成立并通过最终 QA，就允许发布 V1。
+
+### Post-V1 / V1.1 Parking Lot
+
+以下全部禁止进入本次 V1 实现，只允许记录为后续 Recommendation：
+
+- 双人人格关系
+- compatibility / matching
+- referral system
+- invitation challenge system
 - AI Advisor
-- Formal AI Provider
-- Memory
-- Analytics
-- complex Traditional Pattern
-- 用神 / 大量神煞
-- 流月 / 流日 / 预测
+- AI Chat
+- payment
+- ¥9.9 report checkout
+- Supabase Live
+- Auth
+- Account
+- Analytics full system
+- ranking
+- rarity percentage
+- new personality types
+- new Character Style
+- new Bazi prediction features
+- 用神
+- 流月 / 流日
+- complex Traditional Pattern expansion
+- community
+- gamification
+
+发现新的产品想法时，只允许进入 Parking Lot，不得在 V1 Release Freeze 中实现。
 
 ## 10. Definition of Done
 
@@ -240,9 +296,10 @@ V1 Result 至少包含：
 → 真实排盘与 Interpretation
 → 得到唯一主人格 + 第二人格
 → 看完完整 Dossier
+→ 看见正式 Character
 → 生成真的好看的分享卡
 → 发给朋友
-→ 朋友回流继续测
+→ 朋友打开网站继续测
 ```
 
 只有完整闭环成立，才算 V1 Release Candidate 完成。Build success 本身不等于完成。

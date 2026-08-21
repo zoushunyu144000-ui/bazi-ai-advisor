@@ -1,136 +1,172 @@
 # 10 — Roadmap
 
-状态：**V1 Product Convergence — Tonight Release Candidate Active**  
-最后更新：2026-08-20
+状态：**V1 Release Freeze — P0 Release Closure Only**  
+最后更新：2026-08-21
 
-## North Star
+## 0. Roadmap boundary / Source of Truth
 
-当前优先级正式调整为：
+本文件只描述：**接下来做什么**。
 
-**八字版 SBTI → 人格 IP → 免费分享传播 → 后续轻付费深度报告 / 成长建议。**
+Source of Truth precedence：
 
-V1 不再以“全功能 AI 算命平台”作为首发 Definition of Done。
+1. `docs/13_PERSONALITY_IP_BIBLE.md`
+2. `docs/09_CURRENT_STATE.md`
+3. `docs/10_ROADMAP.md`
+4. older docs / experiments / historical research
 
-## Phase 0 — Foundation / Core Technical Chain
+如果本文件与 Personality IP Bible 冲突，以 `docs/13_PERSONALITY_IP_BIBLE.md` 为准。
 
-状态：**Completed / Merged**
+Roadmap 不重新定义 Public Personality 名称、Character Style 或 V1 核心产品方向。
 
-已进入 `main`：
+## 1. V1 Release Freeze objective
 
-```text
-Birth normalization
-→ Bazi Engine
-→ Interpretation personality-map/0.2.0
-→ Supabase Core code layer
-```
-
-核心 deterministic fact ownership 不变；LLM 永远不能重新排八字。
-
-## Phase 1 — Tonight Free Personality RC
-
-目标：一个陌生用户能完整走通：
+V1 的唯一目标：让陌生用户完整走通：
 
 ```text
-首页
+Homepage
 → Birth
 → deterministic Bazi
 → Interpretation
 → 10 Public Personalities
-→ full Result Dossier
+→ full Personality Dossier
+→ formal Character
 → Share Card
-→ friend referral
+→ friend can open the website and test
 ```
 
-### 1A. Product Registry / Copy
+只要这条链路成立并通过最终 QA，就允许发布 V1。
 
-状态：**Implemented on `release/v1-personality-rc`**
+不以 AI、Payment、Supabase、Advisor、Relationship feature 是否完成作为首发条件。
 
-- 10 locked public personalities
-- complete public copy contract
-- six tags per type
-- real dominant Ten-God mapping
-- real secondary Ten-God mapping
-- 25 experimental archetypes removed from public result flow
-- honest bi_jian / jie_cai Presentation Proxy boundary
+## 2. P0 — Release closure sequence
 
-验收：10 / 10 Registry。
+当前只按以下顺序执行：
 
-### 1B. Homepage / Birth / Result
+1. Documentation / Source of Truth sync
+2. 20 / 20 formal Character Assets
+3. Homepage Character integration QA
+4. Result Character integration QA
+5. Share Card real-image QA
+6. mobile browser QA
+7. full CI
+8. PR #16 Ready
+9. merge main
+10. Vercel Production
+11. final public smoke test
 
-状态：**Implemented on release branch / QA active**
+当前最大的 Release Blocker：
 
-Homepage：
+**20 / 20 formal Character Assets + final QA**。
 
-- SBTI positioning
-- 10 personality preview
-- how it works
-- result/share preview
-- CTA loop
+不是 AI，不是 Payment，不是 Supabase，不是 Advisor，也不是 Relationship feature。
 
-Birth：
+## 3. P0.1 — Documentation / Governance Sync
 
-- `normalizeBirthProfile()`
-- static truthful birth-city records
-- IANA timezone resolver
-- custom manual location/timezone fallback
-- exact/approximate/unknown birth time
-- `calculateBazi()`
-- `interpretBaziChart()`
-- `selectArchetypeCandidate()`
+状态：**本轮执行**。
 
-Result：
+要求：
 
-- 18-section Personality Dossier
-- real second personality
-- real 15 dimensions
-- work / learning / relationship / conflict / stress / recovery / decision / money
-- growth advice
-- evidence explanation
-- professional Bazi fold
+- Personality IP Bible 保持最高产品 Source of Truth；
+- `shi_shen` 正式公网人格只使用 **享乐主义**；
+- 旧名称“好吃懒做”保持 retired；
+- Current State 只写当前事实；
+- Roadmap 只写下一步；
+- Character Style 状态统一为 **LOCKED → formal Character Production**；
+- 新想法只进 Post-V1 / V1.1 Parking Lot。
 
-### 1C. Share Loop
+完成后不再继续做治理扩写，直接进入 Character Production。
 
-状态：**Implementation complete / real-asset QA pending**
+## 4. P0.2 — 20 / 20 formal Character Assets
 
-- 1080 × 1350 feed card
-- 1080 × 1920 Story / XHS card
-- Web Share when supported
-- PNG fallback
-- copy result
-- return URL
+状态：**NEXT / BLOCKER**。
 
-正式 Character asset 缺失时 share generation 必须显式失败，不允许 placeholder。
-
-### 1D. Character Visual System V1
-
-状态：**BLOCKER / Product Owner selection required**
-
-先完成 3 套正式 Style Pilot，每套只画：
-
-- 好吃懒做 male
-- 天生反骨 female
-- 狠人 male
-- 道长 female
-
-三套必须在比例、线条、上色、五官、动作语言、Editorial / internet 感上明显不同。
-
-选择后：
+正式 Character contract：
 
 ```text
-freeze Character Style Bible V1
-→ generate 10 × male/female
-→ compress to WebP
-→ commit 20 / 20
-→ Homepage / Result / Share integration QA
+public/characters/v1/{ten_god}-male.webp
+public/characters/v1/{ten_god}-female.webp
 ```
 
-禁止：CSS 小人、几何 SVG、silhouette、temporary placeholder、廉价十神 cosplay。
+10 personalities × male/female = **20 formal assets**。
 
-### 1E. Final QA / Release
+正式人格：
 
-状态：**Pending**
+| Machine key | Public personality |
+| --- | --- |
+| `bi_jian` | 犟种 |
+| `jie_cai` | 撒币 |
+| `shi_shen` | 享乐主义 |
+| `shang_guan` | 天生反骨 |
+| `zheng_cai` | 抠抠搜搜 |
+| `pian_cai` | 搞钱圣体 |
+| `zheng_guan` | 老干部 |
+| `qi_sha` | 狠人 |
+| `zheng_yin` | 活菩萨 |
+| `pian_yin` | 道长 |
 
-最终 HEAD 必须：
+Canonical references：
+
+- `docs/assets/character-style-master-v1.webp`
+- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
+- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
+
+正式风格：**Bold Graphic Character / Flat Editorial Character**。  
+世界观：**City Observation Editorial / 城市观察体**。
+
+硬规则：**pose may be redesigned; style may not be reinterpreted.**
+
+Style selection 已完成。不得重新做 3 套 Style Pilot，不得重新选画风，不得使用“好吃懒做”作为正式 Character identity。
+
+`docs/16_CHARACTER_BATCH_PRODUCTION_V1.md` 中的 Production Pilot / pair gate 只负责验证锁定风格的一致性，不是 Style Exploration。
+
+正式角色缺失时不得回退 CSS / SVG / placeholder / silhouette / legacy 25 archetype character。
+
+当前正式资产状态：**0 / 20**。
+
+## 5. P0.3 — Character integration QA
+
+20 / 20 到位后，按顺序验证：
+
+### Homepage Character integration QA
+
+- 10 personality cards 使用正式图片；
+- 缩小后识别度；
+- 不出现 fallback character；
+- 首屏加载策略正常。
+
+### Result Character integration QA
+
+- dominant personality Hero 正确；
+- male / female contract 正确；
+- secondary personality 使用正式资产；
+- reload / back / error state 不出现 placeholder。
+
+### Share Card real-image QA
+
+- 1080 × 1350 feed card；
+- 1080 × 1920 Story / XHS card；
+- 正式 Hero Character 清晰；
+- Web Share / PNG fallback / copy result；
+- 缺图必须显式失败。
+
+## 6. P0.4 — Mobile / browser QA
+
+至少完成：
+
+- 390px
+- 430px
+- 768px
+- 1440px
+
+完整走查：
+
+Homepage → Birth → Result → Share Card → public return URL。
+
+同时覆盖 unknown birth time、invalid/custom location、reload、back、navigation 与 share fallback。
+
+## 7. P0.5 — Full CI / PR / Production
+
+最终 asset-integrated HEAD 必须通过：
 
 ```text
 npm ci
@@ -140,24 +176,7 @@ npm test
 npm run build
 ```
 
-浏览器必须检查：390 / 430 / 768 / 1440。
-
-还必须验证：
-
-- Homepage
-- Birth
-- unknown birth time
-- invalid/custom location error
-- Result Hero
-- long Result
-- 10 personality registry mapping
-- male/female character rendering
-- Share Card feed/story
-- save/share/copy fallback
-- reload/back/navigation
-- public URL smoke
-
-所有 gate 通过后：
+通过后严格执行：
 
 ```text
 PR #16 Draft
@@ -167,94 +186,41 @@ PR #16 Draft
 → final public smoke test
 ```
 
-## Phase 2 — Paid Full Personality Report
+只有 public smoke test 通过，V1 才算发布完成。
 
-状态：**Deferred until free loop launches**
+## 8. Post-V1 / V1.1 Parking Lot
 
-商业候选：¥9.9 等值。
+以下项目当前全部 **PARKED**。可以记录 Recommendation，但不得在 V1 Release Freeze 中实现：
 
-后续需要：
-
-- final report schema
-- AI provider boundary
-- ContextAssembler consuming deterministic facts
-- structured output validation
-- ReportEntitlement
-- verified payment fulfillment
-- locked/unlocked UI
-- retry / recovery
-
-免费 V1 不能为了等支付而延期。
-
-## Phase 3 — AI Advisor
-
-状态：**Deferred**
-
-商业候选：¥29.9 / 10 credits。
-
-研究与 Billing Contract 可以保留，但今晚不接公网免费链路。
-
-后续继续遵守：
-
-```text
-reserve
-→ AI
-→ commit
-failure → release
-```
-
-## Phase 4 — Supabase Live / Auth / Account
-
-状态：**Deferred**
-
-Supabase Core code layer 已存在，但真实 Project link / migration / RLS / Auth / live CRUD 仍需后续验收。
-
-免费人格 RC 当前使用浏览器 session handoff，不依赖 Supabase env 才能打开。
-
-## Phase 5 — Traditional Pattern Production
-
-状态：**Research exists / production algorithm pending**
-
-完整 `TraditionalPatternResult` 未来必须由 deterministic Bazi layer 产生并带 explicit rule profile。
-
-在此之前：
-
-- `bi_jian → 建禄` 不得伪装成正式格局判定；
-- `jie_cai → 月劫` 不得伪装成正式格局判定。
-
-V1 Presentation Proxy 会在 UI / docs 中明确标记。
-
-## Phase 6 — Analytics / Conversion
-
-状态：**Deferred**
-
-免费分享闭环公开后再接：
-
-- start-test conversion
-- Birth completion
-- result share rate
-- share referral
-- paid report conversion
-- payment failure
-- Advisor usage / repurchase
-
-## Phase 7 — Stable Commercial Launch
-
-在免费 V1 已验证传播后，再逐步补齐：
-
+- 双人人格关系
+- compatibility / matching
+- referral system
+- invitation challenge system
+- AI Advisor
+- AI Chat
+- payment
+- ¥9.9 report checkout
 - Supabase Live
-- Auth / Account
-- production payment
-- ReportEntitlement
-- AI report
-- Advisor credits
-- permissions / RLS
-- privacy / terms
-- monitoring
-- analytics
+- Auth
+- Account
+- Analytics full system
+- ranking
+- rarity percentage
+- new personality types
+- new Character Style
+- new Bazi prediction features
+- 用神
+- 流月 / 流日
+- complex Traditional Pattern expansion
+- community
+- gamification
 
-## Scope guard
+如果出现新的产品想法，也只能追加到本 Parking Lot 或后续 Recommendation，不得改变当前 P0 顺序。
 
-当前产品仍只做：**八字人格**。
+## 9. V1 release rule
 
-在免费人格传播与商业转化得到数据验证前，不提前扩张紫微、奇门、塔罗、面相、手相、风水、社区或真人大师平台。
+在 V1 Release Freeze 期间：
+
+**不主动扩 Scope。**
+
+当前 P0 没完成前，不启动新的产品方向、增长系统、AI、支付、关系功能、预测功能或新的视觉体系。
