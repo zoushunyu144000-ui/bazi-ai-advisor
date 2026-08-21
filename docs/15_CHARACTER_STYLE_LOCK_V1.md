@@ -17,6 +17,8 @@
 
 任何后续 Agent / 生图模型 / 设计师都必须先读取本文件与母版图，再开始角色生产。
 
+批量生产执行规范：`docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`。
+
 ## 2. 正式风格名称
 
 主名称：**Bold Graphic Character / Flat Editorial Character**  
