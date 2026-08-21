@@ -210,9 +210,14 @@ export default function ResultPage() {
   }
 
   async function saveCard(format: CardFormat) {
+    const currentBundle = bundle;
+    if (!currentBundle) {
+      setShareStatus("结果已失效，请重新测试。");
+      return;
+    }
     try {
       setShareStatus("正在生成人格卡…");
-      const blob = await renderShareCard(bundle, format);
+      const blob = await renderShareCard(currentBundle, format);
       const file = new File([blob], `bazi-${dominantKey}-${format}.png`, { type: "image/png" });
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
