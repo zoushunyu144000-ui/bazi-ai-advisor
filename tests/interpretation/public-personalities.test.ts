@@ -7,7 +7,7 @@ const registry = await import(registryPath);
 const EXPECTED = {
   bi_jian: "犟种",
   jie_cai: "撒币",
-  shi_shen: "好吃懒做",
+  shi_shen: "享乐主义",
   shang_guan: "天生反骨",
   zheng_cai: "抠抠搜搜",
   pian_cai: "搞钱圣体",
