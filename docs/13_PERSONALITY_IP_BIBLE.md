@@ -1,7 +1,7 @@
 # 13 — Personality IP Bible V1
 
 状态：**V1 Product Convergence LOCKED / Character Visual Asset Gate OPEN**  
-最后更新：2026-08-20
+最后更新：2026-08-21
 
 ## 1. 产品定位
 
@@ -29,7 +29,7 @@ V1 是 **八字版 SBTI**，不是传统命理专业站，也不是复杂预测�
 | --- | --- | --- |
 | `bi_jian` | 犟种 | 比肩型人格 · V1 展示代理「建禄」 |
 | `jie_cai` | 撒币 | 劫财型人格 · V1 展示代理「月劫」 |
-| `shi_shen` | 好吃懒做 | 食神型人格 |
+| `shi_shen` | 享乐主义 | 食神型人格 |
 | `shang_guan` | 天生反骨 | 伤官型人格 |
 | `zheng_cai` | 抠抠搜搜 | 正财型人格 |
 | `pian_cai` | 搞钱圣体 | 偏财型人格 |
@@ -39,6 +39,8 @@ V1 是 **八字版 SBTI**，不是传统命理专业站，也不是复杂预测�
 | `pian_yin` | 道长 | 偏印型人格 |
 
 以上 display name 在 V1 公网期间禁止自行改名。
+
+`shi_shen → 享乐主义` 已替代旧试制名“好吃懒做”。正式文案与视觉必须表达会享受、生活感、体验优先、审美、松弛和快乐恢复力；不得把食神塑造成废宅、懒汉、肥胖或不上进。
 
 ### Proxy boundary
 
@@ -128,20 +130,25 @@ Canonical implementation：`lib/public-personalities.ts`。
 
 人格优先通过姿态、表情、动作、服装细节、轮廓和视觉张力表达。
 
-### 5.2 Style Pilot process
+### 5.2 Character Style — LOCKED
 
-批量生成 20 张前，必须先比较 3 套真正不同的正式方向。
+Style Pilot 阶段已经完成。Product Owner 已锁定唯一 V1 母版与风格：
 
-每套固定 pilot：
+- `docs/assets/character-style-master-v1.webp`
+- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
+- 主风格：**Bold Graphic Character / Flat Editorial Character**
+- 世界观：**City Observation Editorial / 城市观察体**
 
-1. 好吃懒做 · male
+硬规则：**动作可以重新设计；画风不得重新解释。**
+
+正式生产先完成 4 个 Production Pilot：
+
+1. 享乐主义 · male
 2. 天生反骨 · female
 3. 狠人 · male
 4. 道长 · female
 
-比较维度：人物比例、线条、上色、五官、服装抽象程度、表情体系、动作语言、年轻感、互联网感、Editorial 感、Share Card 适配度。
-
-Product Owner 选定一套后，再冻结 Character Style Bible V1 并扩展 10 × male/female = 20 张。
+4 个通过同一画风、一致面部语言和纯黑剪影辨识检查后，再扩展 10 × male/female = 20 张。
 
 ### 5.3 Asset contract
 
