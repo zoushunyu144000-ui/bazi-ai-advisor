@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**V1 Release Freeze — Rule Profile LOCKED / TraditionalPatternResult Active Next**  
+状态：**V1 Release Freeze — TraditionalPatternResult Spec Review Active**  
 最后更新：2026-08-23
 
 ## 0. Roadmap Boundary
@@ -10,13 +10,12 @@ Source of Truth：
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
-4. `docs/09_CURRENT_STATE.md`
-5. `docs/10_ROADMAP.md`
-6. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`（当前 Proposed / Review）
+5. `docs/09_CURRENT_STATE.md`
+6. `docs/10_ROADMAP.md`
+7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
-项目执行流程见：
-
-`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`
+项目执行流程：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
 
 本文件只描述下一步。
 
@@ -40,27 +39,27 @@ Homepage
 2. ✅ Rule Profile Research / Specification — COMPLETE
 3. ✅ Owner Approval OA-01 ～ OA-07 — COMPLETE
 4. ✅ `ziping-v1.0.0` Rule Profile Freeze — COMPLETE
-5. **TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity — NEXT / ACTIVE**
-6. Public Personality authoritative translation
-7. 降级 / 隔离 legacy engineering personality ranking
-8. Character routing / formal asset completion
-9. Result / Share Card translation integration
-10. mobile browser QA
-11. full CI
-12. PR #16 Ready
-13. merge main
-14. Vercel Production
-15. final public smoke test
+5. ✅ TraditionalPatternResult Spec + Implementation Plan draft — COMPLETE
+6. **TraditionalPatternResult Spec Review + Freeze — NEXT / ACTIVE**
+7. `TraditionalPatternResult` Production Implementation — BLOCKED UNTIL #6
+8. Public Personality authoritative translation
+9. isolate / retire legacy engineering personality authority
+10. Character routing / formal asset completion
+11. Result / Share Card translation integration
+12. mobile browser QA
+13. full CI
+14. PR #16 Ready
+15. merge main
+16. Vercel Production
+17. final public smoke test
 
 ## 3. P0.1 — Traditional Bazi Rule Audit
 
 状态：**COMPLETE**。
 
-结果：
+Source：`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`。
 
-`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
-
-核心结论：
+核心结论继续有效：
 
 - production 尚无真正 Traditional Pattern adjudication；
 - legacy support ratio / 0.58 / 0.42 / month ×1.5 / candidate ranking 属 experimental；
@@ -70,9 +69,7 @@ Homepage
 
 状态：**APPROVED / LOCKED**。
 
-Source of Truth：
-
-`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+Source：`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`。
 
 正式版本：
 
@@ -80,7 +77,7 @@ Source of Truth：
 rule_profile_version = ziping-v1.0.0
 ```
 
-### Locked Calendar
+冻结内容包括：
 
 ```text
 YEAR_BOUNDARY = EXACT_LICHUN_INSTANT
@@ -89,164 +86,205 @@ DAY_BOUNDARY = LOCAL_CIVIL_MIDNIGHT_00_00
 LATE_ZI = NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
 TIME_STANDARD = HISTORICAL_IANA_CIVIL_TIME
 TRUE_SOLAR_TIME = NOT_AUTO_APPLIED_IN_V1
-```
 
-Near-boundary cases preserve ambiguity。
-
-### Locked Month Host
-
-```text
-month branch
+MONTH_HOST_BASE = month branch
 → ordered hidden qi (main > middle > residual)
 → exposure
 → base Pattern Host
-```
 
-重要：这里只决定 **base Host**。最终 pattern judgment 仍必须继续检查 transformation、formation、damage / rescue、roots、strength、mixed / follow structure。
-
-禁止：
-
-```text
-month numeric multiplier authority
-exact commander-day table authority
-Ten-God max authority
-candidate score authority
-```
-
-### Locked Strength
-
-```text
 DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
+YANGREN = FIVE_YANG_STEMS_ONLY
+FOLLOW FINAL = STRICT_FOLLOW_WEALTH + STRICT_FOLLOW_KILLING
 ```
 
-使用：
+Rule Profile 不在当前 Spec Review 中重新讨论。
+
+## 5. P0.3 — TraditionalPatternResult Spec V1
+
+状态：**READY FOR REVIEW / PROPOSED**。
+
+Source：
+
+`docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
+
+Proposed schema version：
 
 ```text
-得令
-+ 得地 / 通根
-+ 得势 / 得助
-+ 生克制化
+pattern_schema_version = traditional-pattern-result/1.0.0
 ```
 
-不使用人格百分比或 numeric threshold authority。
+### 5.1 Proposed Architecture
 
-### Locked Pattern Scope
+```text
+BirthProfile
++ BaziChart
++ CalculationMetadata
++ Relations
+↓
+modules/bazi/traditional-pattern/**
+↓
+TraditionalPatternResult
+```
+
+Traditional layer 不读取：
+
+```text
+BaziDerivedFeatures numeric authority
+PersonalityDimensions
+ArchetypeCandidate
+candidate_score
+Public Personality
+LLM output
+```
+
+### 5.2 Proposed Result
+
+至少包含：
+
+```text
+engine_version
+rule_profile_version
+pattern_schema_version
+patternStatus
+baseMonthHost
+primaryPattern
+secondaryPatterns[]
+candidates[]
+formationState
+strengthContext
+followStructure
+keyCombinations[]
+evidence[]
+counterEvidence[]
+ambiguities[]
+evidenceSufficiency
+```
+
+### 5.3 Proposed Pattern Status
+
+```text
+clear_single
+primary_with_secondary
+mixed
+no_stable_single_pattern
+follow_structure
+ambiguous
+```
+
+### 5.4 Proposed Pattern Enum
 
 ```text
 8 regular patterns
 + Jianlu
 + Yuejie
-+ five-yang Yangren structural host
++ Yangren
++ Follow Wealth
++ Follow Killing
 ```
 
-Yangren：
+没有 `UNKNOWN / NONE` sentinel；无法稳定归类时使用：
 
 ```text
-甲→卯
-丙→午
-戊→午
-庚→酉
-壬→子
+primaryPattern = null
++ explicit patternStatus
 ```
 
-### Locked Follow Scope
+### 5.5 Evidence Contract
+
+first-class：
 
 ```text
-FINAL = STRICT_FOLLOW_WEALTH + STRICT_FOLLOW_KILLING
-```
-
-其他 follow structures：candidate / evidence-only / ambiguous / deferred。
-
-## 5. P0.3 — TraditionalPatternResult Implementation
-
-状态：**NEXT / ACTIVE**。
-
-Rule Profile prerequisite 已满足。
-
-本阶段目标：
-
-> **把 `ziping-v1.0.0` 已冻结规则实现成 deterministic、可测试、可解释的 TraditionalPatternResult。**
-
-### 5.1 Implementation 顺序
-
-必须遵守：
-
-```text
-Spec
-→ Implementation Plan
-→ Build
-→ Unit / Golden Tests
-→ Rule Review
-→ Freeze
-```
-
-不得一边 Build 一边重新发明 Rule Profile。
-
-### 5.2 Minimum Result Contract
-
-至少包含：
-
-```text
-rule_profile_version
-pattern_status
-primary_pattern
-secondary_patterns[]
-base_month_host
-formation_state
-strength_context
-follow_structure
-key_combinations[]
 evidence[]
-counter_evidence[]
+counterEvidence[]
 ambiguities[]
 ```
 
-### 5.3 Required Traditional Facts / Evaluators
+每个正式结论必须能追到 deterministic fact + stable ruleId + `ziping-v1.0.0`。
 
-至少实现或补齐：
+V1 Evidence contract 不提供 numeric traditional weight。
 
-#### Calendar / Time
+### 5.6 Proposed Review Decisions TP-01 ～ TP-07
 
-- `ziping-v1.0.0` exact LiChun / Jie；
-- local civil midnight day boundary；
-- night-Zi / Zi-zheng split；
-- historical IANA / DST；
-- near-boundary ambiguity。
-
-#### Month Host
-
-- ordered hidden qi；
-- exposure evidence；
-- base Host selection；
-- multiple exposure competing evidence；
-- base Host 与 final verdict 分离。
-
-#### Roots / Strength
-
-- main / middle / residual root evidence；
-- 得令 / 得地 / 得势；
-- qualitative strength band；
-- no numeric threshold authority。
-
-#### Relations
-
-至少补：
+Review 必须明确批准 / 修改：
 
 ```text
-三合 existence
-三会 existence
-刑 existence
-破 existence
-transformation_state = validated | unresolved | not_transformed
+TP-01 Bazi Traditional Layer owns result
+TP-02 exclude BaziDerivedFeatures from traditional authority input
+TP-03 pattern_schema_version = traditional-pattern-result/1.0.0
+TP-04 no UNKNOWN/NONE Pattern sentinel
+TP-05 categorical evidence sufficiency; no numeric traditional confidence
+TP-06 approximate-time ambiguity does not invent ±minute window
+TP-07 first phase keeps result independent from required BaziCalculationResult field for shadow migration
 ```
 
-现有六合 / 六冲 / 六害 / 天干五合只可作为 existence facts，不能默认等于完成合化。
+这些是 Contract / architecture decision，不改变 `ziping-v1.0.0`。
 
-#### Formation
+## 6. P0.3 Review + Freeze Gate — ACTIVE
+
+当前唯一 P0：
+
+> **Review + Freeze `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`。**
+
+通过条件：
+
+```text
+1. TP-01 ～ TP-07 approved / modified
+2. Contract consistency review passes
+3. Rule Profile compliance review passes
+4. Legacy migration review passes
+5. Testing / Golden strategy accepted
+6. Decision Log records Approved contract
+7. Current State marks Spec LOCKED
+8. Roadmap moves Production Implementation to ACTIVE
+```
+
+未经该 Gate：
+
+```text
+DO NOT BUILD TraditionalPatternResult production code
+```
+
+## 7. P0.4 — TraditionalPatternResult Implementation
+
+状态：**BLOCKED — Spec not frozen**。
+
+Spec Freeze 后按以下 phases 开发。
+
+### Phase 1 — Contract + Profile Guard
+
+- `types/domain/traditional-pattern.ts`
+- shared enums / result types
+- `pattern_schema_version`
+- `modules/bazi/traditional-pattern/**` skeleton
+- `ziping-v1.0.0` profile guard
+- no Interpretation imports
+
+### Phase 2 — Ziping Calendar Compatibility + Structural Evidence
+
+- versioned `ziping-v1.0.0` calculation path
+- night-Zi hour-stem convention
+- exact LiChun / Jie
+- historical IANA / DST
+- boundary ambiguity
+- Month Host / exposure
+- roots
+- qualitative strength
+- 三合 / 三会 / 刑 / 破
+- transformation state
+
+### Phase 3 — Pattern Candidates
+
+- 8 regular
+- Jianlu
+- Yuejie
+- five-yang Yangren
+
+### Phase 4 — Pattern-specific Formation
 
 逐格实现：
 
 ```text
+required formation
 support
 damage
 rescue
@@ -255,186 +293,169 @@ rescue
 输出：
 
 ```text
-FORMED_CLEAR
-FORMED_IMPURE
-FAILED
-BROKEN
-BROKEN_RESCUED
-NOT_FORMED
-AMBIGUOUS
-```
-
-#### Mixed
-
-支持：
-
-```text
-PRIMARY_WITH_SECONDARY
-MIXED
-NO_STABLE_SINGLE_PATTERN
-```
-
-#### Follow
-
-仅：
-
-```text
-STRICT_FOLLOW_WEALTH
-STRICT_FOLLOW_KILLING
-```
-
-允许 final verdict。
-
-其他 follow 不得偷偷 final。
-
-### 5.4 Directional Combination Requirements
-
-优先支持：
-
-```text
-SHANG_GUAN_GENERATES_WEALTH
-SHI_SHEN_GENERATES_WEALTH
-SHI_SHEN_CONTROLS_QI_SHA
-RESOURCE_TRANSFORMS_QI_SHA
-QI_SHA_GENERATES_RESOURCE
-WEALTH_GENERATES_OFFICER
-RESOURCE_PROTECTS_OFFICER
-OFFICER_GENERATES_RESOURCE
-SHANG_GUAN_WITH_RESOURCE
-```
-
-必须证明 Host direction 不丢失：
-
-```text
-正官佩印 != 印绶用官
-杀用印 != 印绶逢杀
-财逢食生 != 食神生财
-杀格逢刃 != 阳刃露杀
-```
-
-### 5.5 Evidence Contract
-
-必须 first-class：
-
-```text
-evidence[]
-counter_evidence[]
-ambiguities[]
-```
-
-不得最终只输出：
-
-```text
-pattern = SHANG_GUAN
-```
-
-而没有依据。
-
-### 5.6 Forbidden Inputs
-
-TraditionalPatternResult 不得读取：
-
-```text
-PersonalityDimensions
-ArchetypeCandidate
-candidate_score
-public personality name
-Character
-growth / conversion analytics
-LLM free-form judgment
-```
-
-## 6. P0.3 Test Gate
-
-至少覆盖：
-
-### Calendar
-
-- LiChun ±1s；
-- Jie ±1s；
-- 22:59 / 23:00 / 23:59 / 00:00 / 00:59 / 01:00；
-- night-Zi day pillar / hour stem；
-- DST gap / overlap；
-- unknown / approximate time near boundaries。
-
-### Month Host
-
-每个 regular pattern：
-
-- main qi exposed；
-- main unexposed + middle exposed；
-- residual exposed；
-- none exposed；
-- multiple exposed；
-- final verdict changed by later formation without rewriting base Host evidence。
-
-### Self-rooted
-
-- 10 Jianlu mappings；
-- Yuejie；
-- five Yangren mappings；
-- five Yin stems must not auto-Yangren。
-
-### Formation
-
-每种 V1 pattern 至少：
-
-```text
 formed_clear
 formed_impure
 failed
 broken
 broken_rescued
+not_formed
 ambiguous
 ```
 
-### Mixed / Follow
+禁止 generic weighted scoring。
 
-- primary + secondary；
-- 官杀混杂；
-- no stable single pattern；
-- strict Follow Wealth；
-- strict Follow Killing；
-- root breaks follow；
-- fake-follow candidate does not become final。
-
-### Determinism
-
-- same input + same rule profile = same result；
-- all results carry `ziping-v1.0.0`；
-- old `civil-local-jieqi-v1` results are not silently reinterpreted。
-
-## 7. P0.4 — Public Personality Translation
-
-只有 TraditionalPatternResult implementation Review + Freeze 后进入。
-
-未来链路：
+### Phase 5 — Mixed + Follow
 
 ```text
-TraditionalPatternResult
-→ Translation Layer
+primary_with_secondary
+mixed
+no_stable_single_pattern
+strict Follow Wealth
+strict Follow Killing
+```
+
+其他 follow 不得 final。
+
+### Phase 6 — Result Assembly + Shadow Integration
+
+- complete `TraditionalPatternResult`
+- deterministic IDs
+- canonical ordering
+- evidence integrity
+- shadow compare only
+- 不切 Public Personality authority
+
+### Phase 7 — QA / Golden Review
+
+- unit tests
+- golden cases
+- boundary cases
+- determinism
+- rule review
+- debug trace review
+- shadow compare
+
+## 8. Implementation Test Gate
+
+### Calendar
+
+```text
+LiChun -1s / exact / +1s
+Jie -1s / exact / +1s
+22:59 / 23:00 / 23:59 / 00:00 / 00:59 / 01:00
+DST gap / overlap
+unknown / approximate time
+```
+
+### Month Host
+
+```text
+main exposed
+middle exposed fallback
+residual exposed fallback
+none exposed -> main fallback
+multiple exposure
+base Host survives later final-verdict change
+```
+
+### Pattern / Formation
+
+- 8 regular 清格；
+- Jianlu / Yuejie / Yangren；
+- clear / impure / failed / broken / rescued / ambiguous；
+- primary + secondary；
+- mixed；
+- no stable single；
+- strict Follow Wealth / Killing；
+- follow rejected。
+
+### Evidence integrity
+
+必须自动断言：
+
+```text
+primary has evidence
+broken has damage evidence
+broken_rescued has damage + rescue
+confirmed follow is only wealth / killing
+ambiguous has material/blocking ambiguity
+all ruleIds resolve
+all evidence references resolve
+```
+
+### Architecture
+
+```text
+modules/bazi/traditional-pattern/**
+MUST NOT import modules/interpretation/**
+```
+
+## 9. Golden Cases
+
+推荐：
+
+```text
+tests/fixtures/traditional-pattern/
+  classic/
+  textbook/
+  boundary/
+  regression/
+```
+
+来源等级：
+
+```text
+A. 古籍明确案例
+B. 有明确作者 / 版本的传统教材案例
+C. synthetic boundary fixture
+D. regression fixture
+```
+
+每个 fixture 必须记录来源、规则版本、schema 版本和 expected evidence；C 类不能冒充传统正确性证据。
+
+## 10. Legacy Migration
+
+当前 public authority：
+
+```text
+calculateBazi
+→ Interpretation
+→ personality-map/0.2.0
+→ ArchetypeCandidate
 → Public Personality
 ```
 
-例如：
+迁移：
 
 ```text
-primary = SHANG_GUAN
-modifier = SHANG_GUAN_GENERATES_WEALTH
-↓
-主 Public Personality：天生反骨
-明显副倾向：搞钱圣体
+A. TraditionalPatternResult independent
+B. Shadow Compare
+C. Translation Layer
+D. Authority Cutover
+E. Legacy retirement
 ```
 
-要求：
+Shadow Compare 不得用用户反馈反向修改传统规则。
 
-- 所有标签可回溯到 evidence；
-- Public Personality 不覆盖传统格局；
-- 不为了 10 类均衡而调结果；
-- Mixed 允许混合表达；
-- 15 dimensions 只负责现代行为解释，不反向决定格局。
+只有 Authority Cutover + regression 全通过后，旧 candidate 才能退出 authority。
 
-## 8. Personality Percentage Policy
+切换后禁止 silent fallback 到 legacy candidate 作为 Traditional verdict。
+
+## 11. P0.5 — Public Personality Translation
+
+只有 TraditionalPatternResult implementation Review + Freeze 后进入。
+
+未来：
+
+```text
+TraditionalPatternResult
+→ explicit Translation Layer
+→ Public Personality
+```
+
+Public Personality 不得反向修改传统格局。
+
+## 12. Personality Percentage Policy
 
 继续禁止：
 
@@ -443,20 +464,11 @@ candidate_score -> personality percentage
 tenGodDistribution -> personality percentage
 ```
 
-V1 只表达：
+V1 只表达：主导 / 明显副倾向 / 辅助 / 混合 / 清晰 / 歧义。
 
-```text
-主导
-明显副倾向
-辅助
-混合 / 清晰 / 歧义
-```
+## 13. Character P0
 
-未来恢复百分比需要独立传统依据、版本化与验证。
-
-## 9. Character P0
-
-传统判断链完成后继续：
+传统 authority cutover 后继续：
 
 ```text
 10 Public Personality
@@ -466,7 +478,7 @@ V1 只表达：
 
 用户性别不改变 Character identity。
 
-## 10. Final Product QA
+## 14. Final Product QA
 
 最终仍需：
 
@@ -479,7 +491,7 @@ V1 只表达：
 - PR #16 Ready；
 - production smoke test。
 
-## 11. Post-V1 / Deferred
+## 15. Post-V1 / Deferred
 
 仍 PARKED：
 
@@ -494,7 +506,7 @@ V1 只表达：
 - ranking / rarity；
 - 流月 / 流日等进一步预测功能。
 
-Rule Profile V1 Deferred：
+Rule Profile V1 Deferred 继续保持：
 
 - auto true-solar-time authority；
 - exact commander-day table authority；
@@ -505,9 +517,7 @@ Rule Profile V1 Deferred：
 - 神煞 / 纳音格局；
 - 独立调候 / 盲派 profile。
 
-## 12. Project Operating Rule
-
-每轮必须执行：
+## 16. Project Operating Rule
 
 ```text
 PRODUCT
@@ -520,12 +530,17 @@ PRODUCT
 → CURRENT_STATE
 ```
 
-当前唯一 P0：
+当前顺序：
 
-> **TraditionalPatternResult Spec / Plan → Implementation。**
+```text
+Rule Profile = LOCKED
+→ TraditionalPatternResult Spec = READY FOR REVIEW
+→ Spec Review / Freeze = ACTIVE
+→ Implementation = BLOCKED
+```
 
-## 13. Release Rule
+## 17. Release Rule
 
 > **不扩 Scope，不降质量，不自造命理。**
 
-Rule Profile 已冻结。现在按冻结规则实现，不重新混入实验数学权重。
+先冻结 Contract，再写 production code；不得边写边重新发明规则。
