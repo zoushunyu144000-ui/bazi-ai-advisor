@@ -3,7 +3,7 @@
 状态：**APPROVED PRODUCT DESIGN / 2026-08-22 / Traditional Translation Revision**  
 项目：**八字人格 / Bazi Personality**
 
-> 若与 `docs/13_PERSONALITY_IP_BIBLE.md` 或 `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md` 冲突，以前两者为准。
+> 若与 `docs/13_PERSONALITY_IP_BIBLE.md` 或 `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md` 冲突，以前两者为准。专业报告内容契约见 `docs/19_PROFESSIONAL_REPORT_CONTRACT.md`。
 
 ## 1. 产品总定义
 
@@ -94,7 +94,7 @@ Public Personality = 对命理结构的现代人格翻译
 - 一个用户可能传统判断为伤官格，并见明显财星、形成伤官生财；
 - 公网主标签可以是「天生反骨」；
 - 明显副倾向可以是「搞钱圣体」；
-- 专业报告解释为什么这个传统组合产生这种现代人格表达。
+- 专业报告则回到整张命盘本身，用白话讲清这个人的性格、能力、事业、钱、关系、阶段与建议。
 
 不允许因为财星数量更高，就直接覆盖传统伤官格判断。
 
@@ -164,7 +164,7 @@ Public Personality = 对命理结构的现代人格翻译
 8. 翻车面；
 9. 工作 / 学习 / 关系 / 冲突 / 压力 / 恢复 / 决策 / 金钱；
 10. 成长建议；
-11. 为什么得到这个人格；
+11. 轻量命盘说明；
 12. 专业八字依据折叠区；
 13. Share Card。
 
@@ -192,36 +192,47 @@ Public Personality = 对命理结构的现代人格翻译
 
 ## 9. 付费专业报告
 
-专业报告的核心不是“更长”，而是“更传统、更有依据、更能解释个体差异”。
+专业报告不是“解释系统为什么给你这个人格”的升级版。
 
-### A. Traditional Bazi Report
+正式定位：
 
-至少解释：
+> **认真看盘，白话讲盘，最后给建议。**
 
-- 采用的传统规则体系；
-- 月令；
-- 十神；
-- 透藏根气；
-- 旺衰；
-- 格局判断；
-- 成败 / 破格 / 救应；
-- 从格 / 特殊结构；
-- 重要组合；
-- 为什么不是其他格；
-- 流派争议 / 不确定性。
+报告直接围绕整张八字展开，重点讲用户本人，而不是展示内部人格映射过程。
 
-### B. Modern Personality Translation
+正式内容方向：
 
-解释：
+1. 先看整张盘；
+2. 性格与做事方式；
+3. 优势，以及最容易吃亏的地方；
+4. 工作、学习与事业；
+5. 钱、资源与现实选择；
+6. 感情、人际与边界；
+7. 当前人生阶段 / 大运流年上下文（有可靠数据时）；
+8. 现实可执行建议。
 
-- 为什么主标签是这个人格；
-- 为什么出现副倾向；
-- 同样是「天生反骨」，为什么这个人更偏赚钱、另一个人更偏表达；
-- 工作、关系、金钱、压力中的具体体现。
+传统命理术语与证据仍然保留，但优先放在“命盘依据 / 专业模式”中，由用户主动展开。
 
-付费卖的是：
+专业报告不需要长篇回答：
 
-> **对传统命盘结构的深入解释 + 现代语言翻译。**
+- 为什么你是「天生反骨」；
+- 为什么不是另一个人格；
+- 人格标签如何计算；
+- 产品内部候选排序是什么。
+
+付费价值来自：
+
+> **更完整地看懂自己的盘，并知道现实中怎么用。**
+
+完整内容契约见：`docs/19_PROFESSIONAL_REPORT_CONTRACT.md`。
+
+### 既有 AI Report 资产
+
+`feature/ai-system-v1` 已经存在 ContextAssembler、Report Runtime、versioned prompt、structured schema、evidence validation 等实现。
+
+这些技术架构继续复用。
+
+旧 `ai-report/full-personality/1.0.0` 的 8 节人格报告属于历史内容版本，未来恢复实现时只更新 Report Prompt / Schema，不从零重写技术底座。
 
 ## 10. AI 边界
 
@@ -230,11 +241,10 @@ Public Personality = 对命理结构的现代人格翻译
 ```text
 Traditional deterministic facts
 → TraditionalPatternResult + Evidence
-→ translation rules
 → typed evidence packet
-→ LLM narrative
+→ LLM 白话分析 + 现实建议
 → structured validation
-→ report
+→ Professional Report
 ```
 
 LLM 不得：
@@ -242,7 +252,8 @@ LLM 不得：
 - 重新排八字；
 - 自己取格；
 - 发明百分比；
-- 覆盖 deterministic 结论。
+- 覆盖 deterministic 结论；
+- 向用户展示内部推导链。
 
 ## 11. 当前必须先做的工程工作
 
@@ -266,8 +277,8 @@ TraditionalPatternResult
 + Confidence / Ambiguity
 ```
 
-完成之后再接现代人格翻译。
+完成之后再接现代人格翻译与专业报告。
 
 ## 12. 一句话产品模型
 
-> **我们不是用八字素材发明一个人格测试；我们是在保留传统命理判断的前提下，把它翻译成一个现代、年轻、能传播的产品。**
+> **我们不是用八字素材发明一个人格测试；我们是在保留传统命理判断的前提下，把它翻译成一个现代、年轻、能传播的产品，并在专业报告里用白话把整张盘真正讲明白。**
