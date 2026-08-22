@@ -1,15 +1,17 @@
 # 23 — TraditionalPatternResult V1 Spec + Implementation Plan
 
-状态：**READY FOR REVIEW / PROPOSED CONTRACT**  
-日期：2026-08-23  
+状态：**LOCKED / ACTIVE**  
+Freeze Date：2026-08-23  
 Repository：`zoushunyu144000-ui/bazi-ai-advisor`  
 Branch：`release/v1-personality-rc`  
 Rule Profile：`ziping-v1.0.0` **LOCKED**  
-Proposed Pattern Schema：`traditional-pattern-result/1.0.0`
+Pattern Schema：`traditional-pattern-result/1.0.0` **LOCKED**
 
 > 本文把已冻结的 `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md` 翻译成可实现、可测试、可审计的 `TraditionalPatternResult` Contract（传统格局结果契约）与 Implementation Plan（实现计划）。
 >
-> 本文 **不修改** `ziping-v1.0.0`，不实现 production code（生产代码），不切换 Public Personality authority（公网人格判定权）。
+> Owner 已完成 TP-01 ～ TP-07 Review，并批准四项 Required Revisions（强制修订）。本文现正式 Freeze。
+>
+> 本文 **不修改** `ziping-v1.0.0`，不等于 production implementation 已完成，也不切换 Public Personality authority（公网人格判定权）。
 >
 > 最高原则：**传统命理负责判断，现代产品负责翻译。**
 
@@ -17,7 +19,7 @@ Proposed Pattern Schema：`traditional-pattern-result/1.0.0`
 
 # 1. Purpose（目的）
 
-`TraditionalPatternResult` 回答一个问题：
+`TraditionalPatternResult` 回答：
 
 > **在 `ziping-v1.0.0` 已冻结的子平规则体系中，这张命盘的传统结构 / 格局结论是什么，为什么成立，为什么其他候选没有成立，以及哪里存在不能安全消除的歧义？**
 
@@ -31,14 +33,14 @@ Proposed Pattern Schema：`traditional-pattern-result/1.0.0`
 - 吉凶 / 富贵等级；
 - 为 10 类人格服务的分类器。
 
-正确链路：
+正式目标链路：
 
 ```text
 BirthProfile
 ↓
 Bazi calendar / chart facts
 ↓
-Traditional structural evaluators
+Bazi Traditional Layer
 ↓
 TraditionalPatternResult
   + Evidence
@@ -53,11 +55,7 @@ Public Personality
 
 ---
 
-# 2. Architecture Ownership（架构归属）
-
-## 2.1 Owner
-
-正式提议：
+# 2. Architecture Ownership（架构归属）— TP-01 APPROVED
 
 ```text
 OWNER = BAZI_TRADITIONAL_LAYER
@@ -72,7 +70,9 @@ modules/birth
   owns birth normalization / timezone resolution
 
 modules/bazi
-  owns chart facts + traditional structural facts + TraditionalPatternResult
+  owns deterministic Bazi facts
+  owns traditional structural facts
+  owns TraditionalPatternResult
 
 modules/interpretation
   consumes TraditionalPatternResult
@@ -82,16 +82,14 @@ LLM
   never adjudicates TraditionalPatternResult
 ```
 
-## 2.2 Forbidden dependency direction
-
-必须保持：
+硬依赖规则：
 
 ```text
-modules/bazi/traditional-pattern
-  MUST NOT import modules/interpretation
+modules/bazi/traditional-pattern/**
+MUST NOT import modules/interpretation/**
 ```
 
-`TraditionalPatternResult` 不允许读取：
+传统层不得读取：
 
 ```text
 PersonalityDimensions
@@ -107,26 +105,51 @@ conversion analytics
 LLM output
 ```
 
-## 2.3 Do not silently reuse legacy `BaziDerivedFeatures`
+---
 
-当前 `BaziDerivedFeatures` 中存在：
+# 3. Legacy `BaziDerivedFeatures` Authority Clarification — TP-02 APPROVED
+
+Bazi Engine 继续是 deterministic Bazi facts（确定性八字事实）的 canonical owner（规范所有者）。
+
+但当前 legacy `BaziDerivedFeatures` 中以下字段 / 语义：
 
 ```text
-legacy dayMasterStrength
-engineering elementDistribution
-engineering tenGodDistribution
-support_ratio-derived context
+dayMasterStrength
+elementDistribution
+tenGodDistribution
+support-ratio-derived semantics
+confidence
+month multiplier / hidden-stem numeric scoring inputs
 ```
 
-这些可继续作为 legacy / analytics / Interpretation 输入，但不得成为 `TraditionalPatternResult` authority。
+已经由 Rule Audit + `ziping-v1.0.0` 明确限定为：
 
-因此 V1 `TraditionalPatternInput` **不接收 `BaziDerivedFeatures`**。
+```text
+legacy engineering / compatibility / analytics / Interpretation support
+```
+
+它们 **不是**：
+
+```text
+Traditional Pattern authority
+qualitative traditional strength authority
+Month Host authority
+formation / follow verdict authority
+```
+
+因此：
+
+```text
+TraditionalPatternInput MUST NOT accept BaziDerivedFeatures
+```
+
+历史 D-010 中关于“canonical traditional facts”的 authority 语义由本 Spec 对应的 Approved Decision supersede / clarify；D-010 中“Bazi Engine owns deterministic facts，Interpretation 不建立第二套计算”的 ownership / anti-duplication 原则继续有效。
+
+本轮不删除任何 legacy fields。
 
 ---
 
-# 3. Input Contract（输入契约）
-
-## 3.1 Proposed input
+# 4. Input Contract（输入契约）
 
 ```ts
 export interface TraditionalPatternInput {
@@ -137,22 +160,25 @@ export interface TraditionalPatternInput {
 }
 ```
 
-为什么需要 `BirthProfile`：
+需要 `BirthProfile` 的原因：
 
 - `birthTimePrecision` 用于 unknown / approximate ambiguity；
-- `birthTime` 用于 23:00 / 00:00 边界；
-- `birthPlace.coordinates` 可用于未来仅做 true-solar-time boundary comparator（边界比较器），不改变 V1 authority；
-- `resolvedBirthInstant` / historical offset 用于可复现性与 DST ambiguity。
+- `birthTime` 用于 23:00 / 00:00 boundary reasoning；
+- `resolvedBirthInstant` / historical offset 用于 DST 可复现性；
+- 未来若 source 明确提供 uncertainty range，可由专门字段 / adapter 进入，不从 `approximate` 自造窗口；
+- `birthPlace.coordinates` 仅可供 future true-solar-time boundary comparator，不改变 V1 authority。
 
-为什么不直接只传 `BaziCalculationResult`：
+当前不直接用整个 `BaziCalculationResult` 作为 authority input，因为：
 
-- `BaziCalculationResult` 当前不保留完整 birth precision / coordinates；
-- `derivedFeatures` 含 legacy numeric model，不应成为该函数的隐式输入；
-- `luck` 不属于本轮格局判断必需输入。
+- 它隐含 legacy `derivedFeatures`；
+- `luck` 不属于本轮格局判断必要输入；
+- Phase A/B 需要独立 shadow migration。
 
-## 3.2 Input profile guard
+---
 
-正式实现必须有 fail-closed（失败关闭）守卫：
+# 5. Rule Profile Guard（规则版本守卫）
+
+Production implementation 必须 fail closed：
 
 ```text
 calculationMetadata.rule_profile_version
@@ -163,44 +189,42 @@ ziping-v1.0.0
 否则：
 
 ```text
-DO NOT silently reinterpret legacy chart
-DO NOT auto-upgrade civil-local-jieqi-v1
-```
-
-推荐抛出 typed error：
-
-```text
 RULE_PROFILE_MISMATCH
 ```
 
-## 3.3 Current implementation prerequisite
+并且：
 
-当前 production `modules/bazi/engine.ts` 仍输出：
+```text
+DO NOT silently reinterpret civil-local-jieqi-v1
+DO NOT auto-upgrade legacy chart
+DO NOT label legacy result as ziping-v1.0.0
+```
+
+当前 production `calculateBazi` 仍输出：
 
 ```text
 civil-local-jieqi-v1
 ```
 
-且当前 23:00–23:59 hour stem 仍从 same civil-day day stem 推导。
+当前 23:00–23:59 hour stem 仍按 same civil-day day stem 起时，与 frozen night-Zi split semantics 不一致。
 
-这与已冻结：
+所以 **Production Build 已允许开始，但 authority runtime 在 versioned `ziping-v1.0.0` calculation path 建立前必须继续被 guard 阻断。**
+
+Build 的前置实现包括：
 
 ```text
-ziping-v1.0.0
-NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
+versioned ziping-v1.0.0 calculation path
++ frozen late-Zi hour-stem behavior
++ preserved legacy profile identity
 ```
 
-不完全一致。
-
-因此下一轮 Build 在真正调用 `TraditionalPatternResult` 前，必须先建立 **versioned ziping calculation path（版本化子平排盘路径）**，并保留 legacy result 可识别性。
-
-这是 implementation prerequisite，不是重新打开 Rule Profile 讨论。
+这属于 implementation prerequisite，不重新打开 Rule Profile。
 
 ---
 
-# 4. Output Contract（输出契约）
+# 6. Output Contract（输出契约）
 
-## 4.1 Proposed shared TypeScript contract
+## 6.1 Enums
 
 ```ts
 export type TraditionalPattern =
@@ -248,7 +272,11 @@ export type TraditionalEvidenceSufficiency =
   | "partial"
   | "insufficient"
   | "indeterminate";
+```
 
+## 6.2 Locked Result Contract
+
+```ts
 export interface TraditionalPatternResult {
   id: UUID;
   chartId: UUID;
@@ -258,13 +286,14 @@ export interface TraditionalPatternResult {
   pattern_schema_version: "traditional-pattern-result/1.0.0";
 
   patternStatus: TraditionalPatternStatus;
-  baseMonthHost: TraditionalBaseMonthHost;
+
+  baseMonthHost: TraditionalBaseMonthHost | null;
 
   primaryPattern: TraditionalPattern | null;
   secondaryPatterns: TraditionalPattern[];
   candidates: TraditionalPatternCandidate[];
 
-  formationState: TraditionalFormationState;
+  primaryFormationState: TraditionalFormationState | null;
   strengthContext: TraditionalStrengthContext;
   followStructure: TraditionalFollowStructure;
   keyCombinations: TraditionalKeyCombination[];
@@ -274,38 +303,104 @@ export interface TraditionalPatternResult {
   ambiguities: TraditionalPatternAmbiguity[];
 
   evidenceSufficiency: TraditionalEvidenceSufficiency;
-  generatedAt: ISODateTime;
+
+  // Non-semantic audit metadata only.
+  computedAt: ISODateTime;
 }
 ```
 
-## 4.2 Why no `UNKNOWN` / `NONE` Pattern enum
+---
 
-V1 提议：
+# 7. Required Revision 1 — Nullable Base Month Host
 
-```text
-primaryPattern = null
+冻结为：
+
+```ts
+baseMonthHost: TraditionalBaseMonthHost | null;
 ```
 
-配合：
+原因：unknown / approximate birth time 可能跨 exact Jie boundary，使 month branch / month command 无法安全确定。
+
+硬 invariant：
 
 ```text
-patternStatus = no_stable_single_pattern | mixed | ambiguous
+baseMonthHost = null
+=> at least one ambiguity exists where:
+   severity = material | blocking
+   AND affectedFields includes base_month_host or month_pillar
 ```
 
-表达“没有稳定主格 / 不能判断”。
-
-不把：
+禁止：
 
 ```text
-UNKNOWN
-NONE
+UNKNOWN_HOST
+NONE_HOST
+fake fallback month host
 ```
 
-伪装成一个 Traditional Pattern。
+若月令无法确定，应显式保留 null + Ambiguity。
 
-## 4.3 Deterministic identity
+---
 
-`TraditionalPatternResult.id` 必须确定性生成，建议基于：
+# 8. Required Revision 2 — Primary Formation State
+
+顶层不再使用：
+
+```text
+formationState
+```
+
+冻结为：
+
+```ts
+primaryFormationState: TraditionalFormationState | null;
+```
+
+硬 invariants：
+
+```text
+primaryPattern != null
+=> primaryFormationState != null
+
+primaryPattern == null
+=> primaryFormationState == null
+```
+
+候选级仍保留：
+
+```ts
+candidate.formationState: TraditionalFormationState;
+```
+
+这使：
+
+```text
+mixed
+no_stable_single_pattern
+ambiguous with no primary
+```
+
+不再被迫拥有一个虚假的 top-level formation state。
+
+---
+
+# 9. Required Revision 3 — Determinism vs Execution Timestamp
+
+`TraditionalPatternResult` 的 canonical semantics（规范语义）必须确定性。
+
+`computedAt` 只作为 non-semantic audit metadata（非语义审计元数据）。
+
+明确禁止 `computedAt` 参与：
+
+```text
+deterministic ID generation
+canonical equality
+canonical hash
+semantic snapshot comparison
+byte-stability assertions
+```
+
+推荐 deterministic ID 输入：
 
 ```text
 chartId
@@ -314,17 +409,164 @@ chartId
 + pattern_schema_version
 ```
 
-不得把 `Date.now()` 混入 identity。
+Canonical semantic projection（规范语义投影）定义为：
 
-`generatedAt` 沿用 deterministic calculation audit timestamp 或明确、可复现的上游 timestamp；若未来需要真实执行时间，应拆成另一个非 identity audit 字段。
+```text
+TraditionalPatternResult minus computedAt
+```
+
+Testing rule 冻结为：
+
+```text
+same semantic input
++ same engine_version
++ same rule_profile_version
++ same pattern_schema_version
+=
+same canonical semantic TraditionalPatternResult
+```
+
+不同 execution 的 `computedAt` 可以不同。
 
 ---
 
-# 5. Base Month Host Contract（月令基础 Host 契约）
+# 10. TP-03 — Versioning APPROVED
 
-`baseMonthHost` 是 `ziping-v1.0.0` 的 first-class result，因为 Owner 已明确：
+冻结：
 
-> base Host 只负责起点，不等于 final pattern verdict。
+```text
+rule_profile_version = ziping-v1.0.0
+pattern_schema_version = traditional-pattern-result/1.0.0
+```
+
+三层版本职责：
+
+```text
+engine_version
+  = deterministic implementation version
+
+rule_profile_version
+  = traditional rule semantics version
+
+pattern_schema_version
+  = TraditionalPatternResult JSON / TypeScript shape version
+```
+
+Compatibility：
+
+```text
+traditional verdict semantics change
+=> bump rule_profile_version
+
+result shape / serialization change only
+=> bump pattern_schema_version
+
+engine implementation changes when appropriate
+=> bump engine_version
+```
+
+禁止 `latest / final / new` 作为版本语义。
+
+---
+
+# 11. TP-04 — No UNKNOWN / NONE Pattern Sentinel APPROVED
+
+Traditional Pattern enum 不包含：
+
+```text
+UNKNOWN
+NONE
+```
+
+无法稳定确定主格时：
+
+```text
+primaryPattern = null
++ typed patternStatus
++ evidence / counterEvidence / ambiguities
+```
+
+合法状态包括：
+
+```text
+mixed
+no_stable_single_pattern
+ambiguous
+```
+
+null 表示“没有安全 final primary”，不是一个传统格局类型。
+
+---
+
+# 12. Pattern Status（格局状态）
+
+## `clear_single`
+
+```text
+primaryPattern != null
+secondaryPatterns.length = 0
+primaryFormationState != null
+```
+
+## `primary_with_secondary`
+
+```text
+primaryPattern != null
+secondaryPatterns.length >= 1
+primaryFormationState != null
+```
+
+secondary 必须有独立传统结构 evidence，不是第二高分。
+
+## `mixed`
+
+典型：多个 material candidates 竞争，强判单一格会丢失结构事实。
+
+推荐：
+
+```text
+primaryPattern = null
+primaryFormationState = null
+candidates.length >= 2
+```
+
+若未来某 mixed case 仍能明确 primary，应通过 schema / rule review 后调整，不能随意破 invariant。
+
+## `no_stable_single_pattern`
+
+```text
+primaryPattern = null
+primaryFormationState = null
+```
+
+表示有结构 facts，但没有候选可安全成为 final primary。
+
+## `follow_structure`
+
+只允许：
+
+```text
+primaryPattern = follow_wealth | follow_killing
+primaryFormationState != null
+followStructure.status = confirmed
+```
+
+## `ambiguous`
+
+material / blocking ambiguity 影响 final primary 时使用。
+
+若无 final primary：
+
+```text
+primaryPattern = null
+primaryFormationState = null
+```
+
+informational ambiguity 本身不强制整个 result 变 ambiguous。
+
+---
+
+# 13. Base Month Host Contract（月令基础 Host）
 
 ```ts
 export type HiddenQiLayer = "main" | "middle" | "residual";
@@ -353,18 +595,26 @@ export interface TraditionalBaseMonthHost {
 }
 ```
 
-不允许：
+`ziping-v1.0.0` base Host 路径：
 
 ```text
-baseMonthHost.patternCandidate
-=> directly copy to primaryPattern
+month branch
+→ ordered hidden qi main > middle > residual
+→ exposure
+→ base Host
 ```
 
-必须经过：
+但：
+
+```text
+base Host != final pattern verdict
+```
+
+后续必须继续检查：
 
 ```text
 relations / transformation
-roots / strength
+roots / qualitative strength
 formation support
 formation damage
 rescue
@@ -373,140 +623,7 @@ mixed / follow adjudication
 
 ---
 
-# 6. Pattern Enums（格局枚举）
-
-## 6.1 V1 final-capable patterns
-
-```text
-ZHENG_GUAN
-QI_SHA
-ZHENG_CAI
-PIAN_CAI
-ZHENG_YIN
-PIAN_YIN
-SHI_SHEN
-SHANG_GUAN
-JIAN_LU
-YUE_JIE
-YANG_REN
-FOLLOW_WEALTH
-FOLLOW_KILLING
-```
-
-Machine serialization 使用 lower snake case：
-
-```text
-zheng_guan
-qi_sha
-...
-```
-
-## 6.2 Public Personality names forbidden here
-
-以下不得进入 Traditional Pattern enum：
-
-```text
-犟种
-撒币
-享乐主义
-天生反骨
-抠抠搜搜
-搞钱圣体
-老干部
-狠人
-活菩萨
-道长
-```
-
-这些属于 Translation Layer。
-
-## 6.3 Deferred special structures
-
-从儿、从势、从强、专旺、假从、化气等可出现在：
-
-```text
-followStructure candidateKind
-ambiguities
-structured evidence
-```
-
-但 **不得** 在 `ziping-v1.0.0` 作为 final `TraditionalPattern` 扩枚举，除非未来 bump rule profile。
-
----
-
-# 7. Pattern Status（格局状态）
-
-## 7.1 `clear_single`
-
-条件语义：
-
-- 一个 final primary pattern 成立；
-- 没有独立到足以成为 secondary 的竞争结构；
-- material ambiguity 不影响主格结论。
-
-Contract invariant：
-
-```text
-primaryPattern != null
-secondaryPatterns.length = 0
-```
-
-## 7.2 `primary_with_secondary`
-
-- 一个 primary 有明确 Host + formation 优先级；
-- 至少一个 secondary 有独立传统结构依据；
-- secondary 不是“第二高分”。
-
-Invariant：
-
-```text
-primaryPattern != null
-secondaryPatterns.length >= 1
-```
-
-## 7.3 `mixed`
-
-- 至少两个 material candidates 形成实质竞争；
-- 当前 profile 不允许以任意 tie-break 强制纯化。
-
-推荐 invariant：
-
-```text
-primaryPattern = null
-candidates.length >= 2
-```
-
-## 7.4 `no_stable_single_pattern`
-
-- 有结构 facts，但没有候选能安全成为稳定 final primary；
-- 不等于“没有十神”。
-
-Invariant：
-
-```text
-primaryPattern = null
-```
-
-## 7.5 `follow_structure`
-
-仅允许：
-
-```text
-primaryPattern = follow_wealth | follow_killing
-followStructure.status = confirmed
-```
-
-## 7.6 `ambiguous`
-
-只有 **material ambiguity 会改变 pattern verdict** 时才把整体 status 提升为 `ambiguous`。
-
-存在 non-material ambiguity 不必强制整盘变成 `ambiguous`；可在 `ambiguities[]` 保留，同时维持 clear / primary_with_secondary。
-
----
-
-# 8. Pattern Candidate Contract（候选格局契约）
-
-为了回答“为什么不是另一个格”，必须保存结构化 candidate，而不是只保存 winner。
+# 14. Pattern Candidate Contract（候选格局）
 
 ```ts
 export type TraditionalCandidateState =
@@ -532,117 +649,56 @@ export interface TraditionalPatternCandidate {
 }
 ```
 
-数组顺序不是“力量排名”。
-
-建议 canonical serialization 按固定 enum order 排序，避免把 array order 误读成 numeric strength。
+数组顺序不得代表“力量排名”。Canonical serialization 应使用固定 enum order / deterministic ordering。
 
 ---
 
-# 9. Formation State（成败破救）
-
-## 9.1 `formed_clear`
-
-Host 明确；该 pattern 的 required structural conditions 成立；没有 material damage 足以改变结构。
-
-## 9.2 `formed_impure`
-
-格局基本成立，但存在：
-
-- competing structure；
-- mixed qi；
-- material-but-not-fatal counter evidence；
-- 需要保留的不纯因素。
-
-## 9.3 `failed`
-
-候选 Host 存在，但 **从未满足成格所需的关键正向条件**。
-
-关键词：
+# 15. Formation State（成败破救）
 
 ```text
-candidate never reached stable formation
+formed_clear
+formed_impure
+failed
+broken
+broken_rescued
+not_formed
+ambiguous
 ```
 
-## 9.4 `broken`
+语义：
 
-候选曾满足基本 formation 条件，但存在明确 `FORMATION_DAMAGE`，使其不能继续作为成立格局。
+- `formed_clear`：Host / required formation 成立，无足以改变结构的 material damage；
+- `formed_impure`：基本成立，但存在 competing / impure / material-but-not-fatal evidence；
+- `failed`：候选存在，但从未满足关键 formation requirements；
+- `broken`：已经存在 formation basis，后被 material damage 破坏；
+- `broken_rescued`：存在 material damage，同时存在该 pattern 允许的明确传统 rescue；
+- `not_formed`：不满足基本 candidate / formation requirements；
+- `ambiguous`：输入、transformation 或 coverage 不足，无法安全裁决。
 
-关键词：
+硬 invariant：
 
 ```text
-formed basis exists
-+ material damage invalidates it
+candidate.formationState = broken
+=> formation_damage evidence exists
+
+candidate.formationState = broken_rescued
+=> formation_damage evidence exists
+AND rescue evidence exists
 ```
 
-因此：
+禁止：
 
 ```text
-FAILED != BROKEN
+good evidence +1
+bad evidence -1
+score >= threshold => formed
 ```
 
-## 9.5 `broken_rescued`
-
-必须同时存在：
-
-```text
-FORMATION_DAMAGE evidence
-+
-RESCUE evidence
-```
-
-且 rescue rule 是该 pattern 在 `ziping-v1.0.0` / source catalog 中明确允许的结构救应，不是“另一个吉神出现”。
-
-Invariant：
-
-```text
-at least one damage evidence key
-at least one rescue evidence key
-```
-
-## 9.6 `not_formed`
-
-该候选不满足基本 pattern candidate / host requirements，或结果层没有稳定 final formation。
-
-## 9.7 `ambiguous`
-
-输入不足、relation transformation unresolved、school-sensitive fact 或 V1 rule coverage 不足，导致 formation 无法安全裁决。
-
-## 9.8 Pattern-specific evaluator requirement
-
-禁止实现：
-
-```text
-all good evidence +1
-all bad evidence -1
-score >= X => formed
-```
-
-推荐接口：
-
-```ts
-interface PatternRuleSet {
-  pattern: TraditionalPattern;
-  candidateRules: RuleId[];
-  requiredFormationRules: RuleId[];
-  supportingRules: RuleId[];
-  damageRules: RuleId[];
-  rescueRules: RuleId[];
-}
-
-type RuleOutcome =
-  | "matched"
-  | "not_matched"
-  | "unresolved"
-  | "not_applicable";
-```
-
-Formation state 由 **规则条件逻辑** 产生，不由加权总分产生。
+Formation 必须 pattern-specific。
 
 ---
 
-# 10. Strength Context（旺衰上下文）
-
-## 10.1 Contract
+# 16. Strength Context（旺衰上下文）— TP-05 RELATED
 
 ```ts
 export type TraditionalStrengthFactorType =
@@ -679,9 +735,7 @@ export interface TraditionalStrengthContext {
 }
 ```
 
-## 10.2 Locked semantics
-
-必须看：
+必须依据：
 
 ```text
 得令
@@ -690,19 +744,7 @@ export interface TraditionalStrengthContext {
 生克制化
 ```
 
-禁止：
-
-```text
-support_ratio authority
-0.58 / 0.42
-63.7% 身强
-month × 1.5
-hidden qi numeric percentage authority
-```
-
-## 10.3 Root evidence
-
-根气必须保留层级：
+根气保留：
 
 ```text
 ROOT_MAIN_QI
@@ -710,27 +752,28 @@ ROOT_MIDDLE_QI
 ROOT_RESIDUAL_QI
 ```
 
-层级是结构分类，不转换成人造权重。
+禁止作为 Traditional authority：
+
+```text
+support_ratio
+0.58 / 0.42
+numeric strength percentage
+month × 1.5
+hidden qi numeric percentage
+legacy confidence
+```
 
 ---
 
-# 11. Evidence Contract（证据契约）
+# 17. Evidence Contract（证据契约）
 
-## 11.1 Principle
-
-每一个 final conclusion 都必须可追踪到：
+每个 final conclusion 必须可追踪到：
 
 ```text
-deterministic chart fact
-+
-ruleId
-+
-ziping-v1.0.0
+deterministic fact
++ stable ruleId
++ ziping-v1.0.0
 ```
-
-Evidence 不使用 free-form prose 作为 authority。
-
-## 11.2 Vocabulary
 
 ```ts
 export type TraditionalEvidenceType =
@@ -767,11 +810,7 @@ export type TraditionalEvidenceType =
   | "rescue"
   | "follow_condition"
   | "follow_blocker";
-```
 
-## 11.3 Structured source / target
-
-```ts
 export interface TraditionalEvidenceSource {
   pillar?: BaziPillarPosition;
   stem?: HeavenlyStem;
@@ -788,11 +827,7 @@ export interface TraditionalEvidenceTarget {
   formationState?: TraditionalFormationState;
   followKind?: TraditionalFollowCandidateKind;
 }
-```
 
-## 11.4 Evidence record
-
-```ts
 export type TraditionalEvidenceEffect =
   | "establishes"
   | "supports"
@@ -809,45 +844,28 @@ export interface TraditionalPatternEvidence {
   effect: TraditionalEvidenceEffect;
   source: TraditionalEvidenceSource;
   target: TraditionalEvidenceTarget;
-
   ruleId: string;
   descriptionCode: string;
 }
 ```
 
-## 11.5 No authority weight in V1 evidence
+V1 Evidence shared contract **不提供 numeric weight**。
 
-V1 shared Evidence contract **不提供 numeric `weight` 字段**。
-
-如果 UI 将来需要排序，可以在 presentation layer 使用：
+Evidence ID 必须 deterministic，推荐包含：
 
 ```text
-displayPriority
-```
-
-但该字段不得进入 Traditional Pattern authority，也不得存成“传统权重”。
-
-## 11.6 Evidence IDs
-
-建议 deterministic：
-
-```text
-hash / deterministicUuid(
-  chartId
-  + rule_profile_version
-  + pattern_schema_version
-  + ruleId
-  + evidence type
-  + structured source
-  + structured target
-)
+chartId
++ rule_profile_version
++ pattern_schema_version
++ ruleId
++ evidence type
++ structured source
++ structured target
 ```
 
 ---
 
-# 12. Counter Evidence Contract（反证契约）
-
-Counter Evidence 是 first-class data，不是一个 `reason: string`。
+# 18. Counter Evidence Contract（反证契约）
 
 ```ts
 export type TraditionalCounterEvidenceType =
@@ -869,28 +887,19 @@ export interface TraditionalPatternCounterEvidence {
   source: TraditionalEvidenceSource;
   targetPattern: TraditionalPattern;
   effect: "damages" | "blocks" | "competes" | "unresolved";
-
   ruleId: string;
   descriptionCode: string;
   evidenceKeys: string[];
 }
 ```
 
-用途：
+用途：Debug、QA、专业报告、Rule Audit，以及解释“为什么不是另一个格”。
 
-- Debug：为什么不是这个格；
-- QA：候选为什么 rejected / broken；
-- 专业报告：展示可读传统依据；
-- Rule Audit：回溯 ruleId；
-- Translation：理解结构复杂度，但不得修改传统结论。
+Counter Evidence 不是人格缺点标签。
 
 ---
 
-# 13. Ambiguity Contract（歧义契约）
-
-## 13.1 Codes
-
-至少支持：
+# 19. Ambiguity Contract（歧义契约）
 
 ```ts
 export type TraditionalPatternAmbiguityCode =
@@ -906,28 +915,12 @@ export type TraditionalPatternAmbiguityCode =
   | "follow_structure_uncertain"
   | "school_disagreement"
   | "insufficient_evidence";
-```
 
-`school_sensitivity_late_zi` 来自 locked Rule Profile；`late_zi_boundary` 用于实际时间精度跨 23:00 / 00:00 边界的输入不确定性。
-
-## 13.2 Severity
-
-```ts
 export type TraditionalAmbiguitySeverity =
   | "informational"
   | "material"
   | "blocking";
-```
 
-定义：
-
-- `informational`：记录流派敏感性，但不改变当前 profile verdict；
-- `material`：可能改变 secondary / formation / combination，但当前 primary 仍可保留；
-- `blocking`：可能改变 primary pattern / chart facts，必须阻止 final verdict。
-
-## 13.3 Affected fields
-
-```ts
 export type TraditionalPatternAffectedField =
   | "year_pillar"
   | "month_pillar"
@@ -936,15 +929,11 @@ export type TraditionalPatternAffectedField =
   | "base_month_host"
   | "primary_pattern"
   | "secondary_patterns"
-  | "formation_state"
+  | "primary_formation_state"
   | "strength_context"
   | "follow_structure"
   | "key_combinations";
-```
 
-## 13.4 Record
-
-```ts
 export interface TraditionalPatternAmbiguity {
   id: string;
   code: TraditionalPatternAmbiguityCode;
@@ -955,28 +944,50 @@ export interface TraditionalPatternAmbiguity {
 }
 ```
 
-## 13.5 Approximate time policy
+Severity：
 
-当前 `BirthTimePrecision = approximate` 没有 `±N minutes` uncertainty interval。
-
-因此 V1 implementation **不得自行发明 ±15 / ±30 / ±60 分钟**。
-
-提议：
-
-```text
-approximate time with no explicit uncertainty range
-=> approximate_time_unbounded
-```
-
-若该不确定性会影响 hour / day / Jie / LiChun 等关键边界，则 severity 升为 material / blocking。
-
-该项属于 Contract implementation policy，需 Spec Review 时确认。
+- `informational`：记录流派敏感性，不改变本 profile verdict；
+- `material`：可能改变 secondary / formation / combination；
+- `blocking`：可能改变 chart fact / base Host / primary，必须阻止 final verdict。
 
 ---
 
-# 14. Relation / Transformation Contract（合冲刑害与合化状态）
+# 20. TP-06 — Approximate Birth Time APPROVED
 
-## 14.1 Current gap
+`BirthTimePrecision = approximate` 本身不代表任何确定的 `±N minutes`。
+
+禁止自行发明：
+
+```text
+±15
+±30
+±60 minutes
+```
+
+冻结规则：
+
+```text
+explicit uncertainty range supplied by user/source
+=> use that explicit range
+
+no explicit range
+=> approximate_time_unbounded
+```
+
+如果不确定性可能跨：
+
+```text
+hour boundary
+day boundary
+LiChun
+Jie
+```
+
+则 ambiguity 升级为 material / blocking。
+
+---
+
+# 21. Relation / Transformation Contract
 
 当前 `BaziRelationKind` 只有：
 
@@ -987,7 +998,7 @@ branch_clash
 branch_harm
 ```
 
-`ziping-v1.0.0` implementation 至少还需要：
+`ziping-v1.0.0` Build 至少需要补：
 
 ```text
 three_harmony
@@ -996,9 +1007,7 @@ punishment
 break
 ```
 
-## 14.2 Existence != transformation
-
-必须拆开：
+关系存在与合化必须拆开：
 
 ```ts
 export type TraditionalTransformationState =
@@ -1007,15 +1016,13 @@ export type TraditionalTransformationState =
   | "not_transformed";
 ```
 
-关系存在不能默认等于已经合化。
-
-推荐未来扩展 relation fact：
+推荐 structural fact：
 
 ```ts
 interface TraditionalRelationFact {
   id: string;
-  kind: ...;
-  participants: ...;
+  kind: string;
+  participants: unknown[];
   transformationState: TraditionalTransformationState;
   transformedElement?: FiveElement;
   evidenceKeys: string[];
@@ -1023,15 +1030,13 @@ interface TraditionalRelationFact {
 }
 ```
 
-`transformationState = unresolved` 必须可传播到 Pattern ambiguity。
+`unresolved` 必须传播到 Ambiguity；关系存在不能默认等于完成合化。
 
 ---
 
-# 15. Combination Contract（组合结构契约）
+# 22. Combination Contract（组合结构）
 
-## 15.1 Directional enum
-
-严格保留 `ziping-v1.0.0` 已冻结的 Host direction：
+严格保留 Host direction：
 
 ```ts
 export type TraditionalCombinationType =
@@ -1044,11 +1049,7 @@ export type TraditionalCombinationType =
   | "resource_protects_officer"
   | "wealth_generates_officer"
   | "shang_guan_with_resource";
-```
 
-## 15.2 Result
-
-```ts
 export type TraditionalCombinationState =
   | "candidate"
   | "validated"
@@ -1059,42 +1060,27 @@ export interface TraditionalKeyCombination {
   id: string;
   type: TraditionalCombinationType;
   state: TraditionalCombinationState;
-
   hostPattern: TraditionalPattern;
   actorPattern?: TraditionalPattern;
   targetPattern?: TraditionalPattern;
-
   evidenceKeys: string[];
   counterEvidenceKeys: string[];
   ambiguityKeys: string[];
 }
 ```
 
-## 15.3 Direction invariants
-
-必须测试：
+必须证明：
 
 ```text
-RESOURCE_PROTECTS_OFFICER
-!=
-OFFICER_GENERATES_RESOURCE
-
-RESOURCE_TRANSFORMS_QI_SHA
-!=
-QI_SHA_GENERATES_RESOURCE
-
-SHANG_GUAN_GENERATES_WEALTH
-!=
-wealth host receiving output generation
+RESOURCE_PROTECTS_OFFICER != OFFICER_GENERATES_RESOURCE
+RESOURCE_TRANSFORMS_QI_SHA != QI_SHA_GENERATES_RESOURCE
+SHANG_GUAN_GENERATES_WEALTH preserves host direction
+SHI_SHEN_CONTROLS_QI_SHA preserves host direction
 ```
-
-不能因为同样两个 Ten Gods 出现就折叠成无方向组合。
 
 ---
 
-# 16. Follow Structure Contract（从格契约）
-
-## 16.1 Status
+# 23. Follow Structure Contract（从格）
 
 ```ts
 export type TraditionalFollowStatus =
@@ -1103,11 +1089,7 @@ export type TraditionalFollowStatus =
   | "confirmed"
   | "rejected"
   | "ambiguous";
-```
 
-## 16.2 Candidate kinds
-
-```ts
 export type TraditionalFollowCandidateKind =
   | "follow_wealth"
   | "follow_killing"
@@ -1117,27 +1099,7 @@ export type TraditionalFollowCandidateKind =
   | "specialized_strength"
   | "fake_follow"
   | "other_deferred";
-```
 
-只有：
-
-```text
-follow_wealth
-follow_killing
-```
-
-允许 `status = confirmed` 并进入 final `TraditionalPattern`。
-
-其他 candidate kind：
-
-```text
-candidate / ambiguous / rejected only
-never final primaryPattern in ziping-v1.0.0
-```
-
-## 16.3 Contract
-
-```ts
 export interface TraditionalFollowStructure {
   status: TraditionalFollowStatus;
   candidateKind?: TraditionalFollowCandidateKind;
@@ -1152,29 +1114,24 @@ export interface TraditionalFollowStructure {
 }
 ```
 
-## 16.4 Confirmed invariants
+只有：
 
-`confirmed` 至少要求：
+```text
+follow_wealth
+follow_killing
+```
 
-- 无 material root 足以破从；
-- 无有效印比形成自立；
-- 所从方向形成连续主导结构；
-- transformation / formation evidence 不逆向；
-- 无 material mixed evidence 破坏结论。
+允许 `confirmed` + final primaryPattern。
 
-不得通过 numeric weakness threshold 自动 confirm。
+Material root、有效印比、自立条件、mixed evidence 均可否决从格。
+
+禁止 numeric weakness threshold 自动确认从格。
 
 ---
 
-# 17. Evidence Sufficiency（证据充分度）
+# 24. TP-05 — Evidence Sufficiency APPROVED
 
-V1 不建议使用 0–1 `confidence` 数字，因为很容易被误解为：
-
-```text
-“这个格局有 83% 概率”
-```
-
-提议使用：
+冻结：
 
 ```text
 sufficient
@@ -1183,161 +1140,27 @@ insufficient
 indeterminate
 ```
 
-语义只代表：
+只表示：
 
-> **当前 frozen rules + available deterministic facts 是否足够支持该结论。**
+> 当前 `ziping-v1.0.0` + available deterministic facts 是否足够支持该结论。
 
-它不是命理概率，也不是人格准确率。
-
----
-
-# 18. Versioning（版本）
-
-必须拆分：
+它不是：
 
 ```text
-engine_version
-rule_profile_version
-pattern_schema_version
-```
-
-分别回答：
-
-- `engine_version`：哪个 deterministic engine implementation；
-- `rule_profile_version`：采用哪一套传统规则；
-- `pattern_schema_version`：结果 JSON / TypeScript contract 结构版本。
-
-V1 提议：
-
-```text
-rule_profile_version = ziping-v1.0.0
-pattern_schema_version = traditional-pattern-result/1.0.0
-```
-
-禁止：
-
-```text
-latest
-final
-new
-```
-
-## 18.1 Compatibility rule
-
-任何改变传统判定语义：
-
-```text
-bump rule_profile_version
-```
-
-只改变 result field / serialization，不改变命理语义：
-
-```text
-bump pattern_schema_version
-```
-
-Engine refactor 但结果语义不变：
-
-```text
-bump engine_version when appropriate
+格局概率
+准确率
+人格概率
+0-1 confidence
+percentage
 ```
 
 ---
 
-# 19. Shared Domain Impact（共享契约影响）
+# 25. Rule Trace / Observability（调试轨迹）
 
-下一轮 Build 建议新增：
+Durable explainability 由 Evidence / Counter Evidence / Ambiguity 承担。
 
-```text
-types/domain/traditional-pattern.ts
-```
-
-并从：
-
-```text
-types/domain/index.ts
-```
-
-export。
-
-建议 shared types：
-
-```text
-TraditionalPatternResult
-TraditionalPattern
-TraditionalPatternStatus
-TraditionalFormationState
-TraditionalStrengthContext
-TraditionalPatternEvidence
-TraditionalPatternCounterEvidence
-TraditionalPatternAmbiguity
-TraditionalKeyCombination
-TraditionalFollowStructure
-TraditionalBaseMonthHost
-```
-
-## 19.1 Do not immediately break `BaziCalculationResult`
-
-V1 第一阶段不建议直接把 `traditionalPattern` 设为 `BaziCalculationResult` required field，因为：
-
-- existing tests / persistence / public session bundle 都依赖当前 shape；
-- legacy results 仍是 `civil-local-jieqi-v1`；
-- shadow compare 需要新旧结果并存。
-
-推荐先独立生成：
-
-```text
-TraditionalPatternResult(chartId keyed)
-```
-
-后续可新增组合 read model：
-
-```ts
-interface TraditionalBaziAnalysisResult {
-  calculation: BaziCalculationResult;
-  traditionalPattern: TraditionalPatternResult;
-}
-```
-
-是否最终把它纳入 `BaziCalculationResult` required contract，留到 persistence / consumer integration Review 再决定。
-
-## 19.2 Future consumers
-
-### Bazi Engine
-
-producer / authority。
-
-### Supabase persistence
-
-未来建议 first-class persistence，以：
-
-```text
-chart_id
-+ rule_profile_version
-+ pattern_schema_version
-```
-
-可追踪；本轮和下一核心 Build 不要求 Supabase Live。
-
-### Interpretation
-
-只消费结果；不得重算 pattern。
-
-### AI ContextAssembler
-
-未来只把 structured TraditionalPatternResult + selected evidence packet 提供给 LLM；LLM 不可修改 verdict。
-
-### Result UI
-
-只消费 translation layer / professional evidence view，不直接把 raw debug trace 全展示公网。
-
----
-
-# 20. Rule Trace / Observability（调试轨迹）
-
-Evidence 已承担 durable explainability（持久可解释性）。
-
-仍建议提供 **module-local debug trace**，但不进入 shared Public Result contract：
+Module-local 可以另有 debug trace：
 
 ```ts
 export interface TraditionalPatternRuleTraceEntry {
@@ -1360,30 +1183,14 @@ export interface TraditionalPatternRuleTraceEntry {
 }
 ```
 
-推荐 API：
+Debug trace：
 
-```ts
-calculateTraditionalPattern(input)
-// production result only
-
-evaluateTraditionalPatternDebug(input)
-// { result, ruleTrace }
-```
-
-`ruleTrace`：
-
-- 可用于 tests / local debug / QA；
+- 不进入 Public Result shared contract；
 - 不默认持久化；
 - 不发给公网用户；
-- 不允许包含 Personality / LLM reasoning。
+- 不包含 Personality / LLM chain-of-thought。
 
----
-
-# 21. Rule ID Contract（规则编号）
-
-为了 Evidence 可审计，下一轮 Build 必须建立稳定 rule IDs。
-
-建议 namespace：
+Rule ID namespace 建议：
 
 ```text
 ZP-CAL-xxx
@@ -1397,23 +1204,63 @@ ZP-FOLLOW-xxx
 ZP-AMB-xxx
 ```
 
-示例：
+---
+
+# 26. TP-07 — Shared Result Composition APPROVED WITH CONDITION
+
+Phase A / Phase B 允许：
 
 ```text
-ZP-HOST-001 main-qi-exposed
-ZP-HOST-002 middle-qi-exposed-when-main-unexposed
-ZP-HOST-003 residual-qi-exposed-fallback
-ZP-HOST-004 unexposed-main-fallback
-ZP-FOLLOW-001 material-root-breaks-follow
+BaziCalculationResult (legacy-compatible)
++
+independent TraditionalPatternResult keyed by chartId
 ```
 
-Rule ID 不是文案 code；改变规则语义需要 profile/version review。
+目的仅限：
+
+```text
+Phase A independent generation
+Phase B shadow compare
+```
+
+这不是永久架构。
+
+**Before Authority Cutover（权威切换前）必须完成 canonical boundary integration（规范边界整合）。**
+
+最终架构不得保留两个永久平行 authority trees：
+
+```text
+legacy calculation tree
+vs
+traditional result tree
+```
+
+在 Phase C / D 前必须冻结并实现一个 canonical Bazi + Traditional Result boundary，例如：
+
+```ts
+interface TraditionalBaziAnalysisResult {
+  calculation: BaziCalculationResult;
+  traditionalPattern: TraditionalPatternResult;
+}
+```
+
+或者通过后续 Shared Domain Review 将 `traditionalPattern` 纳入 canonical calculation/result boundary。
+
+无论采用哪种 shape，Authority Cutover 前必须满足：
+
+```text
+one canonical deterministic Bazi/traditional-result boundary
+one rule-profile identity chain
+no parallel competing authority
+```
+
+Supabase persistence shape 可后续独立设计，不阻塞 deterministic core implementation。
 
 ---
 
-# 22. Legacy Isolation / Migration（旧逻辑隔离 / 迁移）
+# 27. Legacy Migration（旧逻辑迁移）
 
-当前公网真实路径仍是：
+当前公网：
 
 ```text
 calculateBazi
@@ -1424,160 +1271,125 @@ calculateBazi
 → Public Personality
 ```
 
-不能在新 engine 第一天删除旧逻辑。
-
 ## Phase A — Independent Traditional Result
 
 ```text
-new ziping calculation path
+versioned ziping calculation path
 → TraditionalPatternResult
 ```
 
-- 独立生成；
 - 不接 Public Personality；
-- legacy public experience 继续工作；
-- 新结果不得读取 legacy candidate。
+- legacy site 继续工作；
+- 新结果不读取 legacy candidate。
 
-## Phase B — Shadow Compare（影子对比）
+## Phase B — Shadow Compare
 
-对同一 fixture / opt-in dev flow 同时生成：
+同时生成：
 
 ```text
-new TraditionalPatternResult
+TraditionalPatternResult
 vs
 legacy ArchetypeCandidate
 ```
 
-比较目的：
-
-- 找 migration impact；
-- 找旧 authority 漂移；
-- 找代码 bug。
+仅用于：migration impact、authority drift、bug detection。
 
 禁止：
 
 ```text
-“哪个更像用户反馈” -> 修改 traditional verdict
+user says legacy feels more accurate
+=> change traditional rules
 ```
 
-Shadow disagreement 不是新规则的失败证据。
-
-## Phase C — Translation Layer
+## Phase C — Translation Layer + Canonical Boundary Integration
 
 建立：
 
 ```text
 TraditionalPatternResult
-→ explicit translation rule
+→ explicit translation rules
 → Public Personality
 ```
 
-此阶段才允许 Public Personality 开始消费新结果。
+同时完成 TP-07 要求的 canonical Bazi / Traditional Result boundary。
 
 ## Phase D — Authority Cutover
 
-满足以下 Gate 后：
+Gate：
 
-- Rule / Golden tests 通过；
-- Spec 已 Freeze；
-- TraditionalPatternResult implementation Review 通过；
-- Public translation mapping Review 通过；
-- Result / Share regression 通过；
+- Rule / Golden tests pass；
+- Spec LOCKED；
+- TraditionalPatternResult implementation Review passes；
+- canonical boundary integrated；
+- Translation mapping Review passes；
+- Result / Share regression passes。
 
-才把公网 authoritative source 从：
-
-```text
-ArchetypeCandidate.dominant_ten_god
-```
-
-切到：
+然后才把公网 authority 从 legacy candidate 切到：
 
 ```text
 TraditionalPatternResult
 → Translation Layer
 ```
 
-## Phase E — Legacy retirement
+## Phase E — Legacy Retirement
 
-旧 `personality-map/0.2.0` 可以：
+Authority Cutover + regression 后才允许：
 
-- 保留作 historical experiment；
-- 只继续支撑非 authority modern dimensions；
-- 或在确认无 consumer 后删除。
+- 保留 legacy 作为 historical experiment；
+- 仅用于 non-authority modern analytics；
+- 或删除无 consumer 部分。
 
-**只有 Authority Cutover + regression 完成后才允许删除。**
-
-切换后禁止 fallback：
+切换后禁止：
 
 ```text
 TraditionalPatternResult unavailable
-=> silently use old candidate as traditional answer
+=> silently fallback to legacy candidate as traditional verdict
 ```
-
-应明确返回 unavailable / ambiguous，而不是恢复旧 authority。
 
 ---
 
-# 23. Implementation Plan（实现计划）
+# 28. Implementation Plan（实现计划）
 
-本节是下一轮 Build 的顺序，不代表本轮已实现。
+Spec 已 Freeze。下一轮 Production Build 按以下顺序执行。
 
 ## Phase 1 — Contract + Profile Guard
 
-目标：只建立 shared contract 和不可越过的版本边界。
-
-计划：
-
 1. 新增 `types/domain/traditional-pattern.ts`；
 2. export shared types；
-3. 增加 `PATTERN_SCHEMA_VERSION = traditional-pattern-result/1.0.0`；
-4. 建 `modules/bazi/traditional-pattern/` skeleton；
-5. 建 `assertZipingRuleProfile()`；
-6. 编译期 / unit tests 证明 traditional layer 不 import Interpretation；
+3. `PATTERN_SCHEMA_VERSION = traditional-pattern-result/1.0.0`；
+4. 建 `modules/bazi/traditional-pattern/**` skeleton；
+5. `assertZipingRuleProfile()`；
+6. architecture test：traditional layer 不 import Interpretation；
 7. 不接公网。
 
-## Phase 2 — Ziping Calendar Compatibility + Structural Evidence
-
-目标：保证输入 chart 本身符合 locked profile，并建立基础传统 facts。
-
-计划：
+## Phase 2 — Versioned Ziping Calculation + Structural Evidence
 
 1. 建立 versioned `ziping-v1.0.0` calculation path；
-2. 实现 00:00 day boundary + night-Zi hour-stem convention；
-3. 保持 exact LiChun / exact Jie；
-4. 保持 historical IANA / DST；
-5. unknown / approximate / boundary ambiguity；
-6. Month Host evaluator；
-7. exposure evaluator；
-8. root evaluator；
-9. qualitative strength evaluator；
-10. 扩展 relations existence：三合 / 三会 / 刑 / 破；
-11. 增加 transformation state；
-12. 所有 facts 输出 Evidence。
+2. 00:00 day boundary；
+3. frozen night-Zi hour-stem semantics；
+4. exact LiChun / exact Jie；
+5. historical IANA / DST；
+6. unknown / approximate / boundary ambiguity；
+7. Month Host evaluator；
+8. exposure evaluator；
+9. root evaluator；
+10. qualitative strength evaluator；
+11. 三合 / 三会 / 刑 / 破 existence；
+12. transformation state；
+13. all facts emit structured evidence。
 
-注意：此阶段不能把 legacy support ratio 重新包装成 strength。
+**在 Phase 2 的 ziping profile path 完成前，TraditionalPatternResult authority evaluation 必须被 profile guard fail closed。**
 
 ## Phase 3 — Pattern Candidates
 
-目标：生成传统候选，不做人格。
-
-顺序：
-
 ```text
-8 regular patterns
+8 regular
 → Jianlu
 → Yuejie
 → five-yang Yangren
 ```
 
-每个 candidate 必须有：
-
-```text
-origin
-evidenceKeys
-counterEvidenceKeys
-ambiguityKeys
-```
+每个 candidate 必须有 evidence / counter / ambiguity refs。
 
 ## Phase 4 — Pattern-specific Formation
 
@@ -1587,87 +1399,57 @@ ambiguityKeys
 candidate requirements
 required formation
 support
-material damage
+damage
 rescue
 ```
 
-输出：
+禁止 generic weighted score。
 
-```text
-formed_clear
-formed_impure
-failed
-broken
-broken_rescued
-not_formed
-ambiguous
-```
+## Phase 5 — Mixed + Strict Follow
 
-必须以显式 rules + boolean / tri-state outcomes 实现；不得用总分。
-
-## Phase 5 — Mixed + Follow Structures
-
-先实现：
+实现：
 
 ```text
 primary_with_secondary
 mixed
 no_stable_single_pattern
+strict follow_wealth
+strict follow_killing
 ```
 
-再实现严格：
+其他 follow 不能 final。
 
-```text
-follow_wealth
-follow_killing
-```
+## Phase 6 — Result Assembly + Shadow
 
-其他 follow 只能 candidate / ambiguous / deferred。
-
-## Phase 6 — Result Assembly
-
-组装完整：
-
-```text
-TraditionalPatternResult
-```
-
-实现 invariants：
+组装完整 `TraditionalPatternResult`：
 
 - version guard；
-- patternStatus consistency；
+- baseMonthHost nullable invariant；
+- primaryFormationState nullable invariant；
 - evidence integrity；
 - deterministic IDs；
-- canonical array ordering；
-- no numeric authority fields。
-
-Phase A shadow integration 可以在这里加入，但仍不切 Public Personality。
+- canonical ordering；
+- canonical semantic serializer excludes computedAt；
+- shadow only；
+- 不切 Public Personality。
 
 ## Phase 7 — QA / Golden Review
 
 - unit tests；
 - golden cases；
 - boundary fixtures；
-- determinism；
+- canonical determinism；
 - rule review；
 - debug trace review；
 - shadow compare。
 
-本 Phase 结束仍然：
-
-```text
-Public Personality authority = NOT YET CUT OVER
-```
-
-下一独立 Task 才是 Translation Layer / Authority Cutover。
+完成后才进入独立 Translation / Authority Cutover Task。
 
 ---
 
-# 24. Testing Matrix（测试矩阵）
+# 29. Testing Matrix（测试矩阵）
 
-## 24.1 Calendar Boundaries
-
-必须覆盖：
+## Calendar
 
 ```text
 LiChun -1s / exact / +1s
@@ -1679,154 +1461,155 @@ Jie -1s / exact / +1s
 00:59
 01:00
 DST gap
-DST overlap occurrence A / B
+DST overlap occurrence A/B
 unknown birth time
 approximate birth time
-unknown / approximate on LiChun day
-unknown / approximate on Jie day
+unknown / approximate crossing LiChun / Jie
 ```
 
-Night Zi 必须明确断言：
+Night Zi 必须断言：
 
 ```text
 23:xx day pillar = current civil day
 23:xx hour branch = zi
-23:xx hour stem = starts from next civil day's day stem
+23:xx hour stem = next civil-day day-stem based
 00:xx day pillar = new civil day
 00:xx hour branch = zi
-00:xx hour stem = starts from new civil day's day stem
+00:xx hour stem = new civil-day day-stem based
 ```
 
-并保留旧 `civil-local-jieqi-v1` vector，证明不是 silent migration。
+保留 legacy `civil-local-jieqi-v1` vectors，证明不是 silent migration。
 
-## 24.2 Month Host
-
-至少覆盖：
+## Month Host
 
 ```text
 main qi exposed
 main unexposed + middle exposed
 main/middle unexposed + residual exposed
 none exposed -> unexposed main fallback
-multiple exposed -> main > middle > residual base Host
-competing exposure retained
-base Host unchanged even when final verdict changes later
+multiple exposure -> main > middle > residual
+base Host remains evidence even if final verdict later differs
+blocking Jie ambiguity -> baseMonthHost = null
 ```
 
-八个 regular patterns 均应至少有清晰 Host fixture。
-
-## 24.3 Self-rooted
+## Self-rooted
 
 - 10 Jianlu mappings；
-- Yuejie representative fixtures；
-- 五阳 Yangren exact mappings；
-- 五阴日主不得 auto-Yangren；
-- 比肩出现但非建禄；
-- 劫财出现但非月劫；
-- 劫财出现但非阳刃。
+- Yuejie；
+- five-yang Yangren；
+- five-yin no auto-Yangren；
+- BiJian present != Jianlu；
+- JieCai present != Yuejie / Yangren。
 
-## 24.4 Strength
+## Strength
 
-至少覆盖：
-
-- 得令但无根；
-- 失令但多根 / 多助；
-- 根被有效关系改变的 unresolved case；
+- 得令无根；
+- 失令多根 / 多助；
 - resource / peer support；
 - output / wealth drain；
 - officer / killing pressure；
 - mixed evidence；
-- ambiguous transformation。
+- transformation unresolved。
 
-断言只能检查 qualitative band + evidence，不检查百分比。
+只断言 qualitative band + evidence。
 
-## 24.5 Eight Regular Patterns
+## Pattern / Formation
 
-每类至少：
+8 regular + Jianlu / Yuejie / Yangren 至少覆盖：
 
 ```text
-clear formation
-formed impure
+formed_clear
+formed_impure
 failed
 broken
-broken rescued
+broken_rescued
 ambiguous
 ```
 
-形成规则要逐格 fixture，不用一个 generic scoring fixture 套全部。
-
-## 24.6 Mixed
+## Mixed / Follow
 
 - primary + secondary；
 - 官杀混杂；
-- 两个 material candidate 无法安全定主；
-- no stable single pattern；
-- multiple candidates ambiguity。
+- mixed；
+- no stable single；
+- strict Follow Wealth；
+- strict Follow Killing；
+- root breaks follow；
+- Resource / Peer support breaks follow；
+- fake-follow never final。
 
-## 24.7 Follow
-
-- strict Follow Wealth confirmed；
-- strict Follow Killing confirmed；
-- material root breaks follow；
-- effective Resource / Peer support breaks follow；
-- mixed structure rejects follow；
-- fake-follow candidate never final；
-- deferred follow candidate never becomes final enum。
-
-## 24.8 Combination Direction
-
-必须证明：
+## Directional Combination
 
 ```text
 RESOURCE_PROTECTS_OFFICER != OFFICER_GENERATES_RESOURCE
 RESOURCE_TRANSFORMS_QI_SHA != QI_SHA_GENERATES_RESOURCE
-SHI_SHEN_CONTROLS_QI_SHA retains host direction
-SHANG_GUAN_GENERATES_WEALTH retains host direction
+SHI_SHEN_CONTROLS_QI_SHA retains direction
+SHANG_GUAN_GENERATES_WEALTH retains direction
 ```
 
-## 24.9 Evidence integrity invariants
-
-自动化 invariant tests：
+## Contract Invariants
 
 ```text
+baseMonthHost == null
+=> material/blocking ambiguity explains it
+
 primaryPattern != null
-=> evidenceKeys for that pattern exist
+=> primaryFormationState != null
 
-formationState = broken
-=> formation_damage exists
+primaryPattern == null
+=> primaryFormationState == null
 
-formationState = broken_rescued
-=> formation_damage + rescue both exist
+candidate.formationState = broken
+=> formation_damage evidence exists
+
+candidate.formationState = broken_rescued
+=> formation_damage + rescue evidence exist
 
 followStructure.status = confirmed
 => confirmedPattern is follow_wealth or follow_killing
 
 patternStatus = ambiguous
-=> at least one material/blocking ambiguity
+=> material/blocking ambiguity exists
 
 patternStatus = primary_with_secondary
-=> primary != null and secondary.length >= 1
+=> primaryPattern != null and secondaryPatterns.length >= 1
 
-patternStatus = mixed
-=> candidates >= 2
-
-all evidence.ruleId resolve in rule catalog
-all evidence ids unique
-all counterEvidence references valid evidence keys
-all ambiguity evidenceKeys resolve
+all ruleIds resolve
+all evidence references resolve
+all evidence IDs unique
 ```
 
-## 24.10 Architecture integrity
+## Determinism
 
-- `modules/bazi/traditional-pattern/**` has no import from `modules/interpretation/**`；
-- result serializer contains no `candidate_score` / Personality Dimension inputs；
-- same input + same engine + same rule profile + same schema => byte-stable result。
+测试：
+
+```text
+same semantic input
++ same engine version
++ same rule profile
++ same schema version
+=
+same canonical semantic TraditionalPatternResult
+```
+
+Canonical comparison / canonical hash / deterministic ID 必须排除 `computedAt`。
+
+不再要求包含 execution timestamp 的 raw object byte-identical。
+
+## Architecture
+
+```text
+modules/bazi/traditional-pattern/**
+MUST NOT import modules/interpretation/**
+```
+
+Result contract / serializer 不得消费 legacy candidate score / Personality Dimensions。
 
 ---
 
-# 25. Golden Cases（黄金命例）
+# 30. Golden Cases（黄金命例）
 
-推荐目录：
+推荐：
 
 ```text
 tests/fixtures/traditional-pattern/
@@ -1837,269 +1620,223 @@ tests/fixtures/traditional-pattern/
   regression/
 ```
 
-或采用同等现有 TypeScript fixture 结构，但必须保持 provenance metadata（来源元数据）。
-
-## 25.1 Fixture metadata
-
-每个 Golden Case 至少记录：
-
-```ts
-interface TraditionalPatternGoldenCase {
-  id: string;
-  sourceClass:
-    | "classic_text"
-    | "traditional_textbook"
-    | "synthetic_boundary"
-    | "regression";
-
-  sourceTitle: string;
-  sourceSection?: string;
-  sourceReference?: string;
-  notes?: string;
-
-  rule_profile_version: "ziping-v1.0.0";
-  pattern_schema_version: "traditional-pattern-result/1.0.0";
-
-  input: BirthProfile | explicit chart fixture;
-  expected: {
-    patternStatus?: TraditionalPatternStatus;
-    baseMonthHost?: Partial<TraditionalBaseMonthHost>;
-    primaryPattern?: TraditionalPattern | null;
-    formationState?: TraditionalFormationState;
-    requiredEvidenceTypes?: TraditionalEvidenceType[];
-    requiredCounterEvidenceTypes?: TraditionalCounterEvidenceType[];
-    ambiguityCodes?: TraditionalPatternAmbiguityCode[];
-  };
-}
-```
-
-## 25.2 Source classes
-
-### A. 古籍明确案例
-
-优先来自项目已采用主线：
-
-- 《子平真诠》；
-- 《渊海子平》；
-- 《三命通会》。
-
-只存必要的命例事实、章节引用与 expected rules；不把现代网站长篇转录复制进 fixture。
-
-### B. 已知传统教材案例
-
-使用明确作者 / 版本 / 页码或章节来源。
-
-对仍受版权保护的现代教材，只记录 bibliographic reference + 最少必要事实，不复制长段正文。
-
-### C. Artificial Boundary Fixture（人工边界样例）
-
-只用于验证：
-
-- LiChun / Jie；
-- 23:00 / 00:00；
-- DST；
-- unknown / approximate；
-- specific relation existence。
-
-不得把 C 类当“传统格局正确性”证据。
-
-### D. Regression Fixture（回归样例）
-
-来自真实 bug / previously verified output。
-
-必须记录：
+每例至少记录：
 
 ```text
-regression reason
-fix commit / issue
-expected rule behavior
-```
-
----
-
-# 26. Persistence / Serialization Plan（持久化与序列化）
-
-本轮不改 Supabase。
-
-未来建议：
-
-```text
-TraditionalPatternResult
-= first-class versioned result keyed by chartId
-```
-
-不要只把它塞进 free-form JSON report。
-
-Session-only V1 migration 时：
-
-- Phase A/B 可在 dev / shadow bundle 临时并存；
-- 真正 Public Result cutover 时必须 bump `PUBLIC_RESULT_SCHEMA_VERSION`；
-- old session bundle 应 fail safely，而不是把 legacy archetype 当新 result。
-
-Supabase schema / migration 属后续独立 task，不应阻塞 deterministic core tests。
-
----
-
-# 27. Risks（风险）
-
-## R1 — Current chart profile mismatch
-
-当前 `calculateBazi` 仍是 `civil-local-jieqi-v1`，尤其 late-Zi hour stem 与 locked profile 不同。
-
-Mitigation：versioned ziping calculation path + profile guard + dual golden vectors。
-
-## R2 — Approximate time has no uncertainty range
-
-`BirthTimePrecision = approximate` 没有 ±分钟字段。
-
-Mitigation：不自造窗口；输出 `approximate_time_unbounded`；若影响关键边界则 material / blocking。
-
-## R3 — True solar ambiguity comparator not implemented
-
-V1 不自动真太阳时，但 near-boundary ambiguity 需要能在有坐标时识别 alternative bucket difference。
-
-Mitigation：把 comparator 作为 auxiliary ambiguity detector，不让它改变 authority；无坐标时不伪造结论。
-
-## R4 — Relations are existence-only and incomplete
-
-当前无 三合 / 三会 / 刑 / 破，也无 transformation state。
-
-Mitigation：Phase 2 补 structural facts，再允许 formation final。
-
-## R5 — Pattern-specific formation can scope-explode
-
-若一次实现所有古籍细节会失控。
-
-Mitigation：只实现 `ziping-v1.0.0` supported patterns；每个 rule 必须有 ruleId + source reference；unsupported condition => ambiguity / deferred，不临时发明规则。
-
-## R6 — Legacy D-010 wording
-
-历史 D-010 / `BaziDerivedFeatures` comment 把 legacy dayMasterStrength 描述为 canonical traditional structure fact，现已被 Audit + Rule Profile 限定为 non-authority legacy model。
-
-Mitigation：Build 时通过新的 shared TraditionalPattern contract 和必要的 superseding documentation 明确语义；不要删除历史 decision。
-
-## R7 — Public site migration regression
-
-当前 `PublicResultBundle` required `archetype`，Result UI 仍读 legacy dominant Ten God。
-
-Mitigation：Phase A/B 不切 public；Phase C/D 单独做 schema + translation cutover；切换前不删除 legacy。
-
----
-
-# 28. Proposed Decisions Requiring Owner Review（需要 Owner Review 的新架构决定）
-
-以下不是对 `ziping-v1.0.0` 的修改，而是 **Result Contract / implementation architecture** 新决定：
-
-## TP-01 — Ownership
-
-```text
-TraditionalPatternResult owner = modules/bazi/traditional-pattern
-Interpretation = consumer only
-```
-
-## TP-02 — Input isolation
-
-```text
-TraditionalPatternInput
-= BirthProfile + BaziChart + CalculationMetadata + Relations
-
-BaziDerivedFeatures = excluded from traditional authority input
-```
-
-## TP-03 — Schema version
-
-```text
+id
+sourceClass
+sourceTitle
+sourceSection / sourceReference
+notes
+rule_profile_version = ziping-v1.0.0
 pattern_schema_version = traditional-pattern-result/1.0.0
+input
+expected status / host / primary / formation / evidence / ambiguity
 ```
 
-与 `rule_profile_version` 独立。
+来源：
 
-## TP-04 — No sentinel Pattern
+### A. Classic Text
 
-```text
-no UNKNOWN / NONE pattern enum
-primaryPattern = null + explicit patternStatus
-```
+优先《子平真诠》《渊海子平》《三命通会》。
 
-## TP-05 — Evidence sufficiency is categorical
+### B. Traditional Textbook
 
-```text
-sufficient / partial / insufficient / indeterminate
-```
+必须有明确作者 / 版本 / 页码或章节。
 
-不使用 0–1 traditional confidence。
+### C. Synthetic Boundary
 
-## TP-06 — Approximate-time policy
+用于 LiChun / Jie / 23:00 / 00:00 / DST / unknown / approximate / relation existence。
 
-没有明确 uncertainty interval 时不自造 ±分钟窗口；使用 `approximate_time_unbounded` ambiguity，并在影响关键边界时升级 material / blocking。
+C 类不得冒充传统格局正确性证据。
 
-## TP-07 — Shared result composition
+### D. Regression
 
-第一阶段不把 `TraditionalPatternResult` 设为 `BaziCalculationResult` required field；以 `chartId` 独立版本化，支持 shadow migration。后续 consumer cutover 再决定组合 read model / persistence shape。
-
-在 Owner / Review Gate 批准前，以上均为 **PROPOSED**。
+记录真实 bug / verified output / fix commit / issue。
 
 ---
 
-# 29. Build Gate（开发门）
+# 31. Persistence / Serialization
 
-本文完成后状态：
+本 Spec 不要求当前 Supabase Live。
+
+未来 `TraditionalPatternResult` 应 first-class versioned persistence，不塞进 free-form report JSON。
+
+Phase A/B 可以 session/dev shadow 并存。
+
+Authority Cutover 时：
+
+- canonical Bazi / Traditional Result boundary 必须完成；
+- Public Result schema 必须 bump；
+- old session bundle fail safely；
+- 不允许 silent legacy fallback。
+
+`computedAt` 是 audit metadata，不参与 canonical semantic hash / equality。
+
+---
+
+# 32. Risks（风险）
+
+## R1 — Current Profile Mismatch
+
+Current `calculateBazi = civil-local-jieqi-v1`。
+
+Mitigation：versioned ziping path + profile guard + dual golden vectors。
+
+## R2 — Approximate Time Has No Range
+
+Mitigation：不自造 ±分钟；无明确范围 -> `approximate_time_unbounded`。
+
+## R3 — True Solar Comparator Not Implemented
+
+V1 不自动真太阳时；future comparator 只产生 boundary ambiguity，不改变 authority。
+
+## R4 — Relations Incomplete
+
+当前缺三合 / 三会 / 刑 / 破 / transformation state。
+
+Mitigation：Phase 2 补 structural facts 后才允许 final formation verdict。
+
+## R5 — Formation Scope Explosion
+
+只实现 `ziping-v1.0.0` supported scope；unsupported -> ambiguity / deferred。
+
+## R6 — Legacy Authority Wording
+
+D-010 / legacy `BaziDerivedFeatures` comment 可能被误读为 numeric fields 是传统 authority。
+
+Mitigation：Approved Decision 显式 supersede authority semantics；domain comment 更新为 legacy non-authority clarification；字段保留兼容。
+
+## R7 — Permanent Parallel Tree
+
+TP-07 只允许 Phase A/B independent result。
+
+Mitigation：Authority Cutover 前必须 canonical boundary integration。
+
+## R8 — Timestamp Breaks Determinism
+
+Mitigation：`computedAt` non-semantic；canonical semantic projection 排除它。
+
+---
+
+# 33. TP-01 ～ TP-07 Final Owner Decisions
+
+```text
+TP-01 APPROVED
+Bazi Traditional Layer owns TraditionalPatternResult.
+
+TP-02 APPROVED
+Legacy BaziDerivedFeatures excluded from Traditional Pattern authority input.
+
+TP-03 APPROVED
+pattern_schema_version = traditional-pattern-result/1.0.0
+
+TP-04 APPROVED
+No UNKNOWN / NONE pattern sentinel.
+Use primaryPattern = null + typed Pattern Status.
+
+TP-05 APPROVED
+Evidence sufficiency categorical only:
+sufficient / partial / insufficient / indeterminate.
+
+TP-06 APPROVED
+No arbitrary approximate-time ±minute window.
+Use explicit range only when supplied by user/source.
+
+TP-07 APPROVED WITH CONDITION
+Independent result allowed in Phase A/B shadow migration only.
+Before Authority Cutover it MUST join the canonical Bazi/traditional-result boundary.
+```
+
+---
+
+# 34. Required Revisions Final State
+
+```text
+Revision 1 — Nullable Base Month Host
+DONE
+baseMonthHost: TraditionalBaseMonthHost | null
+
+Revision 2 — Primary Formation State
+DONE
+primaryFormationState: TraditionalFormationState | null
+
+Revision 3 — Determinism vs Execution Timestamp
+DONE
+computedAt = non-semantic audit metadata
+excluded from ID / hash / canonical equality / semantic determinism
+
+Revision 4 — Legacy BaziDerivedFeatures Authority Supersession
+DONE
+Bazi Engine ownership remains
+legacy numeric derived fields are non-authority for TraditionalPatternResult
+Decision Log supersession / clarification required and recorded
+```
+
+---
+
+# 35. Build Gate（开发门）
+
+Spec Freeze 后状态：
 
 ```text
 Rule Audit = DONE
-Rule Profile = LOCKED
-TraditionalPatternResult Spec = READY FOR REVIEW
-Implementation = NOT STARTED
+Rule Profile ziping-v1.0.0 = LOCKED
+TraditionalPatternResult Spec traditional-pattern-result/1.0.0 = LOCKED
+TraditionalPatternResult Implementation = NEXT / ALLOWED
 ```
 
-只有以下完成后才允许 production Build：
+Production Build **可以开始**。
+
+但 runtime authority 仍有 fail-closed prerequisite：
 
 ```text
-1. Review TP-01 ～ TP-07
-2. Spec corrections if needed
-3. Decision Log => Approved / Spec LOCKED
-4. Current State => Spec LOCKED
-5. Roadmap => Implementation ACTIVE
-6. then Build Phase 1
+legacy civil-local-jieqi-v1 chart
+!=
+ziping-v1.0.0 chart
 ```
 
-在此之前禁止：
+因此：
 
-- 写 production TraditionalPatternResult；
-- 改现有 Bazi algorithm；
-- 改 Public Personality mapping；
-- 改 `personality-map/0.2.0`；
-- 删除 legacy candidate；
-- 改 UI / Share Card / Character；
+```text
+Build Phase 1 / Phase 2 = ALLOWED
+TraditionalPatternResult authority on legacy profile = BLOCKED
+Authority Cutover = BLOCKED until implementation + review + canonical boundary integration
+```
+
+下一轮禁止顺手做：
+
+- Public Personality authority cutover；
+- 删除 `personality-map/0.2.0`；
+- UI / Share Card / Character 改造；
+- Payment / AI；
 - Merge PR #16。
 
 ---
 
-# 30. Review Checklist（审核清单）
+# 36. Freeze Review Checklist
 
-- [x] Contract 能表达 clear single pattern；
-- [x] 能表达 primary + secondary；
-- [x] 能表达 mixed；
-- [x] 能表达 no stable single pattern；
-- [x] 能表达 failed / broken / rescued；
-- [x] 能表达 follow candidate / confirmed / rejected / ambiguous；
-- [x] 所有 final verdict 可通过 Evidence 回溯；
-- [x] Counter Evidence 为 first-class；
-- [x] Ambiguity 为 typed first-class；
-- [x] Strength 无百分比 / numeric threshold authority；
-- [x] Directional combinations 不丢 Host；
-- [x] `ziping-v1.0.0` 未被重新讨论或修改；
-- [x] legacy `personality-map/0.2.0` 有安全 migration path；
-- [x] 当前 production logic 未修改；
-- [x] Build Gate 明确阻止 Spec 未 Freeze 时直接开发。
+- [x] TP-01 ～ TP-07 Owner decisions incorporated；
+- [x] `baseMonthHost` nullable invariant；
+- [x] `primaryFormationState` nullable invariant；
+- [x] candidate formation state retained；
+- [x] `computedAt` non-semantic semantics；
+- [x] canonical determinism excludes execution timestamp；
+- [x] D-010 / legacy derived authority semantics superseded / clarified；
+- [x] no numeric strength / confidence authority；
+- [x] no `UNKNOWN / NONE` pattern sentinel；
+- [x] Evidence / Counter Evidence / Ambiguity first-class；
+- [x] directional combination preserved；
+- [x] TP-07 prevents permanent parallel authority tree；
+- [x] current profile mismatch remains fail closed；
+- [x] `ziping-v1.0.0` unchanged；
+- [x] production implementation not started in this Freeze round。
 
 ---
 
-# 31. Final Proposed Contract Summary
+# 37. Final Locked Contract Summary
 
 ```text
-TraditionalPatternResult
-
 OWNER:
 Bazi Traditional Layer
 
@@ -2108,57 +1845,48 @@ BirthProfile
 + BaziChart
 + BaziCalculationMetadata
 + BaziRelation[]
-(no BaziDerivedFeatures authority)
+(no legacy BaziDerivedFeatures authority input)
 
 VERSIONS:
 engine_version
 rule_profile_version = ziping-v1.0.0
 pattern_schema_version = traditional-pattern-result/1.0.0
 
-STATUS:
-clear_single
-primary_with_secondary
-mixed
-no_stable_single_pattern
-follow_structure
-ambiguous
+OUTPUT CORE:
+patternStatus
+baseMonthHost | null
+primaryPattern | null
+secondaryPatterns[]
+candidates[]
+primaryFormationState | null
+strengthContext
+followStructure
+keyCombinations[]
+evidence[]
+counterEvidence[]
+ambiguities[]
+evidenceSufficiency
+computedAt (non-semantic audit metadata)
 
 PATTERNS:
 8 regular
 + Jianlu
 + Yuejie
-+ Yangren
++ five-yang Yangren
 + strict Follow Wealth
 + strict Follow Killing
 
-FORMATION:
-formed_clear
-formed_impure
-failed
-broken
-broken_rescued
-not_formed
-ambiguous
-
-STRENGTH:
-qualitative only
-
-EXPLAINABILITY:
-baseMonthHost
-candidates[]
-evidence[]
-counterEvidence[]
-ambiguities[]
-keyCombinations[]
-followStructure
+DETERMINISM:
+canonical semantic result excludes computedAt
 
 MIGRATION:
-independent result
-→ shadow compare
-→ translation layer
-→ authority cutover
-→ legacy retirement
+Phase A independent
+→ Phase B shadow
+→ Phase C translation + canonical boundary integration
+→ Phase D authority cutover
+→ Phase E legacy retirement
 
 BUILD:
-BLOCKED UNTIL SPEC REVIEW + FREEZE
+IMPLEMENTATION NEXT / ALLOWED
+RUNTIME FAIL-CLOSED UNTIL ziping-v1.0.0 calculation path exists
 ```
