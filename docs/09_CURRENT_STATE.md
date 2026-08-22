@@ -169,6 +169,28 @@ Style 继续 LOCKED：
 
 该分支是 Pilot，不是 Design Freeze。视觉方向等待 Product Owner 审核。
 
+### 8.2 Pilot 外部审查结论与处置（2026-08-22）
+
+外部远程审查（针对 `7e811cb`）结论：**REQUEST CHANGES**，唯一必须修复项为
+「Result mix bar 的『辅助』直接复制主人格，属于伪造第三层结构」。
+
+处置（commit `9dcd42e`）：
+
+1. **辅助层伪造 → 已修复**。Engine 当前只产出 dominant + secondary 两层；
+   自造第三层只能来自 `tenGodDistribution` 工程排序，违反 docs/18 §2 与
+   docs/13 §4。现 mix bar 只渲染「主导 / 明显副倾向」两列，并在代码注释中
+   说明第三层必须等 TraditionalPatternResult 落地后才允许出现。
+2. **首页移动端 10 人格区接近纵向卡片目录 → 同 commit 一并修复**。移动端改为
+   「前 2 张全宽 feature 卡 + 后 8 张横向 snap strip」，桌面端保留非对称 grid。
+
+审查给出的视觉加分项（记录为下一轮候选，未经 Product Owner 批准不实施）：
+
+- 正式 Character 到位后：人物越界、重叠、大裁切、文字穿插等更强编辑排版；
+- 年轻东亚文化感的视觉表达可以比当前更大胆（目前主要由文案承担）。
+
+状态：等待审查方在 `9dcd42e` 复核；复核通过后由 Product Owner 决定是否合并回
+`release/v1-personality-rc`。
+
 ## 9. 当前最大 Release Blockers
 
 当前 blocker 顺序已改变：
