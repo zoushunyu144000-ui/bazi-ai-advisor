@@ -1,6 +1,6 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — Fixed 10-IP Character Production + Final QA Active**  
+状态：**V1 Release Freeze — Fixed 10-IP + Personality Mix + Final QA Active**  
 最后更新：2026-08-22
 
 ## 0. Source of Truth boundary
@@ -21,7 +21,7 @@ Source of Truth precedence：
 
 产品已正式收敛为：
 
-**八字版 SBTI + 10 个固定人格 IP + 完整免费分享传播 + Post-V1 八字人格光谱 / 轻付费扩展。**
+**八字版 SBTI + 10 个固定人格 IP + 免费主人格完整解析 + 免费人格因子配比 + 分享传播 + Post-V1 深度人格光谱付费解析。**
 
 V1 唯一发布目标：
 
@@ -30,8 +30,9 @@ Homepage
 → Birth
 → deterministic Bazi
 → Interpretation
+→ Personality Mix
 → 10 Public Personalities
-→ full Personality Dossier
+→ dominant full Personality Dossier
 → fixed official Character IP
 → Share Card
 → friend can open the website and test
@@ -47,7 +48,7 @@ PR base：`main`。
 
 Vercel Production：`bazi-ai-advisor.vercel.app`。
 
-Preview 可用于 QA；PR #16 在 10 / 10 fixed formal Character assets 与最终 QA 完成前保持 Draft。
+Preview 可用于 QA；PR #16 在 Personality Mix、10 / 10 fixed formal Character assets 与最终 QA 完成前保持 Draft。
 
 ## 3. Deterministic Core Chain
 
@@ -69,6 +70,23 @@ normalizeBirthProfile()
 ```
 
 Presentation Layer 不重新排八字，不随机生成十神，不随机生成 dimensions。
+
+### Personality Mix — NEW V1 CONTRACT / NOT YET IMPLEMENTED
+
+2026-08-22 Product Owner 已新增 V1 正式要求：
+
+> 免费结果必须显示用户的 10 个 Public Personality 因子比例；但只完整详细解析主人格，其他人格主要显示名称 + 比例。
+
+当前仓库已存在 dominant / secondary personality 与 15 dimensions，但尚未确认现有 `personality-map/0.2.0` 是否已经提供可直接公开、归一化到统一尺度的 10 因子权重。
+
+因此当前真实状态是：
+
+- 主人格：implemented
+- 第二人格：implemented
+- 15 dimensions：implemented
+- **10 因子 Personality Mix：product contract locked / implementation pending**
+
+实现必须使用 deterministic / versioned normalization rules；不得由 LLM 或前端随机生成百分比。
 
 ### Birth V1 UX
 
@@ -130,6 +148,8 @@ release branch 已实现：首屏定位与 CTA、10 人格预览、确定性工�
 
 已实现完整 18 段 Personality Dossier，并展示真实 second personality、15 dimensions 与专业八字依据折叠区。
 
+**待更新：**在 Result 中新增免费 Personality Mix 展示；主人格继续保留完整 Dossier，其他人格只显示比例 / 简短标记，不展开深度解析。
+
 ### Share Loop
 
 已实现：
@@ -140,6 +160,8 @@ release branch 已实现：首屏定位与 CTA、10 人格预览、确定性工�
 - PNG download fallback
 - copy result
 - stable production return URL
+
+**待更新：**Share Card 建议加入 Top 3 Personality Mix 摘要，强化同主人格用户之间的个体差异与比较传播。
 
 正式 Character asset 缺失时 Share Card 必须显式失败，不允许 placeholder。
 
@@ -173,37 +195,42 @@ public/characters/v1/{ten_god}.webp
 
 当前最大 Release Blocker：
 
-**fixed 10-IP contract refactor + 10 / 10 formal Character Masters + final QA**。
+**Personality Mix implementation + fixed 10-IP contract refactor + 10 / 10 formal Character Masters + final QA**。
 
 ## 7. 当前 V1 P0 执行顺序
 
-1. 固定 10-IP contract 文档同步
-2. 重构 legacy gender-based Character routing / filenames
-3. 10 / 10 formal Character Masters
-4. Homepage Character integration QA
-5. Result Character integration QA
-6. Share Card real-image QA
-7. mobile browser QA
-8. full CI
-9. PR #16 Ready
-10. merge main
-11. Vercel Production
-12. final public smoke test
+1. 固定 10-IP / Personality Mix contract 文档同步
+2. 确认现有 machine output 是否足够构建 10 因子权重
+3. 实现 versioned Personality Mix normalization contract
+4. 重构 legacy gender-based Character routing / filenames
+5. Result / Share Card 接入免费 Personality Mix
+6. 10 / 10 formal Character Masters
+7. Homepage Character integration QA
+8. Result Character integration QA
+9. Share Card real-image QA
+10. mobile browser QA
+11. full CI
+12. PR #16 Ready
+13. merge main
+14. Vercel Production
+15. final public smoke test
 
 ## 8. 完整产品设计已补齐
 
 `docs/17_PRODUCT_DESIGN_REPORT_V1.md` 已正式定义：
 
 - 10 个固定官方 IP
-- 免费完整 Personality Dossier
+- 免费主人格完整 Personality Dossier
+- 免费 10 因子 Personality Mix
+- 其他人格免费显示比例、不展开详细解析
 - 《疯传》传播结构
-- Post-V1 `Bazi Personality Spectrum / 八字人格光谱`
+- Post-V1 `Bazi Personality Spectrum / 八字人格光谱` 深度解析
 - `1 主人格 + 1–2 副人格 + N deterministic 修正因子`
 - 人格纯度 / 结构清晰度概念
 - 免费 → 付费转化逻辑
 - LLM 只解释、不重新排盘、不编造比例的专业边界
 
-这些是完整产品方向，但 payment / spectrum implementation 仍不阻塞当前 V1 发布。
+付费不卖“看比例”的资格，而卖“为什么会是这些比例、它们怎样互相作用”的解释。
 
 ## 9. CI / Browser acceptance pending
 
@@ -219,7 +246,7 @@ npm run build
 
 最终浏览器验收至少覆盖：390px / 430px / 768px / 1440px。
 
-重点检查 Homepage、Birth、Result Hero、Long Result、fixed Characters、Share Card、Save / Share、Navigation、Reload、Back、Error、Unknown birth time。
+重点检查 Homepage、Birth、Personality Mix、Result Hero、Long Result、fixed Characters、Share Card、Save / Share、Navigation、Reload、Back、Error、Unknown birth time。
 
 ## 10. Post-V1 / V1.1 Parking Lot
 
@@ -229,6 +256,7 @@ npm run build
 - referral / invitation challenge
 - AI Advisor / AI Chat
 - payment / ¥9.9 report checkout
+- **Bazi Personality Spectrum 深度解析 / checkout**
 - Supabase Live / Auth / Account
 - Analytics full system
 - ranking / rarity
@@ -238,7 +266,7 @@ npm run build
 - complex Traditional Pattern expansion
 - community / gamification
 
-其中 **八字人格光谱** 已完成产品设计，但实现仍属于 Post-V1。
+注意：**免费 Personality Mix 已从 Post-V1 移入 V1 P0；只有深度光谱解析仍属于 Post-V1。**
 
 ## 11. Production release gate
 
@@ -249,14 +277,18 @@ npm run build
 - [x] deterministic Birth → Bazi → Interpretation → Public mapping
 - [x] real secondary personality
 - [x] real dimensions
-- [x] full Result Dossier implementation
+- [x] full dominant Result Dossier implementation
 - [x] Share rendering implementation
 - [x] Character Style selected and LOCKED
 - [x] fixed 10-IP product contract approved
-- [x] complete product / paid-spectrum design documented
+- [x] free Personality Mix product contract approved
+- [x] complete paid-spectrum design documented
 
 仍阻塞发布：
 
+- [ ] deterministic / versioned 10-factor Personality Mix implementation
+- [ ] Result Personality Mix UI
+- [ ] Share Card Top-factor mix integration
 - [ ] legacy gender-based character routing refactor
 - [ ] 10 / 10 formal Character Masters
 - [ ] Homepage / Result / Share Card real-image QA
@@ -266,4 +298,4 @@ npm run build
 - [ ] Vercel Production
 - [ ] final public smoke test
 
-**V1 必须完整，但“完整”指当前发布闭环完整，不要求未来所有付费与顾问能力在同一批上线。**
+**V1 必须完整；免费用户可以看到自己的真实人格配方，但详细多因子解析留给付费层。**
