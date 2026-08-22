@@ -523,7 +523,7 @@ PRODUCT
 ## D-019 — Traditional Bazi Rule Profile V1 提案
 
 日期：2026-08-22
-状态：**Proposed — Owner Approval Required**
+状态：**Proposed — Superseded by D-020**
 
 ### 决定
 
@@ -558,31 +558,138 @@ rule_profile_version = ziping-v1.0.0
 - 从格与特殊格采用严格白名单；
 - Evidence、Counter Evidence、Ambiguity 为 first-class contract。
 
-以下 7 项仍需 Owner 明确批准：
-
-1. OA-01：日界推荐 local civil midnight `00:00`，备选子初 `23:00`；
-2. OA-02：晚子时推荐 night-Zi / Zi-zheng split profile；
-3. OA-03：V1 推荐 civil time，不自动真太阳时校正；
-4. OA-04：月令 host 推荐 hidden-qi hierarchy + exposure，不启用精确人元司令日表 authority；
-5. OA-05：阳刃推荐五阳有刃、五阴无真刃，并作为 special self-rooted host；
-6. OA-06：旺衰推荐 qualitative evidence profile，不采用 numeric percentage / thresholds；
-7. OA-07：从格 final verdict 推荐仅 strict 从财 / strict 从杀，其余 candidate / ambiguous / deferred。
+D-019 当时保留 OA-01 ～ OA-07 Owner Approval Gate。该 Gate 已于 2026-08-23 由 D-020 完成。
 
 ### 原因
 
-上一轮 Audit 已确认现有生产链没有完整 Traditional Pattern adjudication，而且 9 项关键 `SCHOOL_CHOICE` 尚未冻结。若不先显式选择 Rule Profile，就直接实现 `TraditionalPatternResult`，会把某一流派或工程假设静默包装成传统共识。
-
-本提案优先保证：
-
-> **规则有来源、分歧有说明、结果可复现、证据可回溯、复杂情况可返回歧义。**
+上一轮 Audit 已确认现有生产链没有完整 Traditional Pattern adjudication，而且关键 `SCHOOL_CHOICE` 必须先显式冻结，不能把某一流派或工程假设静默包装成传统共识。
 
 ### 影响
 
-- Rule Profile 当前状态仍是 **PROPOSED**，不是 LOCKED；
-- 本决策不修改 production Bazi algorithm；
-- Owner Approval 完成前，`TraditionalPatternResult Implementation` 继续 BLOCKED；
-- Owner 批准 / 修改 OA-01 ～ OA-07 后，再新增 Approved / Superseding decision 或将对应 Rule Profile 决策正式 Freeze；
-- Rule Profile 一旦正式启用，必须使用新的 `rule_profile_version`，不得把 `civil-local-jieqi-v1` 静默改语义。
+本提案现已由 D-020 supersede；历史提案保留以便追踪决策过程。
+
+---
+
+## D-020 — Traditional Bazi Rule Profile `ziping-v1.0.0` 正式冻结
+
+日期：2026-08-23
+状态：**Approved / Locked / Active**
+
+Supersedes：`D-019`
+
+### 决定
+
+Owner 已明确批准 OA-01 ～ OA-07，并正式冻结：
+
+```text
+rule_profile_version = ziping-v1.0.0
+```
+
+Rule Profile Source of Truth：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+
+#### OA-01 — Day Boundary
+
+```text
+DAY_BOUNDARY = LOCAL_CIVIL_MIDNIGHT_00_00
+```
+
+#### OA-02 — Late Zi
+
+```text
+LATE_ZI = NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
+```
+
+具体语义：23:00–23:59 日柱仍为当前 civil day，时支为子，时干按次日日干起子时；00:00–00:59 日柱进入新 civil day，时支为子，时干按新日日干起子时。
+
+#### OA-03 — Time Standard / True Solar Time
+
+```text
+TIME_STANDARD = HISTORICAL_IANA_CIVIL_TIME
+TRUE_SOLAR_TIME = NOT_AUTO_APPLIED_IN_V1
+```
+
+接近时辰、日界、立春或节气边界时必须保留 ambiguity，不自动切换为真太阳时结果。
+
+#### OA-04 — Month Host
+
+```text
+MONTH_HOST_BASE =
+month branch
+→ ordered hidden qi (main > middle > residual)
+→ exposure
+→ base Pattern Host
+```
+
+明确：
+
+- 不使用 numeric month multiplier；
+- `ziping-v1.0.0` 不使用 exact commander-day table authority；
+- hierarchy 只选择 **base Host**；
+- 后续 exposure context、combination / transformation、formation、damage / rescue、roots / strength、mixed / follow rules 可以改变最终 pattern verdict，但不能改写 base Host evidence。
+
+#### OA-05 — Yangren
+
+```text
+YANGREN = FIVE_YANG_STEMS_ONLY
+甲→卯
+丙→午
+戊→午
+庚→酉
+壬→子
+```
+
+五阴干不自动论真阳刃。
+
+#### OA-06 — Day Master Strength
+
+```text
+DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
+```
+
+使用得令、得地 / 通根、得势 / 得助、生克制化；禁止 personality percentage 或 numeric threshold authority。
+
+#### OA-07 — Follow Structure
+
+```text
+FOLLOW_STRUCTURE_FINAL_VERDICT =
+STRICT_FOLLOW_WEALTH
++
+STRICT_FOLLOW_KILLING
+```
+
+其他 follow structures 仅 candidate / evidence-only / ambiguous / deferred。
+
+### 同时冻结的结构规则
+
+- 子平月令格局法为核心；
+- 《子平真诠》为主要格局结构来源，《渊海子平》《三命通会》交叉参考；
+- 8 regular patterns + Jianlu + Yuejie + five-yang Yangren structural host；
+- Formation 使用 pattern-specific support / damage / rescue；
+- `PRIMARY_WITH_SECONDARY / MIXED / NO_STABLE_SINGLE_PATTERN` 均合法；
+- directional combination 必须保留 Host direction；
+- `evidence[] / counter_evidence[] / ambiguities[]` 为 first-class；
+- `max(tenGodDistribution)`、legacy candidate score、Personality Dimensions、LLM、产品均衡目标不得参与 Traditional verdict；
+- 任何后续规则语义变化必须 bump `rule_profile_version`，不得 silent migration。
+
+### 原因
+
+OA-01 ～ OA-07 已由 Owner 显式裁决，Rule Profile 的关键流派选择、时间口径、月令 Host、旺衰、阳刃与从格范围已经具备稳定、可版本化、可实现与可测试的 V1 contract。
+
+### 影响
+
+```text
+Traditional Bazi Rule Audit = DONE
+Traditional Bazi Rule Profile = LOCKED
+TraditionalPatternResult Implementation = ALLOWED / NEXT P0
+```
+
+- `docs/09_CURRENT_STATE.md` 必须标记 Rule Profile LOCKED；
+- `docs/10_ROADMAP.md` 下一 P0 移动到 TraditionalPatternResult Implementation；
+- implementation 必须严格消费 `ziping-v1.0.0`，不得重新加入 experimental numeric weights；
+- D-019 保留为历史 Proposed decision，不删除；
+- Rule Profile Freeze 本身不表示 TraditionalPatternResult 已经 Production-ready。
 
 ---
 
@@ -606,4 +713,4 @@ rule_profile_version = ziping-v1.0.0
 ...
 ```
 
-最后更新：2026-08-22
+最后更新：2026-08-23
