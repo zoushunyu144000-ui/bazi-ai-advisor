@@ -1,7 +1,7 @@
 # 10 — Roadmap
 
-状态：**V1 Release Freeze — P0 Release Closure Only**  
-最后更新：2026-08-21
+状态：**V1 Release Freeze — Fixed 10-IP P0 Release Closure**  
+最后更新：2026-08-22
 
 ## 0. Roadmap boundary / Source of Truth
 
@@ -12,11 +12,8 @@ Source of Truth precedence：
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
 2. `docs/09_CURRENT_STATE.md`
 3. `docs/10_ROADMAP.md`
-4. older docs / experiments / historical research
-
-如果本文件与 Personality IP Bible 冲突，以 `docs/13_PERSONALITY_IP_BIBLE.md` 为准。
-
-Roadmap 不重新定义 Public Personality 名称、Character Style 或 V1 核心产品方向。
+4. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+5. older docs / experiments / historical research
 
 ## 1. V1 Release Freeze objective
 
@@ -29,80 +26,90 @@ Homepage
 → Interpretation
 → 10 Public Personalities
 → full Personality Dossier
-→ formal Character
+→ 10 fixed official Character IPs
 → Share Card
 → friend can open the website and test
 ```
 
-只要这条链路成立并通过最终 QA，就允许发布 V1。
+V1 必须是完整产品体验，不是 prototype。
 
-不以 AI、Payment、Supabase、Advisor、Relationship feature 是否完成作为首发条件。
+Payment、AI Advisor、Supabase Live、八字人格光谱 checkout 等未来能力不作为首发阻塞项。
 
 ## 2. P0 — Release closure sequence
 
-当前只按以下顺序执行：
+当前严格按以下顺序执行：
 
 1. Documentation / Source of Truth sync
-2. 20 / 20 formal Character Assets
-3. Homepage Character integration QA
-4. Result Character integration QA
-5. Share Card real-image QA
-6. mobile browser QA
-7. full CI
-8. PR #16 Ready
-9. merge main
-10. Vercel Production
-11. final public smoke test
+2. Refactor legacy gender-based Character contract
+3. 10 / 10 formal Character Masters
+4. Homepage Character integration QA
+5. Result Character integration QA
+6. Share Card real-image QA
+7. mobile browser QA
+8. full CI
+9. PR #16 Ready
+10. merge main
+11. Vercel Production
+12. final public smoke test
 
-当前最大的 Release Blocker：
+当前最大 Release Blocker：
 
-**20 / 20 formal Character Assets + final QA**。
+**legacy gender contract refactor + 10 / 10 fixed Character Masters + final QA**。
 
-不是 AI，不是 Payment，不是 Supabase，不是 Advisor，也不是 Relationship feature。
-
-## 3. P0.1 — Documentation / Governance Sync
-
-状态：**本轮执行**。
-
-要求：
-
-- Personality IP Bible 保持最高产品 Source of Truth；
-- `shi_shen` 正式公网人格只使用 **享乐主义**；
-- 旧名称“好吃懒做”保持 retired；
-- Current State 只写当前事实；
-- Roadmap 只写下一步；
-- Character Style 状态统一为 **LOCKED → formal Character Production**；
-- 新想法只进 Post-V1 / V1.1 Parking Lot。
-
-完成后不再继续做治理扩写，直接进入 Character Production。
-
-## 4. P0.2 — 20 / 20 formal Character Assets
+## 3. P0.1 — Fixed 10-IP Contract Refactor
 
 状态：**NEXT / BLOCKER**。
 
-正式 Character contract：
+2026-08-22 Product Owner 已正式锁定：
+
+> **10 Public Personality = 10 个固定官方 IP。**
+
+旧逻辑：
 
 ```text
-public/characters/v1/{ten_god}-male.webp
-public/characters/v1/{ten_god}-female.webp
+{ten_god}-male.webp
+{ten_god}-female.webp
+用户性别 → Character asset
 ```
 
-10 personalities × male/female = **20 formal assets**。
+新逻辑：
 
-正式人格：
+```text
+{ten_god}.webp
+Public Personality → 唯一固定 Character asset
+```
 
-| Machine key | Public personality |
-| --- | --- |
-| `bi_jian` | 犟种 |
-| `jie_cai` | 撒币 |
-| `shi_shen` | 享乐主义 |
-| `shang_guan` | 天生反骨 |
-| `zheng_cai` | 抠抠搜搜 |
-| `pian_cai` | 搞钱圣体 |
-| `zheng_guan` | 老干部 |
-| `qi_sha` | 狠人 |
-| `zheng_yin` | 活菩萨 |
-| `pian_yin` | 道长 |
+执行要求：
+
+- 移除代码中的 male / female character filename routing；
+- Birth 若仍收集用户性别，只保留 deterministic Bazi calculation 语义；
+- UI 不再把性别描述为角色选择；
+- Result Hero 只按 dominant personality 选择固定角色；
+- secondary personality 也只按 personality key 选择固定角色；
+- Share Card 只按 personality key 选择固定角色；
+- tests / manifests / types / docs 全部同步；
+- 不得保留“缺固定角色时回退到 gender asset”的双轨逻辑。
+
+## 4. P0.2 — 10 / 10 formal Character Masters
+
+状态：**BLOCKER**。
+
+正式目录：`public/characters/v1/`
+
+正式资产：
+
+```text
+bi_jian.webp        # 犟种 · 固定女角色
+jie_cai.webp        # 撒币 · 固定男角色
+shi_shen.webp       # 享乐主义 · 固定男角色
+shang_guan.webp     # 天生反骨 · 固定女角色
+zheng_cai.webp      # 抠抠搜搜 · 固定女角色
+pian_cai.webp       # 搞钱圣体 · 固定男角色
+zheng_guan.webp     # 老干部 · 固定女角色
+qi_sha.webp         # 狠人 · 固定男角色
+zheng_yin.webp      # 活菩萨 · 固定男角色
+pian_yin.webp       # 道长 · 固定女角色
+```
 
 Canonical references：
 
@@ -115,52 +122,47 @@ Canonical references：
 
 硬规则：**pose may be redesigned; style may not be reinterpreted.**
 
-Style selection 已完成。不得重新做 3 套 Style Pilot，不得重新选画风，不得使用“好吃懒做”作为正式 Character identity。
-
-`docs/16_CHARACTER_BATCH_PRODUCTION_V1.md` 中的 Production Pilot / pair gate 只负责验证锁定风格的一致性，不是 Style Exploration。
-
-正式角色缺失时不得回退 CSS / SVG / placeholder / silhouette / legacy 25 archetype character。
-
-当前正式资产状态：**0 / 20**。
+当前正式 binary 状态：**0 / 10**。
 
 ## 5. P0.3 — Character integration QA
 
-20 / 20 到位后，按顺序验证：
+### Homepage
 
-### Homepage Character integration QA
-
-- 10 personality cards 使用正式图片；
-- 缩小后识别度；
-- 不出现 fallback character；
+- 10 personality cards 使用固定正式 Character；
+- 缩小后人格识别度足够；
+- 不出现 fallback / gender alternate；
 - 首屏加载策略正常。
 
-### Result Character integration QA
+### Birth
+
+- 用户性别若保留，仅作为排盘数据；
+- 不出现“选择男 / 女角色”产品语义；
+- 不因为用户性别改变最终 Character。
+
+### Result
 
 - dominant personality Hero 正确；
-- male / female contract 正确；
-- secondary personality 使用正式资产；
+- secondary personality Character 正确；
+- 同人格所有用户看到同一个固定 Character；
 - reload / back / error state 不出现 placeholder。
 
-### Share Card real-image QA
+### Share Card
 
 - 1080 × 1350 feed card；
 - 1080 × 1920 Story / XHS card；
-- 正式 Hero Character 清晰；
+- 固定 Hero Character 清晰；
 - Web Share / PNG fallback / copy result；
 - 缺图必须显式失败。
 
 ## 6. P0.4 — Mobile / browser QA
 
-至少完成：
-
-- 390px
-- 430px
-- 768px
-- 1440px
+至少完成：390px / 430px / 768px / 1440px。
 
 完整走查：
 
-Homepage → Birth → Result → Share Card → public return URL。
+```text
+Homepage → Birth → Result → Share Card → public return URL
+```
 
 同时覆盖 unknown birth time、invalid/custom location、reload、back、navigation 与 share fallback。
 
@@ -176,7 +178,7 @@ npm test
 npm run build
 ```
 
-通过后严格执行：
+通过后：
 
 ```text
 PR #16 Draft
@@ -186,41 +188,51 @@ PR #16 Draft
 → final public smoke test
 ```
 
-只有 public smoke test 通过，V1 才算发布完成。
+## 8. 完整产品方向 — 已设计，不阻塞 V1
 
-## 8. Post-V1 / V1.1 Parking Lot
+`docs/17_PRODUCT_DESIGN_REPORT_V1.md` 已定义完整产品终局：
 
-以下项目当前全部 **PARKED**。可以记录 Recommendation，但不得在 V1 Release Freeze 中实现：
+```text
+10 fixed Public Personality IPs
+→ 免费完整 Personality Dossier
+→ Share Loop
+→ Bazi Personality Spectrum / 八字人格光谱
+→ 轻付费深度报告
+→ AI Advisor / 后续顾问能力
+```
 
-- 双人人格关系
-- compatibility / matching
-- referral system
-- invitation challenge system
-- AI Advisor
-- AI Chat
-- payment
-- ¥9.9 report checkout
-- Supabase Live
-- Auth
-- Account
+八字人格光谱采用：
+
+```text
+1 主人格
++ 1–2 副人格 / 次级动力
++ N deterministic 八字结构修正因子
+```
+
+任何比例 / 纯度 / 权重不得由 LLM 自行编造。
+
+## 9. Post-V1 / V1.1 Parking Lot
+
+当前 PARKED：
+
+- 双人人格关系 / compatibility
+- referral / invitation challenge
+- AI Advisor / AI Chat
+- payment / ¥9.9 report checkout
+- Bazi Personality Spectrum implementation
+- Supabase Live / Auth / Account
 - Analytics full system
-- ranking
-- rarity percentage
+- ranking / rarity
 - new personality types
 - new Character Style
-- new Bazi prediction features
-- 用神
-- 流月 / 流日
+- 用神 / 流月 / 流日
 - complex Traditional Pattern expansion
-- community
-- gamification
+- community / gamification
 
-如果出现新的产品想法，也只能追加到本 Parking Lot 或后续 Recommendation，不得改变当前 P0 顺序。
+这些可以继续设计，但不得改变当前 P0 执行顺序。
 
-## 9. V1 release rule
+## 10. V1 release rule
 
-在 V1 Release Freeze 期间：
+**不扩 Scope，不降质量。**
 
-**不主动扩 Scope。**
-
-当前 P0 没完成前，不启动新的产品方向、增长系统、AI、支付、关系功能、预测功能或新的视觉体系。
+V1 的完整性标准是：当前发布闭环中的每一环都是真实、正式、可用、可分享、无 placeholder；不是把所有未来商业功能一次性塞进首发。
