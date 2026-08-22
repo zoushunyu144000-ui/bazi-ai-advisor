@@ -1,7 +1,7 @@
 # 09 — Current State
 
 状态：**V1 Release Freeze — Traditional Rule Audit Required Before Personality Finalization**  
-最后更新：2026-08-22
+最后更新：2026-08-22（+ Mobile UI Design Pilot V1 on `design/mobile-ui-pilot-v1`）
 
 ## 0. Source of Truth
 
@@ -151,6 +151,23 @@ Style 继续 LOCKED：
 但 Result 的人格 authoritative source 仍需在 Traditional Rule Audit 后调整。
 
 15 dimensions 可以保留为现代行为解释辅助，但不得反向决定传统格局。
+
+### 8.1 Mobile UI Design Pilot V1（branch `design/mobile-ui-pilot-v1`）
+
+2026-08-22 完成一轮 Mobile UI Pilot，只改 presentation，不动 Engine / Interpretation / Character contract：
+
+- 分支：`design/mobile-ui-pilot-v1`（base `release/v1-personality-rc`），未合并。
+- 覆盖页面：`/`、`/birth`、`/result`；viewport 基准 390×844 与 430×932。
+- 视觉系统：冷白 / 中性灰底 + 墨黑主字 + 每个人格专属低饱和 accent（`lib/personality-accent.ts`）。
+- Character 处理：`app/_components/character-slot.tsx` 运行时探测 `/characters/v1/{ten_god}.webp`；正式资产到位前显示清晰预留位，不伪造角色、不使用 CSS 人形 / silhouette fallback。
+- Birth 改为 4 步 onboarding ritual：date → time → place → verify，时间用 tactile wheel（`time-wheel.tsx`）；「大运性别」保留为排盘数据字段，不再承担角色选择语义。
+- Result 采用 editorial blocks：巨大人格名 hero、主导 / 明显副倾向 mix bar、A 面（dark block）/ 翻车面（accent block）、dimension chart、8 张 mode 卡、professional evidence fold、9 人格横向 carousel、share card preview。
+- 动效全部受 `prefers-reduced-motion` 约束。
+- 验收截图：`docs/ui-pilot/{home,birth,result}-{390,430}.png`（另有 `-full.png` 全页版本）。
+- 校验状态：typecheck clean；lint 0 errors；4/4 test suites pass；`next build` 成功；390 与 430 视口均无水平 overflow。
+- 已知限制：console 中的 `/characters/v1/*.webp` 404 属于预期资产 gate 行为；Share Card 在正式资产到位前会显式失败并给出提示文案（符合 character README 的 fail-visibly 要求）。
+
+该分支是 Pilot，不是 Design Freeze。视觉方向等待 Product Owner 审核。
 
 ## 9. 当前最大 Release Blockers
 

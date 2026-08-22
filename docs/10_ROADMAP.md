@@ -214,6 +214,20 @@ V1 可使用：
 
 用户性别不决定 Character。
 
+### 8.1 Mobile UI Pilot（已完成，等待审核）
+
+2026-08-22 在 `design/mobile-ui-pilot-v1` 分支完成一轮 Mobile Editorial UI Pilot：
+
+- 只覆盖 `/`、`/birth`、`/result` 三个页面；viewport 基准 390×844 / 430×932。
+- Character 使用 `character-slot.tsx` 预留位方案，正式资产到位后无需改代码即可替换。
+- 验收截图在 `docs/ui-pilot/`，typecheck / lint / tests / build 全部通过。
+
+下一步（等 Product Owner 审核视觉后）：
+
+1. 审核通过 → 把 pilot 合并回 `release/v1-personality-rc`；
+2. 审核有意见 → 在同一分支上迭代，不新开分支；
+3. 本轮不宣布 Design Freeze，不扩展其他页面（report / advisor / account 等）。
+
 ## 9. QA Gate
 
 最终必须覆盖：
