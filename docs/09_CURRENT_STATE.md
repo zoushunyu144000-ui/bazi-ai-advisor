@@ -1,6 +1,6 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — TraditionalPatternResult Spec READY FOR REVIEW / Implementation NOT STARTED**  
+状态：**V1 Release Freeze — TraditionalPatternResult Spec LOCKED / Implementation NEXT**  
 最后更新：2026-08-23
 
 ## 0. Source of Truth
@@ -10,7 +10,7 @@
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
-4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`（当前 Proposed / Review）
+4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
 5. `docs/09_CURRENT_STATE.md`
 6. `docs/10_ROADMAP.md`
 7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
@@ -38,19 +38,23 @@
 
 PR 继续保持 Draft，直到传统判断链、固定 Character IP、最终 QA 均完成。
 
-## 3. 已完成 Gate
-
-### Traditional Bazi Rule Audit
-
-```text
-DONE
-```
+## 3. Traditional Bazi Rule Audit — DONE
 
 Source：`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`。
 
-核心结论继续有效：legacy `support_ratio`、0.58 / 0.42、month ×1.5、52/18/22/8 candidate ranking 均不得承担正式 Traditional Pattern authority。
+核心结论继续有效：
 
-### Traditional Bazi Rule Profile V1
+```text
+legacy support_ratio
+0.58 / 0.42
+month × 1.5
+hidden-stem numeric scoring
+52 / 18 / 22 / 8 candidate ranking
+```
+
+均不得承担正式 Traditional Pattern authority。
+
+## 4. Traditional Bazi Rule Profile V1 — LOCKED
 
 ```text
 rule_profile_version = ziping-v1.0.0
@@ -59,7 +63,7 @@ status = LOCKED / ACTIVE
 
 Source：`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`。
 
-Owner Approval OA-01 ～ OA-07 已冻结：
+OA-01 ～ OA-07 已冻结：
 
 ```text
 YEAR_BOUNDARY = EXACT_LICHUN_INSTANT
@@ -79,37 +83,100 @@ DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
 FOLLOW FINAL = STRICT_FOLLOW_WEALTH + STRICT_FOLLOW_KILLING
 ```
 
-## 4. TraditionalPatternResult Spec — READY FOR REVIEW
+## 5. TraditionalPatternResult Spec V1 — LOCKED
 
-本轮已新增：
+Source：
 
 `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
 
-状态：
+正式版本：
 
 ```text
-TraditionalPatternResult Spec = READY FOR REVIEW / PROPOSED
-Implementation = NOT STARTED
+pattern_schema_version = traditional-pattern-result/1.0.0
+status = LOCKED / ACTIVE
 ```
 
-Spec 提议：
+Owner 已批准 TP-01 ～ TP-07，并完成四项 Required Revisions。
 
-- Owner：`modules/bazi/traditional-pattern/**`；
-- Shared Contract：未来 `types/domain/traditional-pattern.ts`；
-- Input：`BirthProfile + BaziChart + BaziCalculationMetadata + BaziRelation[]`；
-- `BaziDerivedFeatures` 不进入 Traditional Pattern authority input；
-- `pattern_schema_version = traditional-pattern-result/1.0.0`；
-- Pattern Status 支持 clear / primary+secondary / mixed / no-stable / follow / ambiguous；
-- Pattern enum 只包含 `ziping-v1.0.0` 可 final 的传统结构；
-- Evidence / Counter Evidence / Ambiguity first-class；
-- Strength 只用 qualitative evidence；
-- directional combinations 保留 Host direction；
-- strict Follow Wealth / Follow Killing 才可 confirmed final；
-- legacy `personality-map/0.2.0` 采用 shadow migration，不立即删除。
+### TP-01 ～ TP-07
 
-Spec 中 TP-01 ～ TP-07 为 **Proposed architecture decisions**，需要 Review / Owner Approval 后才能 Freeze Spec。
+```text
+TP-01 APPROVED
+Bazi Traditional Layer owns TraditionalPatternResult.
 
-## 5. Current Implementation Reality / Gaps
+TP-02 APPROVED
+Legacy BaziDerivedFeatures excluded from Traditional Pattern authority input.
+
+TP-03 APPROVED
+pattern_schema_version = traditional-pattern-result/1.0.0
+
+TP-04 APPROVED
+No UNKNOWN / NONE TraditionalPattern sentinel.
+Use primaryPattern = null + Pattern Status.
+
+TP-05 APPROVED
+Evidence sufficiency categorical only.
+
+TP-06 APPROVED
+Approximate birth time does not invent arbitrary ±minute range.
+
+TP-07 APPROVED WITH CONDITION
+Independent result allowed only in Phase A/B shadow migration;
+before Authority Cutover it must enter the canonical Bazi/traditional-result boundary.
+```
+
+### Four Required Revisions
+
+```text
+1. baseMonthHost: TraditionalBaseMonthHost | null
+   null requires material/blocking ambiguity.
+
+2. primaryFormationState: TraditionalFormationState | null
+   primaryPattern != null => state != null
+   primaryPattern == null => state == null
+
+3. computedAt = non-semantic audit metadata
+   excluded from deterministic ID / canonical hash / canonical equality.
+
+4. Legacy BaziDerivedFeatures authority semantics superseded / clarified.
+```
+
+## 6. Legacy BaziDerivedFeatures Governance Clarification
+
+Bazi Engine 继续是 deterministic Bazi facts 的 canonical owner。
+
+但当前 legacy：
+
+```text
+dayMasterStrength
+elementDistribution
+tenGodDistribution
+support-ratio-derived semantics
+confidence
+```
+
+只可继续作为：
+
+```text
+compatibility
+analytics
+Interpretation support
+```
+
+它们不是：
+
+```text
+TraditionalPatternResult authority input
+ziping-v1.0.0 qualitative strength authority
+Month Host authority
+formation / follow authority
+```
+
+Decision Log D-021 已明确 supersede D-010 中对应 authority 语义，同时保留 D-010 的 Bazi Engine ownership / Interpretation anti-duplication 原则。
+
+`types/domain/bazi.ts` 只更新了注释说明；legacy fields / type shape 未删除、未改运行逻辑。
+
+## 7. Current Production Reality / Fail-Closed Prerequisite
 
 当前 production 仍是：
 
@@ -123,88 +190,94 @@ Birth
 → Public Personality
 ```
 
-当前尚未实现 `TraditionalPatternResult`。
+`TraditionalPatternResult` production implementation 尚未开始。
 
-当前代码与 `ziping-v1.0.0` implementation 的关键差距：
+当前最重要的 prerequisite：
 
-1. `modules/bazi/engine.ts` 仍输出 `civil-local-jieqi-v1`；
-2. 23:00–23:59 当前 hour stem 仍按 same civil-day day stem 起时，不是 locked night-Zi split semantics；
-3. current `BaziRelationKind` 只有天干合、六合、六冲、六害；
-4. 尚缺三合、三会、刑、破、transformation state；
-5. 尚缺 Month Host / exposure / root / qualitative strength evaluators；
-6. 尚缺 pattern-specific formation / damage / rescue；
-7. 尚缺 mixed / strict follow adjudication；
-8. `PublicResultBundle` 仍 required `ArchetypeCandidate`；
-9. Result authority 仍由 legacy dominant Ten God 驱动。
+```text
+production calculation profile = civil-local-jieqi-v1
+required Traditional Pattern profile = ziping-v1.0.0
+```
 
-这些是下一 Build 的 implementation work，不是重新修改 Rule Profile 的理由。
+并且当前 23:00–23:59 hour stem 仍按 same civil-day day stem 起时，不符合 frozen night-Zi split semantics。
 
-## 6. Spec Review Gate — ACTIVE
+因此：
+
+```text
+Production Build = ALLOWED
+TraditionalPatternResult authority on legacy profile = FAIL CLOSED / BLOCKED
+```
+
+Build 必须先建立 versioned `ziping-v1.0.0` calculation path，包括 frozen late-Zi hour-stem behavior；不得 silent reinterpret legacy chart。
+
+## 8. Current Implementation Gaps
+
+下一 Build 至少需要：
+
+1. shared `TraditionalPatternResult` contract；
+2. profile guard；
+3. versioned `ziping-v1.0.0` calculation path；
+4. night-Zi frozen semantics；
+5. Month Host / exposure；
+6. roots；
+7. qualitative strength；
+8. 三合 / 三会 / 刑 / 破；
+9. transformation state；
+10. 8 regular + Jianlu / Yuejie / Yangren candidates；
+11. pattern-specific formation / damage / rescue；
+12. Mixed / No Stable / strict Follow；
+13. Evidence / Counter Evidence / Ambiguity；
+14. canonical semantic determinism；
+15. Golden / boundary / regression tests。
+
+## 9. Current P0 — TraditionalPatternResult Implementation
 
 当前唯一 P0：
 
-> **Review + Freeze `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`。**
+> **严格按 `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md` 开始 TraditionalPatternResult Production Implementation。**
 
-Review 需要确认 TP-01 ～ TP-07：
-
-```text
-TP-01 Ownership: Bazi Traditional Layer owns result
-TP-02 Input isolation: no BaziDerivedFeatures authority input
-TP-03 pattern_schema_version = traditional-pattern-result/1.0.0
-TP-04 no UNKNOWN/NONE pattern sentinel; use null + patternStatus
-TP-05 categorical evidence sufficiency; no numeric traditional confidence
-TP-06 approximate-time ambiguity does not invent ±minute window
-TP-07 first phase keeps TraditionalPatternResult independent from required BaziCalculationResult field for shadow migration
-```
-
-在 Spec Freeze 之前：
-
-```text
-TraditionalPatternResult production Build = BLOCKED
-```
-
-## 7. Implementation Plan after Spec Freeze
-
-批准后按：
+实施顺序：
 
 ```text
 Phase 1 Contract + profile guard
-Phase 2 ziping calendar compatibility + structural evidence
+Phase 2 ziping calculation path + structural evidence
 Phase 3 pattern candidates
 Phase 4 pattern-specific formation
 Phase 5 mixed + strict follow
-Phase 6 result assembly + shadow integration
-Phase 7 QA / golden cases
+Phase 6 result assembly + shadow
+Phase 7 QA / golden review
 ```
 
-完成 TraditionalPatternResult implementation Review + Freeze 后，才进入 Public Personality Translation / Authority Cutover。
+Phase A/B 可以 independent shadow result；Authority Cutover 前必须完成 canonical Bazi / traditional-result boundary integration。
 
-## 8. Legacy Personality Authority Risk
+## 10. Legacy Personality Authority Risk
 
 当前 `personality-map/0.2.0`：
 
 ```text
-52% canonical Ten-God score
+52% Ten-God score
 18% family score
-22% personality dimension fit
+22% dimensions
 8% strength fit
 ```
 
 仍属于 `EXPERIMENTAL`。
 
-迁移策略已在 Spec 固定为：
+迁移路径继续锁定：
 
 ```text
-A. TraditionalPatternResult 独立生成
+A. Independent TraditionalPatternResult
 B. Shadow Compare
-C. Translation Layer
+C. Translation Layer + canonical boundary integration
 D. Authority Cutover
 E. Legacy retirement
 ```
 
-切换前不删除旧逻辑；切换后不得在 Traditional result 缺失时静默 fallback 到旧 candidate 作为传统答案。
+Shadow Compare 不得用用户“更像不像”反向修改传统规则。
 
-## 9. 10 Public Personalities — LOCKED
+Authority Cutover 前不删除 legacy；Cutover 后不得 silent fallback 到 legacy candidate 作为 Traditional verdict。
+
+## 11. 10 Public Personalities — LOCKED
 
 | key | Public Personality |
 | --- | --- |
@@ -219,9 +292,9 @@ E. Legacy retirement
 | `zheng_yin` | 活菩萨 |
 | `pian_yin` | 道长 |
 
-这些名字是现代 Translation labels，不等于 Traditional Pattern enum。
+它们属于 Translation Layer，不等于 Traditional Pattern enum。
 
-## 10. Character System — LOCKED
+## 12. Character System — LOCKED
 
 ```text
 10 Public Personality = 10 fixed official Character IPs
@@ -236,26 +309,27 @@ Style Source of Truth：
 - `docs/15_CHARACTER_STYLE_LOCK_V1.md`
 - `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
 
-## 11. Current Release Blockers
+## 13. Current Release Blockers
 
 当前顺序：
 
 1. ✅ Traditional Bazi Rule Audit
 2. ✅ Rule Profile Research / Owner Approval / Freeze
-3. **TraditionalPatternResult Spec Review + Freeze — ACTIVE**
-4. TraditionalPatternResult Build + Golden QA
-5. Public Personality authoritative translation
-6. isolate / retire legacy engineering authority
-7. Character asset / routing completion
-8. Result / Share integration QA
-9. mobile browser QA
-10. full CI
-11. PR #16 Ready
-12. merge main
-13. Vercel Production
-14. final public smoke test
+3. ✅ TraditionalPatternResult Spec Review / Revision / Freeze
+4. **TraditionalPatternResult Production Implementation + Golden QA — NEXT / ACTIVE**
+5. Public Personality authoritative Translation Layer
+6. canonical boundary + authority cutover
+7. isolate / retire legacy engineering authority
+8. Character asset / routing completion
+9. Result / Share integration QA
+10. mobile browser QA
+11. full CI
+12. PR #16 Ready
+13. merge main
+14. Vercel Production
+15. final public smoke test
 
-## 12. Current Out of Scope
+## 14. Current Out of Scope
 
 仍 PARKED：
 
@@ -280,7 +354,7 @@ Rule Profile V1 Deferred 继续保持：
 - 神煞 / 纳音格局；
 - 独立调候 / 盲派 profile。
 
-## 13. Project Operating Rule
+## 15. Project Operating Rule
 
 ```text
 PRODUCT
@@ -296,14 +370,14 @@ PRODUCT
 当前阶段：
 
 ```text
-Rule Profile = LOCKED
-→ TraditionalPatternResult Spec = READY FOR REVIEW
-→ Spec Freeze
-→ Implementation
+Rule Audit = DONE
+→ Rule Profile = LOCKED
+→ TraditionalPatternResult Spec = LOCKED
+→ Production Implementation = NEXT / ALLOWED
 ```
 
-## 14. Product Integrity Rule
+## 16. Product Integrity Rule
 
 > **命理判断来源讲得清楚，现代人格翻译讲得好看。**
 
-不扩 Scope，不降质量，不自造命理，不使用实验数学权重填补规则空白。
+不扩 Scope，不降质量，不自造命理，不使用 legacy numeric model 填补传统规则空白。
