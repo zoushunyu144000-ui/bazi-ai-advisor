@@ -520,6 +520,72 @@ PRODUCT
 
 ---
 
+## D-019 — Traditional Bazi Rule Profile V1 提案
+
+日期：2026-08-22
+状态：**Proposed — Owner Approval Required**
+
+### 决定
+
+基于 `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`，形成：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+
+提议正式版本：
+
+```text
+rule_profile_version = ziping-v1.0.0
+```
+
+提议核心体系：
+
+```text
+子平月令格局法为主体
+《子平真诠》作为格局结构主要规则来源
+《渊海子平》+《三命通会》作为传统交叉参考
+```
+
+提案明确：
+
+- 精确立春换年、精确“节”切月；
+- 月令通过藏气层级与透干决定 Pattern Host，不用数值月支权重；
+- `max(tenGodDistribution)`、candidate score、Personality Dimensions、LLM 不得参与传统格局裁决；
+- 旺衰使用得令、得地 / 根、得势 / 得助、生克制化的 qualitative evidence，不显示身强百分比；
+- regular patterns 为正官、七杀、正财、偏财、正印、偏印、食神、伤官；
+- 建禄必须 exact Lu month position；月劫必须是 month-host 劫财；
+- 成败破救采用 pattern-specific support / damage / rescue；
+- Mixed、primary + secondary、no stable single pattern 均为合法结果；
+- 从格与特殊格采用严格白名单；
+- Evidence、Counter Evidence、Ambiguity 为 first-class contract。
+
+以下 7 项仍需 Owner 明确批准：
+
+1. OA-01：日界推荐 local civil midnight `00:00`，备选子初 `23:00`；
+2. OA-02：晚子时推荐 night-Zi / Zi-zheng split profile；
+3. OA-03：V1 推荐 civil time，不自动真太阳时校正；
+4. OA-04：月令 host 推荐 hidden-qi hierarchy + exposure，不启用精确人元司令日表 authority；
+5. OA-05：阳刃推荐五阳有刃、五阴无真刃，并作为 special self-rooted host；
+6. OA-06：旺衰推荐 qualitative evidence profile，不采用 numeric percentage / thresholds；
+7. OA-07：从格 final verdict 推荐仅 strict 从财 / strict 从杀，其余 candidate / ambiguous / deferred。
+
+### 原因
+
+上一轮 Audit 已确认现有生产链没有完整 Traditional Pattern adjudication，而且 9 项关键 `SCHOOL_CHOICE` 尚未冻结。若不先显式选择 Rule Profile，就直接实现 `TraditionalPatternResult`，会把某一流派或工程假设静默包装成传统共识。
+
+本提案优先保证：
+
+> **规则有来源、分歧有说明、结果可复现、证据可回溯、复杂情况可返回歧义。**
+
+### 影响
+
+- Rule Profile 当前状态仍是 **PROPOSED**，不是 LOCKED；
+- 本决策不修改 production Bazi algorithm；
+- Owner Approval 完成前，`TraditionalPatternResult Implementation` 继续 BLOCKED；
+- Owner 批准 / 修改 OA-01 ～ OA-07 后，再新增 Approved / Superseding decision 或将对应 Rule Profile 决策正式 Freeze；
+- Rule Profile 一旦正式启用，必须使用新的 `rule_profile_version`，不得把 `civil-local-jieqi-v1` 静默改语义。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
