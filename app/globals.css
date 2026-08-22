@@ -14,19 +14,31 @@
   --color-jade-soft: oklch(0.95 0.03 162);
   --color-gold: oklch(0.80 0.11 85);
 
+  /* Editorial palette — mobile-first design pilot */
+  --color-ink-deep: oklch(0.16 0.02 60);
+  --color-canvas: oklch(0.985 0.005 85);
+  --color-dust: oklch(0.93 0.014 85);
+  --color-dust-strong: oklch(0.87 0.018 78);
+
   --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
   --font-sans: ui-sans-serif, system-ui, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
 
   --radius-card: 14px;
 }
 
 :root {
   color-scheme: light;
+  /* safe area helpers, populated by env(safe-area-inset-*) at runtime */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 html {
   background: var(--color-paper);
   scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -34,8 +46,11 @@ body {
   background: var(--color-paper);
   color: var(--color-ink);
   font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  text-rendering: geometricPrecision;
 }
 
 ::selection {
@@ -43,28 +58,41 @@ body {
   color: white;
 }
 
-/* Fluid editorial display sizes */
+/* Editorial display utilities */
 .display-xl {
   font-family: var(--font-display);
   font-weight: 700;
-  line-height: 1.04;
-  letter-spacing: -0.01em;
-  font-size: clamp(2.4rem, 6vw, 4.6rem);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  font-size: clamp(2.6rem, 12vw, 4.6rem);
 }
 .display-lg {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 1.1;
-  font-size: clamp(1.8rem, 3.4vw, 2.8rem);
+  line-height: 1.04;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.9rem, 7vw, 3.1rem);
 }
 .display-md {
   font-family: var(--font-display);
   font-weight: 600;
-  line-height: 1.15;
-  font-size: clamp(1.3rem, 2.2vw, 1.8rem);
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  font-size: clamp(1.35rem, 5vw, 1.95rem);
 }
-
-/* Vertical accent rule used as an editorial device */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.28em;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.eyebrow-zh {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+}
 .rule-accent {
   width: 56px;
   height: 3px;
@@ -72,16 +100,47 @@ body {
   border-radius: 999px;
 }
 
-/* Reveal animation for the result */
-@keyframes rise {
+/* Reveal / breathing animations — reduced-motion safe */
+@keyframes editorial-rise {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.reveal {
-  animation: rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes character-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
 }
+@keyframes editorial-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+.reveal {
+  animation: editorial-rise 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.breathe {
+  animation: character-breathe 4.6s ease-in-out infinite;
+}
+.pulse-soft {
+  animation: pulse-soft 2.4s ease-in-out infinite;
+}
+.marquee-track {
+  animation: editorial-marquee 28s linear infinite;
+  will-change: transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .reveal { animation: none; }
+  .reveal,
+  .breathe,
+  .pulse-soft,
+  .marquee-track {
+    animation: none !important;
+  }
+  html { scroll-behavior: auto; }
+  * { transition: none !important; }
 }
 
 /* Button + link primitives */
@@ -90,20 +149,47 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: var(--color-cinnabar);
+  background: var(--color-ink-deep);
   color: white;
   font-weight: 600;
-  padding: 0.8rem 1.6rem;
+  padding: 0.95rem 1.6rem;
   border-radius: 999px;
+  font-size: 1rem;
   transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-  box-shadow: 0 6px 20px -8px var(--color-cinnabar);
+  box-shadow: 0 6px 22px -10px oklch(0.22 0.02 60 / 0.55);
+  min-height: 48px;
 }
 .btn-primary:hover {
   transform: translateY(-1px);
-  background: oklch(0.50 0.185 30);
-  box-shadow: 0 10px 26px -10px var(--color-cinnabar);
+  background: oklch(0.10 0.02 60);
+  box-shadow: 0 10px 28px -10px oklch(0.22 0.02 60 / 0.65);
 }
 .btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--p-ink, var(--color-cinnabar));
+  color: white;
+  font-weight: 600;
+  padding: 0.95rem 1.6rem;
+  border-radius: 999px;
+  font-size: 1rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease;
+  box-shadow: 0 6px 22px -10px var(--p-ink, var(--color-cinnabar));
+  min-height: 48px;
+}
+.btn-accent:hover { transform: translateY(-1px); filter: brightness(0.92); }
+.btn-accent:active { transform: translateY(0); }
+.btn-accent:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
 
 .btn-ghost {
   display: inline-flex;
@@ -112,33 +198,106 @@ body {
   border: 1px solid var(--color-line-strong);
   color: var(--color-ink);
   font-weight: 500;
-  padding: 0.8rem 1.6rem;
+  padding: 0.85rem 1.4rem;
   border-radius: 999px;
-  transition: border-color 0.18s ease, background 0.18s ease;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  background: transparent;
+  min-height: 46px;
 }
-.btn-ghost:hover { border-color: var(--color-cinnabar); background: var(--color-cinnabar-soft); }
+.btn-ghost:hover { border-color: var(--color-ink-deep); background: var(--color-ink-deep); color: white; }
 
 .field-label {
   display: block;
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 700;
   color: var(--color-soft);
-  margin-bottom: 0.4rem;
-  letter-spacing: 0.02em;
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
 .input-base {
   width: 100%;
-  background: var(--color-surface);
+  background: var(--color-canvas);
   border: 1px solid var(--color-line-strong);
-  border-radius: 10px;
-  padding: 0.7rem 0.9rem;
+  border-radius: 14px;
+  padding: 0.85rem 1rem;
   font-size: 1rem;
   color: var(--color-ink);
   transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  min-height: 48px;
 }
 .input-base:focus {
   outline: none;
-  border-color: var(--color-cinnabar);
-  box-shadow: 0 0 0 3px var(--color-cinnabar-soft);
+  border-color: var(--color-ink-deep);
+  box-shadow: 0 0 0 4px oklch(0.92 0.02 60);
+}
+
+/* Editorial frame treatments — NOT the same rounded card template */
+.editorial-rule {
+  position: relative;
+  display: block;
+}
+.editorial-rule::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--p-ink, var(--color-ink-deep));
+  border-radius: 3px;
+}
+.dark-block {
+  background: var(--color-ink-deep);
+  color: var(--color-paper);
+}
+
+/* Chip used for personality labels — accent-bound */
+.accent-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: var(--p-paper, var(--color-paper));
+  color: var(--p-ink, var(--color-ink-deep));
+  border: 1px solid var(--p-hairline, var(--color-line));
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.accent-chip-solid {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: var(--p-ink, var(--color-ink-deep));
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.accent-soft-block {
+  background: var(--p-soft, oklch(0.94 0.02 60));
+  color: var(--p-ink, var(--color-ink-deep));
+}
+
+/* Hidden scrollbars on mobile strips */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Safe area helpers */
+.pad-safe-top { padding-top: max(0.75rem, var(--safe-top)); }
+.pad-safe-bottom { padding-bottom: max(1rem, var(--safe-bottom)); }
+
+/* Sticky action bar above safe area */
+.sticky-bottom {
+  padding-bottom: calc(1rem + var(--safe-bottom));
 }

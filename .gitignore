@@ -25,6 +25,9 @@
 *.tsbuildinfo
 next-env.d.ts
 
+# test compilation artefacts (created by scripts/run-test-suite.mjs)
+.tmp/
+
 # misc
 .DS_Store
 *.pem
