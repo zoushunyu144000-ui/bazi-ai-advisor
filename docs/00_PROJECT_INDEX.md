@@ -60,6 +60,7 @@ Homepage
 - `20_TRADITIONAL_BAZI_RULE_AUDIT.md`：八字规则审计、分类、风险与 Rule Profile 前置缺口
 - `21_AI_PROJECT_OPERATING_SYSTEM.md`：AI 项目管理闭环与每轮 Task / Build / Review / Freeze 规则
 - `22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`：**LOCKED `ziping-v1.0.0`**；Calendar、月令 Host、旺衰、格局范围、成败救应、Mixed、从格、Evidence / Ambiguity 的传统规则 Source of Truth
+- `23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`：**READY FOR REVIEW / PROPOSED**；TraditionalPatternResult Contract、Evidence / Counter Evidence / Ambiguity schema、legacy migration、Implementation Plan 与 Testing / Golden strategy
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口/阶段交接模板
 
 ## AI 工作协议
@@ -97,8 +98,9 @@ Billing / Payment / Advisor credit 相关实现还必须读取 `docs/14_BILLING_
 1. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 2. `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
-4. `docs/09_CURRENT_STATE.md`
-5. `docs/10_ROADMAP.md`
+4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
+5. `docs/09_CURRENT_STATE.md`
+6. `docs/10_ROADMAP.md`
 
 当前状态：
 
@@ -106,7 +108,9 @@ Billing / Payment / Advisor credit 相关实现还必须读取 `docs/14_BILLING_
 Traditional Bazi Rule Audit = DONE
 Traditional Bazi Rule Profile = LOCKED
 rule_profile_version = ziping-v1.0.0
-NEXT P0 = TraditionalPatternResult Implementation
+TraditionalPatternResult Spec = READY FOR REVIEW / PROPOSED
+TraditionalPatternResult Implementation = NOT STARTED / BLOCKED UNTIL SPEC FREEZE
+NEXT P0 = TraditionalPatternResult Spec Review + Freeze
 ```
 
 原则：
