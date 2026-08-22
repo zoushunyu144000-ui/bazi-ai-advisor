@@ -1,6 +1,6 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — Traditional Rule Audit Complete / Rule Profile Lock Next**  
+状态：**V1 Release Freeze — Traditional Rule Profile PROPOSED / Owner Approval Required**  
 最后更新：2026-08-22
 
 ## 0. Source of Truth
@@ -16,6 +16,10 @@
 项目执行流程见：
 
 `docs/21_AI_PROJECT_OPERATING_SYSTEM.md`
+
+当前 Traditional Rule Profile 提案见：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 
 本文件只记录当前事实。
 
@@ -72,10 +76,6 @@ Birth
 
 `cb8d55f1cbe7e50046c3fa872a765b4beb07cbc2`
 
-CI：GitHub Actions `ci` run #259 — **SUCCESS**。
-
-Install、Lint、Typecheck、Test、Build 均通过。
-
 审计结论：
 
 - 共审计 43 条重要规则 / 能力；
@@ -84,9 +84,9 @@ Install、Lint、Typecheck、Test、Build 均通过。
 - `IMPLEMENTATION_DETAIL`：7；
 - `EXPERIMENTAL`：14；
 - 当前可直接保留或以 non-authority 工程统计保留：15 条；
-- `TraditionalPatternResult Readiness`：**NOT READY**。
+- 审计时 `TraditionalPatternResult Readiness`：**NOT READY**。
 
-本轮没有修改 production logic。
+Audit 本身没有修改 production logic。
 
 ## 5. 当前核心风险
 
@@ -112,45 +112,70 @@ Install、Lint、Typecheck、Test、Build 均通过。
 
 当前完整、可用于专业报告的 `TraditionalPatternResult` 尚未 Production-ready。
 
-审计确认仍缺：
+仍缺 production implementation：
 
-- 月令取格 / Host Selection；
-- 透干；
-- 根气；
-- 月令司权；
-- 格局候选；
+- 月令 Host Selection；
+- 透干 evidence；
+- 根气 evidence；
+- 定性旺衰 context；
+- 格局候选与主 / 副结构；
 - 成格 / 败格 / 破格 / 救应；
 - 兼格 / 混合格局；
-- 从格 / 假从；
-- 特殊格局；
+- 从格 / 特殊格局；
 - evidence / counter evidence；
 - ambiguity；
-- 版本化 Rule Profile。
+- relation transformation state。
 
-当前身强弱的 support ratio 与 0.58 / 0.42 阈值也属于实验工程模型，不能直接承担完整传统旺衰 authority。
+当前身强弱的 support ratio 与 0.58 / 0.42 阈值仍属于实验工程模型，不能直接承担传统旺衰 authority。
 
-## 7. 下一 P0 — Rule Profile / School Choice Lock
+## 7. Traditional Bazi Rule Profile V1 — PROPOSED
 
-Traditional Rule Audit 已完成。
+本轮已完成 Rule Profile research / specification 提案：
 
-当前新的最高 blocker：
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 
-> **Rule Profile / School Choice Lock（规则体系 / 流派选择冻结）**
+提议版本：
 
-至少需要明确并版本化：
+```text
+rule_profile_version = ziping-v1.0.0
+status = PROPOSED
+```
 
-1. Calendar Profile：立春年界、日界、晚子时、真太阳时；
-2. 子平主参考体系；
-3. 月令 Host Selection / 透干优先级；
-4. 旺衰体系；
-5. 建禄 / 月劫 / 阳刃规则；
-6. 成格 / 败格 / 破格 / 救应规则；
-7. 混合格局 / 不成单一格处理；
-8. 从格 / 假从 / 特殊格局范围；
-9. ambiguity / disagreement policy；
-10. 新 Traditional result 接管 Public Personality authority 的边界。
+核心提案：
 
-Rule Profile 冻结前，不正式实现 `TraditionalPatternResult`。
+```text
+子平月令格局法
+《子平真诠》作为主要格局结构来源
+《渊海子平》+《三命通会》作传统交叉参考
+
+Year = exact LiChun
+Month = exact Jie
+Month Host = ordered hidden qi + exposure
+Strength = 得令 / 得地 / 得势 / 制化的定性 evidence
+Patterns = 八个 regular + 建禄 + 月劫 + proposed 阳刃
+Formation = pattern-specific 成败 / damage / rescue
+Mixed / no stable single pattern = first-class results
+Follow = strict whitelist
+Evidence / Counter Evidence / Ambiguity = first-class
+```
+
+Rule Profile **尚未 LOCKED**。
+
+需要 Owner 明确批准：
+
+1. OA-01：日界采用 local civil midnight `00:00`，还是子初 `23:00`；
+2. OA-02：晚子时采用 night-Zi / Zi-zheng split profile；
+3. OA-03：V1 默认 civil time，不自动真太阳时校正；
+4. OA-04：月令 host 采用 hidden-qi hierarchy + exposure，不启用精确人元司令日表 authority；
+5. OA-05：阳刃采用五阳有刃、五阴无真刃，并作为 special self-rooted host；
+6. OA-06：旺衰采用定性 evidence profile，不恢复 numeric percentage / threshold；
+7. OA-07：从格 final verdict 仅 strict 从财 / strict 从杀，其余 candidate / ambiguous / deferred。
+
+Owner Approval 之前：
+
+```text
+TraditionalPatternResult Implementation = BLOCKED
+```
 
 ## 8. 10 Public Personalities — LOCKED
 
@@ -204,29 +229,32 @@ Style 继续 LOCKED：
 - Share Card rendering；
 - professional evidence section 基础 UI。
 
-但 Result 的人格 authoritative source 仍需在 Rule Profile Lock + TraditionalPatternResult 后调整。
+但 Result 的人格 authoritative source 仍需在 Rule Profile LOCK + TraditionalPatternResult 后调整。
 
 ## 11. 当前 Release Blockers
 
 当前顺序：
 
-1. **Rule Profile / School Choice Lock**；
-2. 建立 `TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity`；
-3. 将 Public Personality 改为传统结果的 translation layer；
-4. 降级 / 隔离 legacy engineering personality authority；
-5. Refactor legacy gender-based Character routing；
-6. 10 / 10 Character Masters；
-7. Result / Share integration QA；
-8. mobile browser QA；
-9. full CI；
-10. PR #16 Ready；
-11. merge main；
-12. Vercel Production；
-13. final public smoke test。
+1. **Owner review / approval of `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md` OA-01 ～ OA-07**；
+2. 将 `ziping-v1.0.0` Rule Profile 正式 LOCK；
+3. 建立 `TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity`；
+4. 将 Public Personality 改为传统结果的 translation layer；
+5. 降级 / 隔离 legacy engineering personality authority；
+6. Refactor legacy gender-based Character routing；
+7. 10 / 10 Character Masters；
+8. Result / Share integration QA；
+9. mobile browser QA；
+10. full CI；
+11. PR #16 Ready；
+12. merge main；
+13. Vercel Production；
+14. final public smoke test。
 
 已完成 Gate：
 
-- ✅ Traditional Bazi Rule Audit。
+- ✅ Traditional Bazi Rule Audit；
+- ✅ Rule Profile Research / Specification；
+- ⏳ Rule Profile Owner Approval / Freeze。
 
 ## 12. 当前不做
 
@@ -243,9 +271,15 @@ Style 继续 LOCKED：
 - community / gamification；
 - 流月 / 流日等进一步预测功能。
 
+同时在 Rule Profile Freeze 前明确禁止：
+
+- 实现 `TraditionalPatternResult`；
+- 修改 Bazi production algorithm；
+- 修改 Personality authoritative mapping。
+
 ## 13. Project Operating Rule
 
-所有 Agent 现在强制执行：
+所有 Agent 强制执行：
 
 ```text
 PRODUCT
