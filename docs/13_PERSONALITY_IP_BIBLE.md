@@ -25,7 +25,7 @@ V1 项目治理优先级固定为：
 
 ## 1. 产品定位
 
-V1 是 **八字版 SBTI + 固定人格 IP + 完整免费人格 Dossier + 分享传播闭环**。
+V1 是 **八字版 SBTI + 固定人格 IP + 免费主人格完整解析 + 免费人格因子配比 + 分享传播闭环**。
 
 核心体验：
 
@@ -34,15 +34,17 @@ V1 是 **八字版 SBTI + 固定人格 IP + 完整免费人格 Dossier + 分享�
 → deterministic Birth normalization
 → deterministic Bazi Engine
 → Interpretation personality-map/0.2.0
-→ 10 Public Personalities
-→ Personality Dossier
+→ versioned personality weighting / normalization
+→ 10 Public Personality factor mix
+→ dominant Public Personality
+→ full dominant Personality Dossier
 → fixed official Character IP
 → Share Card
 ```
 
 产品语气：**里面认真算，外面认真发疯。**
 
-第一反应应该是“这什么鬼”，第二反应是“好像真有点像我”，最后愿意截图或生成卡片发给朋友。
+第一反应应该是“这什么鬼”，第二反应是“好像真有点像我”，第三反应是“原来我还混了这么多别的人格”，最后愿意截图或生成卡片发给朋友。
 
 V1 必须是完整可用产品，不是低质量 prototype；但 payment / AI Advisor / 深度付费报告仍可按 Roadmap 延后，不得因此降低免费 V1 的完整度。
 
@@ -83,14 +85,30 @@ V1 必须是完整可用产品，不是低质量 prototype；但 payment / AI Ad
 normalizeBirthProfile()
 → calculateBazi()
 → interpretBaziChart()
+→ versioned personality weighting / normalization
 → selectArchetypeCandidate()
 ```
 
-主人格使用 `archetype_seed.dominant_ten_god`。
+主人格使用确定性人格权重中的 dominant result，并必须与 `archetype_seed.dominant_ten_god` 兼容或通过版本迁移明确替代关系。
 
-第二人格使用 `archetype_seed.secondary_ten_god`。
+第二人格使用确定性人格权重中的 secondary result，并必须与 `archetype_seed.secondary_ten_god` 兼容或通过版本迁移明确替代关系。
 
 Personality Dimensions 继续消费 `personality-map/0.2.0` 的真实 15 个 dimensions，不允许 Presentation 随机造数。
+
+### Free Personality Mix Contract
+
+V1 免费结果必须展示用户的 **10 个 Public Personality 因子权重 / Personality Mix**。
+
+这些比例必须：
+
+- 来自 deterministic engine 或明确版本化 normalization rules；
+- 同一命盘可复算；
+- 总体归一化到统一尺度，建议 100%；
+- 不得由 LLM 或前端随机生成；
+- 不得为了视觉效果手工修改；
+- 明确是“人格因子权重”，不是宣称传统命理里存在天然固定百分比。
+
+如当前 `personality-map/0.2.0` 尚不能直接产出合格的 10 因子比例，则必须先实现版本化 normalization contract，再对公网展示数字。
 
 `lib/personality-archetypes.ts` 的 5 Elements × 5 Families = 25 archetypes 归类为 **experimental / legacy presentation experiment**，V1 公网人格判断不再消费。
 
@@ -217,24 +235,44 @@ pian_yin.webp
 
 V1 Result 至少包含：
 
-1. 你到底是什么东西
-2. 朋友眼里的你
-3. 你的 A 面
-4. 你的翻车面
-5. 你的第二人格
-6. Personality Dimensions
-7. 工作中的你
-8. 学习中的你
-9. 关系里的你
-10. 冲突中的你
-11. 压力大的你
-12. 你的回血方式
-13. 你的决策方式
-14. 你的金钱模式
-15. 你最容易卡在哪里
-16. 成长建议
-17. 为什么会得到这个结果
-18. 专业八字依据折叠区
+1. 你到底是什么东西 / 主人格 Hero
+2. 你的 10 因子人格配比
+3. 朋友眼里的你
+4. 你的 A 面
+5. 你的翻车面
+6. 你的第二人格名称 + 比例
+7. Personality Dimensions
+8. 工作中的你
+9. 学习中的你
+10. 关系里的你
+11. 冲突中的你
+12. 压力大的你
+13. 你的回血方式
+14. 你的决策方式
+15. 你的金钱模式
+16. 你最容易卡在哪里
+17. 成长建议
+18. 为什么会得到这个主人格
+19. 专业八字依据折叠区
+
+### Free interpretation boundary
+
+免费层：
+
+- **完整详细解析主人格**；
+- 显示其他人格因子的名称与比例；
+- 可标记第二人格 / Top factors；
+- 其他人格最多一句极短提示，不做详细解释。
+
+免费层不详细解释：
+
+- 主人格与其他因子的组合机制；
+- 为什么会形成这些具体比例；
+- 多因子之间的冲突 / 协同；
+- 混合度 / 结构清晰度的专业含义；
+- 多因子在工作、金钱、关系等场景里的联动效应。
+
+这些属于 Post-V1 付费 `Bazi Personality Spectrum` 解析价值。
 
 传统内容不得抢占第一体验。
 
@@ -251,6 +289,16 @@ V1 Result 至少包含：
 
 分享卡必须包含人格大名、固定官方 Hero Character、锚点句、3–5 Tags、毒舌总结、品牌和回流 URL。
 
+建议增加 **Top 3 人格配比摘要**，例如：
+
+```text
+天生反骨 41%
+搞钱圣体 26%
+狠人 14%
+```
+
+这样同一主人格用户的分享卡仍有个人差异，增强比较与二次传播。
+
 正式 Character asset 缺失时，Share Card 必须显式失败，不允许静默 placeholder。
 
 ## 8. Free / Paid boundary
@@ -259,15 +307,27 @@ V1 Result 至少包含：
 
 免费 V1 必须完整爽，不做残缺诱导付费。
 
-免费至少包含：主人格、固定官方 Character、朋友视角、A 面、翻车面、第二人格、Dimensions、主要生活场景、八字依据、Share Card。
+免费必须包含：
 
-免费层回答：**“我是什么人？”**
+- 主人格完整解析；
+- 固定官方 Character；
+- 10 因子人格配比；
+- 第二人格名称 + 比例；
+- 朋友视角、A 面、翻车面；
+- Dimensions；
+- 主要生活场景；
+- 八字依据；
+- Share Card。
+
+免费层回答：**“我主要是什么人，以及我的人格配方是什么？”**
 
 ### Post-V1 paid design — Bazi Personality Spectrum
 
 付费层方向正式定义为：**八字人格光谱 / Bazi Personality Spectrum**。
 
-它不是给主人格简单加长文，而是解释：
+付费不卖“看比例”的权限。**比例免费可见，付费卖的是比例背后的解释。**
+
+它解释：
 
 ```text
 1 个主人格
@@ -275,11 +335,17 @@ V1 Result 至少包含：
 + N 个 deterministic 八字结构修正因子
 ```
 
+重点回答：
+
+- 为什么会形成这个比例；
+- 主人格与副人格怎样互相作用；
+- 哪些结构造成内在矛盾；
+- 混合度 / 清晰度意味着什么；
+- 在工作、金钱、关系、压力、决策里怎样表现。
+
 可扩展因子包括经过版本化规则验证的：十神权重、日主状态、五行结构、格局清晰度 / 混合度、关键组合关系等。
 
 任何比例、纯度、权重或结构标签必须来自 deterministic engine / versioned rules，LLM 不得自行编造。
-
-付费层回答：**“为什么我是这样，而且为什么我和另一个同人格的人仍然不同？”**
 
 支付未接前，付费区只允许显示“即将开放”，不得伪造支付成功。
 
@@ -291,12 +357,12 @@ V1 Result 至少包含：
 
 核心必须同时满足：
 
-- 社交货币：人格名值得说出口；
+- 社交货币：人格名和人格配方值得说出口；
 - 情绪：好笑、被说中、反差；
-- 公开性：固定角色与分享卡可识别；
+- 公开性：固定角色、分享卡、Top factor mix 可识别；
 - 触发：工作、关系、金钱、压力等生活场景；
 - 实用价值：免费结果本身有自我理解价值；
-- 故事：朋友眼中的你 / 真正的你 / 翻车面 / 第二人格形成可讲述结构。
+- 故事：朋友眼中的你 / 真正的你 / 翻车面 / 第二人格 / 混合配方形成可讲述结构。
 
 ## 10. V1 Release Freeze
 
@@ -307,14 +373,15 @@ Homepage
 → Birth
 → deterministic Bazi
 → Interpretation
+→ versioned Personality Mix
 → 10 Public Personalities
-→ full Personality Dossier
+→ dominant full Personality Dossier
 → 10 fixed formal Characters
-→ Share Card
+→ Share Card with personalized mix summary
 → friend can open the website and test
 ```
 
-当前 release 不要求 payment / AI Advisor / Bazi Personality Spectrum checkout 已实现，但这些未来能力不得破坏当前 deterministic architecture。
+当前 release 不要求 payment / AI Advisor / Bazi Personality Spectrum 深度付费解析已实现，但 **免费 Personality Mix 属于 V1 正式体验，不得延后到付费版。**
 
 ## 11. Definition of Done
 
@@ -323,9 +390,11 @@ Homepage
 → 被角色和名字吸引
 → 愿意填出生信息
 → 真实排盘与 Interpretation
+→ 得到可复算的人格因子配比
 → 得到唯一主人格 + 第二人格
-→ 看完完整 Dossier
+→ 看完主人格完整 Dossier
 → 看见该人格唯一固定 Character
+→ 看见其他人格比例但不展开深度解析
 → 生成真的好看的分享卡
 → 发给朋友
 → 朋友打开网站继续测
@@ -334,6 +403,7 @@ Homepage
 同时必须满足：
 
 - 10 / 10 Character Master 到位；
+- Personality Mix 来自 deterministic / versioned rules；
 - 无 male/female 双角色资产依赖；
 - 无 placeholder；
 - mobile QA 通过；
