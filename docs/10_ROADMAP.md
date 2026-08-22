@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**V1 Release Freeze — Traditional Bazi Authenticity Gate First**  
+状态：**V1 Release Freeze — Rule Profile Lock Active**  
 最后更新：2026-08-22
 
 ## 0. Roadmap boundary
@@ -13,11 +13,11 @@ Source of Truth：
 4. `docs/10_ROADMAP.md`
 5. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
+项目执行流程见 `docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
+
 本文件只描述接下来做什么。
 
 ## 1. V1 objective
-
-V1 最终链路：
 
 ```text
 Homepage
@@ -31,13 +31,11 @@ Homepage
 → friend opens website and tests
 ```
 
-## 2. 新 P0 顺序
+## 2. 当前 P0 顺序
 
-当前严格按以下顺序执行：
-
-1. **Traditional Bazi Rule Audit**
-2. 锁定 rule profile / school choices
-3. 建立 `TraditionalPatternResult + Evidence + Ambiguity`
+1. ✅ Traditional Bazi Rule Audit — COMPLETE
+2. **Rule Profile / School Choice Lock — NEXT / ACTIVE**
+3. 建立 `TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity`
 4. 重构 Public Personality authoritative mapping
 5. 降级 / 隔离现有 engineering personality ranking
 6. 移除伪精确 Personality Mix 百分比要求
@@ -53,81 +51,102 @@ Homepage
 
 ## 3. P0.1 — Traditional Bazi Rule Audit
 
+状态：**COMPLETE**。
+
+结果：`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
+
+- 审计 43 条重要规则 / 能力；
+- `TRADITIONAL_CORE`：13；
+- `SCHOOL_CHOICE`：9；
+- `IMPLEMENTATION_DETAIL`：7；
+- `EXPERIMENTAL`：14；
+- 可直接保留或 non-authority 保留：15；
+- `TraditionalPatternResult Readiness`：**NOT READY**；
+- production logic 未修改；
+- GitHub Actions `ci` run #259：**SUCCESS**。
+
+核心结论：`personality-map/0.2.0` 的 52 / 18 / 22 / 8 candidate ranking 属于实验工程逻辑，不得承担正式传统格局或公网主人格的最终判断权。
+
+## 4. P0.2 — Rule Profile / School Choice Lock
+
 状态：**NEXT / HIGHEST BLOCKER**。
 
-逐条审计：
+本轮目标不是开发完整格局引擎，而是先冻结本产品采用的传统规则体系。
 
-### Calendar / Chart facts
+必须明确：
 
-- 年界；
-- 月界；
-- 日柱；
-- 时柱；
-- 节气；
-- 真太阳时选择；
-- 晚子时规则。
+### Calendar Profile
 
-### Structural facts
+- 立春年界；
+- 日界；
+- 晚子时；
+- 真太阳时；
+- 未知时辰处理。
 
-- 十神映射；
-- 藏干；
-- 月令；
-- 根气；
-- 旺衰；
-- 合冲刑害。
+### Traditional Reference
 
-### Pattern judgment
+- 子平主参考体系；
+- 主来源与辅助来源；
+- 传统来源冲突时的裁决原则。
+
+### Month Command / Host Selection
 
 - 月令取格；
-- 透干取用；
-- 格局候选；
+- 透干 / 藏干优先级；
+- 月令司权；
+- 根气；
+- 建禄 / 月劫；
+- 阳刃定义与 V1 范围。
+
+### Strength Profile
+
+- 得令、得地、得势；
+- 根、透、制化；
+- 当前 support ratio 与 0.58 / 0.42 实验阈值如何退出正式判断链。
+
+### Formation Profile
+
 - 成格；
 - 败格；
 - 破格；
 - 救应；
 - 兼格；
-- 从格 / 假从；
-- 不成单一格；
-- 特殊格局。
+- 混合格局；
+- 不成单一格。
 
-### Existing numeric rules
+### Follow / Special Structures
 
-重点检查当前：
+- 从格；
+- 假从；
+- 特殊格局；
+- 哪些 V1 暂不自动判定。
 
-- 藏干权重；
-- 月支额外权重；
-- 身强弱阈值；
-- `tenGodDistribution` 语义；
-- `personality-map/0.2.0` candidate weights；
-- 15 dimensions 对主人格的影响。
+### Ambiguity Policy
 
-每条规则归类：
+- 流派分歧何时返回 ambiguity；
+- 证据不足何时不强判；
+- evidence strength / confidence 如何表达；
+- Rule Profile 如何版本化。
+
+### Authority Handoff
+
+未来正式链路必须是：
 
 ```text
-TRADITIONAL_CORE
-SCHOOL_CHOICE
-IMPLEMENTATION_DETAIL
-EXPERIMENTAL
+TraditionalPatternResult
+→ Translation Layer
+→ Public Personality
 ```
 
-任何 `EXPERIMENTAL` 规则不得决定正式传统格局。
+而不是由旧 candidate score 直接决定主人格。
 
-## 4. P0.2 — Rule Profile / School Lock
-
-传统命理本身存在流派差异，所以不能假装只有一个“天然算法”。
-
-必须明确：
-
-- 本产品采用哪套核心取格逻辑；
-- 哪些问题存在不同传统意见；
-- 本产品在哪些分歧处选择哪一套；
-- 哪些情况返回 ambiguity，而不是强判。
-
-规则必须版本化。
+本轮完成后必须 Review，并把正式 Rule Profile 写入 Contract / Decision Log 后 Freeze。
 
 ## 5. P0.3 — TraditionalPatternResult
 
-目标 contract 至少包含：
+只有 P0.2 Freeze 后才开始。
+
+目标至少包含：
 
 ```text
 pattern_status
@@ -138,24 +157,17 @@ follow_structure
 strength_context
 key_combinations[]
 evidence[]
+counter_evidence[]
 rule_profile_version
 ambiguities[]
 confidence_or_evidence_strength
 ```
 
-具体字段由审计后定稿，但必须能够表达：
-
-- 成格；
-- 不纯；
-- 兼格；
-- 破格 / 救应；
-- 从格；
-- 不成格；
-- 流派分歧。
+必须能表达成格、不纯、兼格、破格 / 救应、从格、不成格、流派分歧与证据不足。
 
 ## 6. P0.4 — Public Personality Translation
 
-完成 TraditionalPatternResult 后，建立**翻译规则**，不是新算法。
+完成 TraditionalPatternResult 后，建立翻译规则，而不是再造一套命理算法。
 
 例如：
 
@@ -169,36 +181,19 @@ confidence_or_evidence_strength
 
 要求：
 
-- 每个标签可回溯到 evidence；
+- 标签可回溯到 evidence；
 - Public Personality 不覆盖传统格局；
 - 不为了 10 类均衡而调结果；
-- 混合结构允许混合表达。
+- 混合结构允许混合表达；
+- 15 dimensions 只用于现代行为解释，不能反向决定传统格局。
 
 ## 7. Personality percentage policy
 
-当前暂停实现精确 Public Personality 百分比。
+当前禁止把 `candidate_score` 或 `tenGodDistribution` 直接转成 Public Personality 百分比。
 
-禁止：
+V1 可表达：主导 / 明显 / 辅助 / 弱 / 结构混合度。
 
-```text
-candidate_score → normalize to 100% → call it personality percentage
-```
-
-也禁止：
-
-```text
-tenGodDistribution → directly call it Public Personality percentage
-```
-
-V1 可使用：
-
-- 主导；
-- 明显；
-- 辅助；
-- 弱；
-- 结构混合 / 清晰。
-
-未来若恢复百分比，必须经过传统依据与命例验证 Gate。
+未来恢复百分比必须经过传统依据、规则版本化、命例验证与审核。
 
 ## 8. Character P0
 
@@ -210,13 +205,11 @@ V1 可使用：
 → public/characters/v1/{ten_god}.webp
 ```
 
-现有 5 男 + 5 女的 canonical cast 不变。
-
 用户性别不决定 Character。
 
 ## 9. QA Gate
 
-最终必须覆盖：
+最终覆盖：
 
 - 典型清格命例；
 - 混合格局；
@@ -245,7 +238,24 @@ V1 可使用：
 - ranking / rarity；
 - 流月 / 流日等进一步预测功能。
 
-## 11. Release rule
+## 11. Project Operating Rule
+
+每轮必须执行：
+
+```text
+PRODUCT
+→ ROADMAP
+→ CURRENT_STATE
+→ TASK
+→ BUILD
+→ REVIEW
+→ FREEZE
+→ CURRENT_STATE
+```
+
+当前唯一 P0 Task 是 Rule Profile / School Choice Lock。
+
+## 12. Release rule
 
 > **不扩 Scope，不降质量，不自造命理。**
 
