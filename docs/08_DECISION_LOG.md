@@ -470,6 +470,56 @@ Wave 1 已有 wallet / ledger / order / purchase 基础，但 Payment Research �
 
 ---
 
+## D-018 — AI 项目执行统一采用 Product → Roadmap → Current State → Task → Build → Review → Freeze → Current State
+
+日期：2026-08-22
+状态：Approved / Active
+
+### 决定
+
+本仓库所有正式 AI / GPT / Codex / Agent 开发任务统一采用以下项目闭环：
+
+```text
+PRODUCT
+→ ROADMAP
+→ CURRENT_STATE
+→ TASK
+→ BUILD
+→ REVIEW
+→ FREEZE
+→ CURRENT_STATE
+```
+
+完整执行规范见：
+
+`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`
+
+同时规定：
+
+1. 不从聊天中的新想法直接跳到 BUILD；
+2. 每轮必须先明确 Task Boundary，包括 Goal / In Scope / Out of Scope / Deliverables / Review Gate / Forbidden；
+3. 一个 Task 可以做深，但不能无限横向扩 Scope；
+4. Build 完成后必须经过 Scope / Product / Architecture / Engineering / Documentation Review；
+5. Review 通过后重要决定才进入 Freeze；
+6. Freeze 后其他 Agent 不得仅凭个人偏好重新推翻；
+7. 每个真正改变项目状态的 Task 完成后必须更新 `docs/09_CURRENT_STATE.md`，并按需要推进 Roadmap / Decision Log / 专题 Contract；
+8. 本仓库沿用现有编号化文档作为唯一 Source of Truth，不再并行创建重复的 `PRODUCT.md / ROADMAP.md / CURRENT_STATE.md / DESIGN_SYSTEM.md / DECISIONS.md`。
+
+### 原因
+
+此前多 Agent 并行开发容易出现范围蔓延、状态漂移、重复推翻冻结决定、Research / Prototype 被误当 Production Ready，以及重要结果只留在聊天窗口的问题。
+
+该闭环把“产品是什么、准备做什么、现在在哪里、本轮只做什么、如何验收、何时冻结、如何回写状态”固定成仓库级执行协议。
+
+### 影响
+
+- 根目录 `AGENTS.md` 必须强制引用并执行该流程；
+- `docs/00_PROJECT_INDEX.md` 注册该文档作为统一项目管理入口；
+- 当前八字人格项目下一 P0 继续由 `docs/09_CURRENT_STATE.md` 与 `docs/10_ROADMAP.md` 决定；
+- 任何 Agent 不能绕过当前 P0 去顺手开发 parked 功能。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
@@ -490,4 +540,4 @@ Wave 1 已有 wallet / ledger / order / purchase 基础，但 Payment Research �
 ...
 ```
 
-最后更新：2026-08-18
+最后更新：2026-08-22
