@@ -200,7 +200,7 @@ Foundation PR #1 正式合并 `main` 后，Wave 1 所有开发窗口统一从最
 ## D-010 — 02 是 canonical BaziDerivedFeatures 唯一传统命理事实来源
 
 日期：2026-08-18
-状态：Approved / Active
+状态：Approved / Historical — authority semantics superseded by D-021
 
 ### 决定
 
@@ -230,6 +230,8 @@ BirthProfile
 ### 影响
 
 数据库只保存 canonical 02 facts；04 消费 canonical facts。
+
+> 2026-08-23 clarification：D-021 已 supersede 本决策中“当前 legacy `BaziDerivedFeatures` numeric / strength fields 属于 Traditional Pattern authority”的语义。Bazi Engine ownership 与 Interpretation 不得建立第二套事实模型的原则继续有效。
 
 ---
 
@@ -470,6 +472,442 @@ Wave 1 已有 wallet / ledger / order / purchase 基础，但 Payment Research �
 
 ---
 
+## D-018 — AI 项目执行统一采用 Product → Roadmap → Current State → Task → Build → Review → Freeze → Current State
+
+日期：2026-08-22
+状态：Approved / Active
+
+### 决定
+
+本仓库所有正式 AI / GPT / Codex / Agent 开发任务统一采用以下项目闭环：
+
+```text
+PRODUCT
+→ ROADMAP
+→ CURRENT_STATE
+→ TASK
+→ BUILD
+→ REVIEW
+→ FREEZE
+→ CURRENT_STATE
+```
+
+完整执行规范见：
+
+`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`
+
+同时规定：
+
+1. 不从聊天中的新想法直接跳到 BUILD；
+2. 每轮必须先明确 Task Boundary，包括 Goal / In Scope / Out of Scope / Deliverables / Review Gate / Forbidden；
+3. 一个 Task 可以做深，但不能无限横向扩 Scope；
+4. Build 完成后必须经过 Scope / Product / Architecture / Engineering / Documentation Review；
+5. Review 通过后重要决定才进入 Freeze；
+6. Freeze 后其他 Agent 不得仅凭个人偏好重新推翻；
+7. 每个真正改变项目状态的 Task 完成后必须更新 `docs/09_CURRENT_STATE.md`，并按需要推进 Roadmap / Decision Log / 专题 Contract；
+8. 本仓库沿用现有编号化文档作为唯一 Source of Truth，不再并行创建重复的 `PRODUCT.md / ROADMAP.md / CURRENT_STATE.md / DESIGN_SYSTEM.md / DECISIONS.md`。
+
+### 原因
+
+此前多 Agent 并行开发容易出现范围蔓延、状态漂移、重复推翻冻结决定、Research / Prototype 被误当 Production Ready，以及重要结果只留在聊天窗口的问题。
+
+该闭环把“产品是什么、准备做什么、现在在哪里、本轮只做什么、如何验收、何时冻结、如何回写状态”固定成仓库级执行协议。
+
+### 影响
+
+- 根目录 `AGENTS.md` 必须强制引用并执行该流程；
+- `docs/00_PROJECT_INDEX.md` 注册该文档作为统一项目管理入口；
+- 当前八字人格项目下一 P0 继续由 `docs/09_CURRENT_STATE.md` 与 `docs/10_ROADMAP.md` 决定；
+- 任何 Agent 不能绕过当前 P0 去顺手开发 parked 功能。
+
+---
+
+## D-019 — Traditional Bazi Rule Profile V1 提案
+
+日期：2026-08-22
+状态：**Proposed — Superseded by D-020**
+
+### 决定
+
+基于 `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`，形成：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+
+提议正式版本：
+
+```text
+rule_profile_version = ziping-v1.0.0
+```
+
+提议核心体系：
+
+```text
+子平月令格局法为主体
+《子平真诠》作为格局结构主要规则来源
+《渊海子平》+《三命通会》作为传统交叉参考
+```
+
+提案明确：
+
+- 精确立春换年、精确“节”切月；
+- 月令通过藏气层级与透干决定 Pattern Host，不用数值月支权重；
+- `max(tenGodDistribution)`、candidate score、Personality Dimensions、LLM 不得参与传统格局裁决；
+- 旺衰使用得令、得地 / 根、得势 / 得助、生克制化的 qualitative evidence，不显示身强百分比；
+- regular patterns 为正官、七杀、正财、偏财、正印、偏印、食神、伤官；
+- 建禄必须 exact Lu month position；月劫必须是 month-host 劫财；
+- 成败破救采用 pattern-specific support / damage / rescue；
+- Mixed、primary + secondary、no stable single pattern 均为合法结果；
+- 从格与特殊格采用严格白名单；
+- Evidence、Counter Evidence、Ambiguity 为 first-class contract。
+
+D-019 当时保留 OA-01 ～ OA-07 Owner Approval Gate。该 Gate 已于 2026-08-23 由 D-020 完成。
+
+### 原因
+
+上一轮 Audit 已确认现有生产链没有完整 Traditional Pattern adjudication，而且关键 `SCHOOL_CHOICE` 必须先显式冻结，不能把某一流派或工程假设静默包装成传统共识。
+
+### 影响
+
+本提案现已由 D-020 supersede；历史提案保留以便追踪决策过程。
+
+---
+
+## D-020 — Traditional Bazi Rule Profile `ziping-v1.0.0` 正式冻结
+
+日期：2026-08-23
+状态：**Approved / Locked / Active**
+
+Supersedes：`D-019`
+
+### 决定
+
+Owner 已明确批准 OA-01 ～ OA-07，并正式冻结：
+
+```text
+rule_profile_version = ziping-v1.0.0
+```
+
+Rule Profile Source of Truth：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+
+#### OA-01 — Day Boundary
+
+```text
+DAY_BOUNDARY = LOCAL_CIVIL_MIDNIGHT_00_00
+```
+
+#### OA-02 — Late Zi
+
+```text
+LATE_ZI = NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
+```
+
+具体语义：23:00–23:59 日柱仍为当前 civil day，时支为子，时干按次日日干起子时；00:00–00:59 日柱进入新 civil day，时支为子，时干按新日日干起子时。
+
+#### OA-03 — Time Standard / True Solar Time
+
+```text
+TIME_STANDARD = HISTORICAL_IANA_CIVIL_TIME
+TRUE_SOLAR_TIME = NOT_AUTO_APPLIED_IN_V1
+```
+
+接近时辰、日界、立春或节气边界时必须保留 ambiguity，不自动切换为真太阳时结果。
+
+#### OA-04 — Month Host
+
+```text
+MONTH_HOST_BASE =
+month branch
+→ ordered hidden qi (main > middle > residual)
+→ exposure
+→ base Pattern Host
+```
+
+明确：
+
+- 不使用 numeric month multiplier；
+- `ziping-v1.0.0` 不使用 exact commander-day table authority；
+- hierarchy 只选择 **base Host**；
+- 后续 exposure context、combination / transformation、formation、damage / rescue、roots / strength、mixed / follow rules 可以改变最终 pattern verdict，但不能改写 base Host evidence。
+
+#### OA-05 — Yangren
+
+```text
+YANGREN = FIVE_YANG_STEMS_ONLY
+甲→卯
+丙→午
+戊→午
+庚→酉
+壬→子
+```
+
+五阴干不自动论真阳刃。
+
+#### OA-06 — Day Master Strength
+
+```text
+DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
+```
+
+使用得令、得地 / 通根、得势 / 得助、生克制化；禁止 personality percentage 或 numeric threshold authority。
+
+#### OA-07 — Follow Structure
+
+```text
+FOLLOW_STRUCTURE_FINAL_VERDICT =
+STRICT_FOLLOW_WEALTH
++
+STRICT_FOLLOW_KILLING
+```
+
+其他 follow structures 仅 candidate / evidence-only / ambiguous / deferred。
+
+### 同时冻结的结构规则
+
+- 子平月令格局法为核心；
+- 《子平真诠》为主要格局结构来源，《渊海子平》《三命通会》交叉参考；
+- 8 regular patterns + Jianlu + Yuejie + five-yang Yangren structural host；
+- Formation 使用 pattern-specific support / damage / rescue；
+- `PRIMARY_WITH_SECONDARY / MIXED / NO_STABLE_SINGLE_PATTERN` 均合法；
+- directional combination 必须保留 Host direction；
+- `evidence[] / counter_evidence[] / ambiguities[]` 为 first-class；
+- `max(tenGodDistribution)`、legacy candidate score、Personality Dimensions、LLM、产品均衡目标不得参与 Traditional verdict；
+- 任何后续规则语义变化必须 bump `rule_profile_version`，不得 silent migration。
+
+### 原因
+
+OA-01 ～ OA-07 已由 Owner 显式裁决，Rule Profile 的关键流派选择、时间口径、月令 Host、旺衰、阳刃与从格范围已经具备稳定、可版本化、可实现与可测试的 V1 contract。
+
+### 影响
+
+```text
+Traditional Bazi Rule Audit = DONE
+Traditional Bazi Rule Profile = LOCKED
+TraditionalPatternResult Implementation = ALLOWED / NEXT P0
+```
+
+- `docs/09_CURRENT_STATE.md` 必须标记 Rule Profile LOCKED；
+- `docs/10_ROADMAP.md` 下一 P0 移动到 TraditionalPatternResult Implementation；
+- implementation 必须严格消费 `ziping-v1.0.0`，不得重新加入 experimental numeric weights；
+- D-019 保留为历史 Proposed decision，不删除；
+- Rule Profile Freeze 本身不表示 TraditionalPatternResult 已经 Production-ready。
+
+---
+
+## D-021 — TraditionalPatternResult V1 Contract 正式冻结 + Legacy BaziDerivedFeatures Authority 澄清
+
+日期：2026-08-23
+状态：**Approved / Locked / Active**
+
+Related：`D-010`, `D-020`  
+Supersedes：**D-010 中关于当前 legacy `BaziDerivedFeatures` numeric / strength fields 属于 Traditional Pattern authority 的语义；不 supersede Bazi Engine ownership / anti-duplication 原则。**
+
+### 决定
+
+Owner 已完成 `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md` Review，并批准 TP-01 ～ TP-07 与四项 Required Contract Revisions。
+
+正式冻结：
+
+```text
+pattern_schema_version = traditional-pattern-result/1.0.0
+status = LOCKED / ACTIVE
+rule_profile_version = ziping-v1.0.0
+```
+
+#### TP-01 — Ownership
+
+```text
+TraditionalPatternResult owner = modules/bazi/traditional-pattern/**
+Interpretation = consumer only
+LLM = no pattern judgment authority
+```
+
+#### TP-02 — Input Authority Isolation
+
+```text
+TraditionalPatternInput
+= BirthProfile
++ BaziChart
++ BaziCalculationMetadata
++ BaziRelation[]
+
+Current legacy BaziDerivedFeatures
+= excluded from Traditional Pattern authority input
+```
+
+Bazi Engine 继续是 deterministic Bazi facts 的 canonical owner。
+
+但当前 legacy：
+
+```text
+dayMasterStrength
+elementDistribution
+tenGodDistribution
+support-ratio-derived semantics
+confidence
+```
+
+只能保留作 compatibility / analytics / Interpretation support；它们不定义 `ziping-v1.0.0` 的 Month Host、qualitative strength、pattern formation 或 follow verdict。
+
+D-010 的“Interpretation 不得自己建立第二套 deterministic facts”继续有效；D-010 中把当前 numeric / distribution / strength fields 称为 Traditional Pattern authority 的语义由 D-021 supersede。
+
+#### TP-03 — Schema Version
+
+```text
+pattern_schema_version = traditional-pattern-result/1.0.0
+```
+
+与 `rule_profile_version` 独立版本化。
+
+#### TP-04 — No UNKNOWN / NONE Pattern Sentinel
+
+```text
+primaryPattern = null
++ structured patternStatus
+```
+
+不得发明 `UNKNOWN / NONE` 格局。
+
+#### TP-05 — Evidence Sufficiency
+
+仅：
+
+```text
+sufficient
+partial
+insufficient
+indeterminate
+```
+
+不得使用 numeric traditional confidence / percentage authority。
+
+#### TP-06 — Approximate Birth Time
+
+没有用户 / source 提供明确 uncertainty range 时，不得自造 ±15 / ±30 / ±60 分钟等窗口。
+
+无明确范围：
+
+```text
+approximate_time_unbounded
+```
+
+若可能跨关键边界，升级 material / blocking ambiguity。
+
+#### TP-07 — Shadow Independence Is Temporary
+
+Phase A / Phase B 允许 `TraditionalPatternResult` 以 chartId 独立版本化进行 shadow migration。
+
+但在 Authority Cutover 前必须进入 canonical Bazi / traditional-result boundary；不得永久保留 parallel authority trees。
+
+### Required Revision 1 — Nullable Base Month Host
+
+冻结：
+
+```text
+baseMonthHost: TraditionalBaseMonthHost | null
+```
+
+Invariant：
+
+```text
+baseMonthHost = null
+=> material/blocking ambiguity must explain it
+```
+
+### Required Revision 2 — Primary Formation State
+
+冻结：
+
+```text
+primaryFormationState: TraditionalFormationState | null
+```
+
+Invariants：
+
+```text
+primaryPattern != null => primaryFormationState != null
+primaryPattern == null => primaryFormationState == null
+```
+
+Candidate 继续保留各自 `candidate.formationState`。
+
+### Required Revision 3 — Determinism / Audit Timestamp
+
+冻结：
+
+```text
+computedAt: ISODateTime
+```
+
+为 non-semantic audit metadata。
+
+`computedAt` 明确排除于：
+
+```text
+deterministic ID
+canonical hash
+canonical equality
+semantic determinism / byte-stability assertion
+```
+
+Determinism 测试比较 canonical semantic result，而不是包含 execution timestamp 的 raw object。
+
+### Required Revision 4 — Legacy Authority Supersession
+
+`types/domain/bazi.ts` 的 legacy `BaziDerivedFeatures` 注释同步澄清：字段保留，但不再描述为 `ziping-v1.0.0` Traditional Pattern authority。
+
+不删除 legacy fields，不破坏 Interpretation compatibility。
+
+### Production Profile Prerequisite
+
+当前 production calculation profile 仍是：
+
+```text
+civil-local-jieqi-v1
+```
+
+而 TraditionalPatternResult authority 必须消费：
+
+```text
+ziping-v1.0.0
+```
+
+因此实现必须 fail closed：
+
+```text
+legacy profile
+=> RULE_PROFILE_MISMATCH
+=> do not emit ziping-v1.0.0 verdict
+```
+
+Build 允许开始，但第一阶段必须建立 versioned `ziping-v1.0.0` calculation path，包括 frozen late-Zi hour-stem behavior。不得 silent reinterpret legacy chart。
+
+### 原因
+
+Review 发现原 Proposed Contract 有四个可导致未来实现歧义的问题：阻塞月令边界时 Host 不可强制非空；mixed/no-primary 时顶层 formation state 无明确主体；execution timestamp 与 semantic determinism 冲突；D-010 / legacy domain wording 可能让未来 Agent 恢复 numeric authority。
+
+上述修订解决这些 contract contradictions，同时不修改已冻结的传统规则体系。
+
+### 影响
+
+```text
+Rule Audit = DONE
+Rule Profile ziping-v1.0.0 = LOCKED
+TraditionalPatternResult Spec traditional-pattern-result/1.0.0 = LOCKED
+TraditionalPatternResult Implementation = NEXT / ALLOWED
+```
+
+同时：
+
+- Production Build 可以从 Contract / profile guard 开始；
+- legacy `civil-local-jieqi-v1` 不得产生 `ziping-v1.0.0` authority result；
+- Authority Cutover 仍需 implementation Review + Golden QA + canonical boundary integration + Translation Review；
+- PR #16 继续 Draft；
+- 本 Freeze round 不修改 production logic。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
@@ -490,4 +928,4 @@ Wave 1 已有 wallet / ledger / order / purchase 基础，但 Payment Research �
 ...
 ```
 
-最后更新：2026-08-18
+最后更新：2026-08-23

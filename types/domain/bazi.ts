@@ -67,11 +67,13 @@ export interface BaziCalculationMetadata {
 export type DayMasterStrength = "weak" | "balanced" | "strong" | "unknown";
 
 /**
- * Semantic percentage on an inclusive 0-100 scale.
+ * Semantic percentage on an inclusive 0-100 scale for the legacy engineering
+ * distribution model.
  *
  * TypeScript cannot encode the numeric bounds, so producers MUST validate the
- * range in deterministic tests. Canonical element and Ten-God distributions
- * must use this scale; 0-1 fractions are not valid for these fields.
+ * range in deterministic tests. These percentages may remain for compatibility,
+ * analytics and Interpretation consumption; they are NOT Traditional Pattern
+ * authority under ziping-v1.0.0.
  */
 export type BaziPercentageScore = number;
 
@@ -86,9 +88,19 @@ export interface WeightedTenGodScore {
 }
 
 /**
- * Canonical traditional-structure facts produced by the deterministic Bazi
- * Engine. Interpretation consumes this object; it must not independently
- * recalculate a second competing element/Ten-God/strength model.
+ * Legacy engineering derived features produced by the deterministic Bazi Engine.
+ *
+ * The Bazi Engine remains the canonical owner of deterministic Bazi facts and
+ * Interpretation must not independently recreate a competing feature model.
+ * However, the current dayMasterStrength, elementDistribution,
+ * tenGodDistribution and confidence semantics are compatibility / analytics /
+ * Interpretation fields only. They are NOT authority inputs for
+ * TraditionalPatternResult and do NOT define ziping-v1.0.0 Month Host,
+ * qualitative strength, formation or follow-structure verdicts.
+ *
+ * See docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md,
+ * docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md and
+ * docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md.
  */
 export interface BaziDerivedFeatures {
   id: UUID;

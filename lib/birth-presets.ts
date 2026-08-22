@@ -1,0 +1,41 @@
+import type { StaticLocationRecord } from "@/modules/birth";
+
+export interface BirthplacePreset extends StaticLocationRecord {
+  label: string;
+}
+
+export const BIRTHPLACE_PRESETS: BirthplacePreset[] = [
+  { providerLocationId: "cn-beijing", label: "中国 · 北京", city: { zhHans: "北京", en: "Beijing" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 39.9042, longitude: 116.4074 }, timezone: "Asia/Shanghai", aliases: ["北京市", "Beijing"] },
+  { providerLocationId: "cn-shanghai", label: "中国 · 上海", city: { zhHans: "上海", en: "Shanghai" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 31.2304, longitude: 121.4737 }, timezone: "Asia/Shanghai", aliases: ["上海市", "Shanghai"] },
+  { providerLocationId: "cn-guangzhou", label: "中国 · 广州", city: { zhHans: "广州", en: "Guangzhou" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 23.1291, longitude: 113.2644 }, timezone: "Asia/Shanghai", aliases: ["广州市", "Guangzhou"] },
+  { providerLocationId: "cn-shenzhen", label: "中国 · 深圳", city: { zhHans: "深圳", en: "Shenzhen" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 22.5431, longitude: 114.0579 }, timezone: "Asia/Shanghai", aliases: ["深圳市", "Shenzhen"] },
+  { providerLocationId: "cn-wuhan", label: "中国 · 武汉", city: { zhHans: "武汉", en: "Wuhan" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 30.5928, longitude: 114.3055 }, timezone: "Asia/Shanghai", aliases: ["武汉市", "Wuhan"] },
+  { providerLocationId: "cn-chengdu", label: "中国 · 成都", city: { zhHans: "成都", en: "Chengdu" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 30.5728, longitude: 104.0668 }, timezone: "Asia/Shanghai", aliases: ["成都市", "Chengdu"] },
+  { providerLocationId: "cn-chongqing", label: "中国 · 重庆", city: { zhHans: "重庆", en: "Chongqing" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 29.563, longitude: 106.5516 }, timezone: "Asia/Shanghai", aliases: ["重庆市", "Chongqing"] },
+  { providerLocationId: "cn-xian", label: "中国 · 西安", city: { zhHans: "西安", en: "Xi'an" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 34.3416, longitude: 108.9398 }, timezone: "Asia/Shanghai", aliases: ["西安市", "Xi'an", "Xian"] },
+  { providerLocationId: "cn-hangzhou", label: "中国 · 杭州", city: { zhHans: "杭州", en: "Hangzhou" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 30.2741, longitude: 120.1551 }, timezone: "Asia/Shanghai", aliases: ["杭州市", "Hangzhou"] },
+  { providerLocationId: "cn-nanjing", label: "中国 · 南京", city: { zhHans: "南京", en: "Nanjing" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 32.0603, longitude: 118.7969 }, timezone: "Asia/Shanghai", aliases: ["南京市", "Nanjing"] },
+  { providerLocationId: "cn-tianjin", label: "中国 · 天津", city: { zhHans: "天津", en: "Tianjin" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 39.3434, longitude: 117.3616 }, timezone: "Asia/Shanghai", aliases: ["天津市", "Tianjin"] },
+  { providerLocationId: "cn-changsha", label: "中国 · 长沙", city: { zhHans: "长沙", en: "Changsha" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 28.2282, longitude: 112.9388 }, timezone: "Asia/Shanghai", aliases: ["长沙市", "Changsha"] },
+  { providerLocationId: "cn-zhengzhou", label: "中国 · 郑州", city: { zhHans: "郑州", en: "Zhengzhou" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 34.7466, longitude: 113.6254 }, timezone: "Asia/Shanghai", aliases: ["郑州市", "Zhengzhou"] },
+  { providerLocationId: "cn-hefei", label: "中国 · 合肥", city: { zhHans: "合肥", en: "Hefei" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 31.8206, longitude: 117.2272 }, timezone: "Asia/Shanghai", aliases: ["合肥市", "Hefei"] },
+  { providerLocationId: "cn-fuzhou", label: "中国 · 福州", city: { zhHans: "福州", en: "Fuzhou" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 26.0745, longitude: 119.2965 }, timezone: "Asia/Shanghai", aliases: ["福州市", "Fuzhou"] },
+  { providerLocationId: "cn-kunming", label: "中国 · 昆明", city: { zhHans: "昆明", en: "Kunming" }, country: { zhHans: "中国", en: "China" }, countryCode: "CN", coordinates: { latitude: 25.0389, longitude: 102.7183 }, timezone: "Asia/Shanghai", aliases: ["昆明市", "Kunming"] },
+  { providerLocationId: "hk-hong-kong", label: "中国香港 · 香港", city: { zhHans: "香港", en: "Hong Kong" }, country: { zhHans: "中国香港", en: "Hong Kong" }, countryCode: "HK", coordinates: { latitude: 22.3193, longitude: 114.1694 }, timezone: "Asia/Hong_Kong", aliases: ["Hong Kong"] },
+  { providerLocationId: "tw-taipei", label: "中国台湾 · 台北", city: { zhHans: "台北", en: "Taipei" }, country: { zhHans: "中国台湾", en: "Taiwan" }, countryCode: "TW", coordinates: { latitude: 25.033, longitude: 121.5654 }, timezone: "Asia/Taipei", aliases: ["台北市", "Taipei"] },
+  { providerLocationId: "mo-macau", label: "中国澳门 · 澳门", city: { zhHans: "澳门", en: "Macau" }, country: { zhHans: "中国澳门", en: "Macao" }, countryCode: "MO", coordinates: { latitude: 22.1987, longitude: 113.5439 }, timezone: "Asia/Macau", aliases: ["Macau", "Macao"] },
+  { providerLocationId: "my-penang", label: "马来西亚 · 槟城", city: { zhHans: "槟城", en: "George Town" }, country: { zhHans: "马来西亚", en: "Malaysia" }, countryCode: "MY", coordinates: { latitude: 5.4141, longitude: 100.3288 }, timezone: "Asia/Kuala_Lumpur", aliases: ["乔治市", "George Town", "Penang"] },
+  { providerLocationId: "my-kuala-lumpur", label: "马来西亚 · 吉隆坡", city: { zhHans: "吉隆坡", en: "Kuala Lumpur" }, country: { zhHans: "马来西亚", en: "Malaysia" }, countryCode: "MY", coordinates: { latitude: 3.139, longitude: 101.6869 }, timezone: "Asia/Kuala_Lumpur", aliases: ["Kuala Lumpur"] },
+  { providerLocationId: "sg-singapore", label: "新加坡 · 新加坡", city: { zhHans: "新加坡", en: "Singapore" }, country: { zhHans: "新加坡", en: "Singapore" }, countryCode: "SG", coordinates: { latitude: 1.3521, longitude: 103.8198 }, timezone: "Asia/Singapore", aliases: ["Singapore"] },
+  { providerLocationId: "jp-tokyo", label: "日本 · 东京", city: { zhHans: "东京", en: "Tokyo" }, country: { zhHans: "日本", en: "Japan" }, countryCode: "JP", coordinates: { latitude: 35.6762, longitude: 139.6503 }, timezone: "Asia/Tokyo", aliases: ["Tokyo"] },
+  { providerLocationId: "kr-seoul", label: "韩国 · 首尔", city: { zhHans: "首尔", en: "Seoul" }, country: { zhHans: "韩国", en: "South Korea" }, countryCode: "KR", coordinates: { latitude: 37.5665, longitude: 126.978 }, timezone: "Asia/Seoul", aliases: ["Seoul"] },
+  { providerLocationId: "gb-london", label: "英国 · 伦敦", city: { zhHans: "伦敦", en: "London" }, country: { zhHans: "英国", en: "United Kingdom" }, countryCode: "GB", coordinates: { latitude: 51.5074, longitude: -0.1278 }, timezone: "Europe/London", aliases: ["London"] },
+  { providerLocationId: "fr-paris", label: "法国 · 巴黎", city: { zhHans: "巴黎", en: "Paris" }, country: { zhHans: "法国", en: "France" }, countryCode: "FR", coordinates: { latitude: 48.8566, longitude: 2.3522 }, timezone: "Europe/Paris", aliases: ["Paris"] },
+  { providerLocationId: "us-new-york", label: "美国 · 纽约", city: { zhHans: "纽约", en: "New York" }, country: { zhHans: "美国", en: "United States" }, countryCode: "US", coordinates: { latitude: 40.7128, longitude: -74.006 }, timezone: "America/New_York", aliases: ["New York", "New York City"] },
+  { providerLocationId: "us-los-angeles", label: "美国 · 洛杉矶", city: { zhHans: "洛杉矶", en: "Los Angeles" }, country: { zhHans: "美国", en: "United States" }, countryCode: "US", coordinates: { latitude: 34.0522, longitude: -118.2437 }, timezone: "America/Los_Angeles", aliases: ["Los Angeles"] },
+  { providerLocationId: "au-sydney", label: "澳大利亚 · 悉尼", city: { zhHans: "悉尼", en: "Sydney" }, country: { zhHans: "澳大利亚", en: "Australia" }, countryCode: "AU", coordinates: { latitude: -33.8688, longitude: 151.2093 }, timezone: "Australia/Sydney", aliases: ["Sydney"] },
+];
+
+export function getBirthplacePreset(id: string): BirthplacePreset | undefined {
+  return BIRTHPLACE_PRESETS.find((item) => item.providerLocationId === id);
+}

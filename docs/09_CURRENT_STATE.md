@@ -1,211 +1,383 @@
 # 09 — Current State
 
-最后更新：2026-08-18
+状态：**V1 Release Freeze — TraditionalPatternResult Spec LOCKED / Implementation NEXT**  
+最后更新：2026-08-23
 
-> 本文件描述“现在真实做到哪里”。只有实际存在于仓库 / 分支 / PR / CI / 部署环境或已明确 Approved 的事项才写为已完成。
+## 0. Source of Truth
 
-## 1. Repository / current integration baseline
+优先级：
 
-- GitHub：`zoushunyu144000-ui/bazi-ai-advisor`
-- Visibility：Private
-- Default branch：`main`
-- Wave 2 Billing Contract branch：`feature/billing-contract-integration`
-- Billing Contract Draft PR：#11 `arch: freeze Wave 2 billing contracts`
-- 本 branch 创建时最新 `main` HEAD：`1f13068e9f6d63e5c0692a94fcedb58f03693f95`
-- 该 `main` HEAD 为 PR #10 Payment / Credits Research Merge Commit。
+1. `docs/13_PERSONALITY_IP_BIBLE.md`
+2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
+3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
+5. `docs/09_CURRENT_STATE.md`
+6. `docs/10_ROADMAP.md`
+7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
-PR #11 当前只做 Shared Contract / docs / contract tests，**尚未 merge main**，也不接真实 Payment Provider。
+项目执行流程：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
 
-## 2. Wave 1 核心技术链：已完成并进入 main
+本文件只记录当前真实状态。
+
+## 1. 当前产品方向
+
+产品正式定义为：
+
+**传统八字判断 + 现代人格翻译 + 10 固定官方 IP + 免费完整 Dossier + 分享传播 + 后续专业付费报告。**
+
+最高原则：
+
+> **传统命理负责判断，现代产品负责翻译。**
+
+## 2. Repository / PR
+
+- Branch：`release/v1-personality-rc`
+- Draft PR：`#16 release: V1 public personality experience`
+- Base：`main`
+- Production：`bazi-ai-advisor.vercel.app`
+
+PR 继续保持 Draft，直到传统判断链、固定 Character IP、最终 QA 均完成。
+
+## 3. Traditional Bazi Rule Audit — DONE
+
+Source：`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`。
+
+核心结论继续有效：
+
+```text
+legacy support_ratio
+0.58 / 0.42
+month × 1.5
+hidden-stem numeric scoring
+52 / 18 / 22 / 8 candidate ranking
+```
+
+均不得承担正式 Traditional Pattern authority。
+
+## 4. Traditional Bazi Rule Profile V1 — LOCKED
+
+```text
+rule_profile_version = ziping-v1.0.0
+status = LOCKED / ACTIVE
+```
+
+Source：`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`。
+
+OA-01 ～ OA-07 已冻结：
+
+```text
+YEAR_BOUNDARY = EXACT_LICHUN_INSTANT
+MONTH_BOUNDARY = EXACT_JIE_INSTANT
+DAY_BOUNDARY = LOCAL_CIVIL_MIDNIGHT_00_00
+LATE_ZI = NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
+TIME_STANDARD = HISTORICAL_IANA_CIVIL_TIME
+TRUE_SOLAR_TIME = NOT_AUTO_APPLIED_IN_V1
+
+MONTH_HOST_BASE = month branch
+→ ordered hidden qi (main > middle > residual)
+→ exposure
+→ base Pattern Host
+
+YANGREN = FIVE_YANG_STEMS_ONLY
+DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
+FOLLOW FINAL = STRICT_FOLLOW_WEALTH + STRICT_FOLLOW_KILLING
+```
+
+## 5. TraditionalPatternResult Spec V1 — LOCKED
+
+Source：
+
+`docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
+
+正式版本：
+
+```text
+pattern_schema_version = traditional-pattern-result/1.0.0
+status = LOCKED / ACTIVE
+```
+
+Owner 已批准 TP-01 ～ TP-07，并完成四项 Required Revisions。
+
+### TP-01 ～ TP-07
+
+```text
+TP-01 APPROVED
+Bazi Traditional Layer owns TraditionalPatternResult.
+
+TP-02 APPROVED
+Legacy BaziDerivedFeatures excluded from Traditional Pattern authority input.
+
+TP-03 APPROVED
+pattern_schema_version = traditional-pattern-result/1.0.0
+
+TP-04 APPROVED
+No UNKNOWN / NONE TraditionalPattern sentinel.
+Use primaryPattern = null + Pattern Status.
+
+TP-05 APPROVED
+Evidence sufficiency categorical only.
+
+TP-06 APPROVED
+Approximate birth time does not invent arbitrary ±minute range.
+
+TP-07 APPROVED WITH CONDITION
+Independent result allowed only in Phase A/B shadow migration;
+before Authority Cutover it must enter the canonical Bazi/traditional-result boundary.
+```
+
+### Four Required Revisions
+
+```text
+1. baseMonthHost: TraditionalBaseMonthHost | null
+   null requires material/blocking ambiguity.
+
+2. primaryFormationState: TraditionalFormationState | null
+   primaryPattern != null => state != null
+   primaryPattern == null => state == null
+
+3. computedAt = non-semantic audit metadata
+   excluded from deterministic ID / canonical hash / canonical equality.
+
+4. Legacy BaziDerivedFeatures authority semantics superseded / clarified.
+```
+
+## 6. Legacy BaziDerivedFeatures Governance Clarification
+
+Bazi Engine 继续是 deterministic Bazi facts 的 canonical owner。
+
+但当前 legacy：
+
+```text
+dayMasterStrength
+elementDistribution
+tenGodDistribution
+support-ratio-derived semantics
+confidence
+```
+
+只可继续作为：
+
+```text
+compatibility
+analytics
+Interpretation support
+```
+
+它们不是：
+
+```text
+TraditionalPatternResult authority input
+ziping-v1.0.0 qualitative strength authority
+Month Host authority
+formation / follow authority
+```
+
+Decision Log D-021 已明确 supersede D-010 中对应 authority 语义，同时保留 D-010 的 Bazi Engine ownership / Interpretation anti-duplication 原则。
+
+`types/domain/bazi.ts` 只更新了注释说明；legacy fields / type shape 未删除、未改运行逻辑。
+
+## 7. Current Production Reality / Fail-Closed Prerequisite
+
+当前 production 仍是：
 
 ```text
 Birth
-→ Bazi Engine
+→ calculateBazi (civil-local-jieqi-v1)
+→ BaziDerivedFeatures
 → Interpretation
-→ Supabase Persistence
+→ personality-map/0.2.0
+→ ArchetypeCandidate
+→ Public Personality
 ```
 
-已确认：
+`TraditionalPatternResult` production implementation 尚未开始。
 
-- PR #4 Birth：Merged
-- PR #5 Bazi Engine：Merged
-- PR #3 Interpretation V0.2：Merged
-- PR #6 Supabase Core：Merged
-
-最终 Wave 1 累计验收口径：
-
-- Birth：14/14 passed
-- Bazi：22/22 passed
-- Interpretation：9/9 passed
-- Backend：19/19 passed
-- skipped：0
-
-统一 CI contract：
+当前最重要的 prerequisite：
 
 ```text
-npm ci
-→ npm run lint
-→ npm run typecheck
-→ npm test
-→ npm run build
+production calculation profile = civil-local-jieqi-v1
+required Traditional Pattern profile = ziping-v1.0.0
 ```
 
-共享不变量继续有效：Birth resolved facts → deterministic Bazi → canonical BaziDerivedFeatures → Interpretation；LLM 不参与原始排盘。
+并且当前 23:00–23:59 hour stem 仍按 same civil-day day stem 起时，不符合 frozen night-Zi split semantics。
 
-## 3. Supabase 状态
-
-**Supabase Core Code Layer 已完成并进入 main。**
-
-已包含：
-
-- migration history
-- Auth bootstrap
-- RLS
-- browser / SSR / server-only client boundary
-- user-scoped repositories
-- Birth / Bazi calculation persistence and read-back
-- billing foundation tables：wallets / orders / purchases / credit_ledger
-
-但 **Supabase Live Integration 仍未完成**：真实 Project link、remote migration apply、Auth/live RLS/live CRUD 验证仍属于后续工作。
-
-## 4. Research knowledge base
-
-### Traditional Pattern Research
-
-PR #9：**Merged / Closed**
-
-- Merge Commit：`a529e3c04d8b8fb8fd7f3f20c735cdc842d59b87`
-- Research 已进入知识库。
-- 不代表 Traditional Pattern production algorithm 已实现。
-- 不自动启用 `personality-map/0.3.0`。
-
-### AI Benchmark Research
-
-PR #8：**Merged / Closed**
-
-- Merge Commit：`6a19acb7a0f1e3ed27d26084a4bc0299e0bb0bac`
-- AI / Skill / MCP benchmark 已进入知识库。
-- 不代表 `modules/ai/**` 正式 Production System 已完成。
-
-### Payment / Credits Research
-
-PR #10：**Merged / Closed**
-
-- Merge Commit：`1f13068e9f6d63e5c0692a94fcedb58f03693f95`
-- Research 文档：`docs/research/PAYMENT_CREDIT_BENCHMARK.md`
-- Research 提出了 `CCR-09-001` ～ `CCR-09-006`。
-- 研究推荐 Stripe Checkout 仅为 conditional candidate；尚未选择/接入真实 Provider，也未完成 merchant/category approval。
-
-## 5. Wave 2 Billing Contract Gate
-
-状态：**Shared Contract implemented on Draft PR #11 / not merged**。
-
-当前正式裁决：
-
-- CCR-09-001：APPROVED — Provider Event Inbox，unique `(provider, provider_event_id)`
-- CCR-09-002：APPROVED — relational ReportEntitlement identity `(user_id, product_code, resource_id)`
-- CCR-09-003：MODIFIED — V1 使用 `advisor_requests`；`reserved → committed | released`
-- CCR-09-004：MODIFIED — 保留现有 ledger `entry_type`，新增 reason/reference vocabulary
-- CCR-09-005：APPROVED — first-class shared `Purchase` read model
-- CCR-09-006：REJECTED rename — ProductCode 保持 `personality_report` / `advisor_10`
-
-Shared Domain branch 已新增：
-
-- `Purchase`
-- `ReportEntitlement`
-- `AdvisorRequest`
-- `CreditLedgerReason`
-- `CreditLedgerReferenceType`
-- `CreditLedgerFactInput`
-- stable runtime vocabulary constants
-
-详细 source of truth：`docs/14_BILLING_CONTRACT_INTEGRATION.md`。
-
-本 Gate **没有**：
-
-- 修改 Supabase migration
-- 实现 BillingService
-- 实现 Provider Adapter
-- 接 Stripe / PayPal
-- 写 Checkout UI
-- 修改 Bazi / Interpretation
-
-## 6. Billing architecture frozen by Gate
-
-### Payment
+因此：
 
 ```text
-Verified Provider Event
-→ Provider Event Inbox
-→ Order
-→ Purchase
-→ ReportEntitlement OR Credit Grant
+Production Build = ALLOWED
+TraditionalPatternResult authority on legacy profile = FAIL CLOSED / BLOCKED
 ```
 
-Browser success / return page 不是 fulfillment authority。
+Build 必须先建立 versioned `ziping-v1.0.0` calculation path，包括 frozen late-Zi hour-stem behavior；不得 silent reinterpret legacy chart。
 
-### Advisor
+## 8. Current Implementation Gaps
+
+下一 Build 至少需要：
+
+1. shared `TraditionalPatternResult` contract；
+2. profile guard；
+3. versioned `ziping-v1.0.0` calculation path；
+4. night-Zi frozen semantics；
+5. Month Host / exposure；
+6. roots；
+7. qualitative strength；
+8. 三合 / 三会 / 刑 / 破；
+9. transformation state；
+10. 8 regular + Jianlu / Yuejie / Yangren candidates；
+11. pattern-specific formation / damage / rescue；
+12. Mixed / No Stable / strict Follow；
+13. Evidence / Counter Evidence / Ambiguity；
+14. canonical semantic determinism；
+15. Golden / boundary / regression tests。
+
+## 9. Current P0 — TraditionalPatternResult Implementation
+
+当前唯一 P0：
+
+> **严格按 `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md` 开始 TraditionalPatternResult Production Implementation。**
+
+实施顺序：
 
 ```text
-reserve 1 credit capacity
-→ AI outside DB transaction
-→ validate
-→ commit -1
+Phase 1 Contract + profile guard
+Phase 2 ziping calculation path + structural evidence
+Phase 3 pattern candidates
+Phase 4 pattern-specific formation
+Phase 5 mixed + strict follow
+Phase 6 result assembly + shadow
+Phase 7 QA / golden review
 ```
 
-Terminal failure：
+Phase A/B 可以 independent shadow result；Authority Cutover 前必须完成 canonical Bazi / traditional-result boundary integration。
+
+## 10. Legacy Personality Authority Risk
+
+当前 `personality-map/0.2.0`：
 
 ```text
-reserved → released
+52% Ten-God score
+18% family score
+22% dimensions
+8% strength fit
 ```
 
-Reservation 不是 ledger debit；release 不产生 compensating `+1`。
+仍属于 `EXPERIMENTAL`。
 
-Ledger 是 immutable committed fact stream；Wallet 是 committed projection。
+迁移路径继续锁定：
 
-## 7. Ownership after Billing Contract Gate
+```text
+A. Independent TraditionalPatternResult
+B. Shadow Compare
+C. Translation Layer + canonical boundary integration
+D. Authority Cutover
+E. Legacy retirement
+```
 
-### 01 Architecture
+Shadow Compare 不得用用户“更像不像”反向修改传统规则。
 
-负责 Shared Contract、DB target、transaction/idempotency boundaries；不实现 Provider / migration。
+Authority Cutover 前不删除 legacy；Cutover 后不得 silent fallback 到 legacy candidate 作为 Traditional verdict。
 
-### 08 Supabase / DB
+## 11. 10 Public Personalities — LOCKED
 
-待 PR #11 合并后：实现 forward migration、RLS、constraints/indexes 与 atomic billing RPC / transaction primitives。
+| key | Public Personality |
+| --- | --- |
+| `bi_jian` | 犟种 |
+| `jie_cai` | 撒币 |
+| `shi_shen` | 享乐主义 |
+| `shang_guan` | 天生反骨 |
+| `zheng_cai` | 抠抠搜搜 |
+| `pian_cai` | 搞钱圣体 |
+| `zheng_guan` | 老干部 |
+| `qi_sha` | 狠人 |
+| `zheng_yin` | 活菩萨 |
+| `pian_yin` | 道长 |
 
-### 09 Billing / Payment
+它们属于 Translation Layer，不等于 Traditional Pattern enum。
 
-待 PR #11 + 08 DB primitives：实现 BillingService、Provider Adapter、webhook verify/normalize、fulfillment flow。
+## 12. Character System — LOCKED
 
-### 07 AI Advisor
+```text
+10 Public Personality = 10 fixed official Character IPs
+public/characters/v1/{ten_god}.webp
+```
 
-待 reservation API：在 LLM 前 reserve，成功后 commit，terminal failure release；不得直接写 Wallet / Ledger。
+用户性别不改变 Character identity。
 
-## 8. 05 Visual / UX
+Style Source of Truth：
 
-PR #2 仍独立处理视觉验收；不因 Billing Contract Gate 自动获得 merge 资格。
+- `docs/assets/character-style-master-v1.webp`
+- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
+- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
 
-## 9. 当前仍未完成
+## 13. Current Release Blockers
 
-- PR #11 Billing Contract 尚未 merge
-- 08 Billing DB migration / RPC
-- 09 real Billing service / Provider integration
-- 07 Formal AI Advisor runtime
-- Supabase Live Integration
-- Traditional Pattern production algorithm
-- 05 Visual acceptance / merge
-- Production deployment / end-to-end live commercial flow
+当前顺序：
 
-## 10. Blocking product decisions
+1. ✅ Traditional Bazi Rule Audit
+2. ✅ Rule Profile Research / Owner Approval / Freeze
+3. ✅ TraditionalPatternResult Spec Review / Revision / Freeze
+4. **TraditionalPatternResult Production Implementation + Golden QA — NEXT / ACTIVE**
+5. Public Personality authoritative Translation Layer
+6. canonical boundary + authority cutover
+7. isolate / retire legacy engineering authority
+8. Character asset / routing completion
+9. Result / Share integration QA
+10. mobile browser QA
+11. full CI
+12. PR #16 Ready
+13. merge main
+14. Vercel Production
+15. final public smoke test
 
-没有产品决策阻塞 **Shared Billing Contract Gate 本身**。
+## 14. Current Out of Scope
 
-真实支付/退款上线前仍需冻结：
+仍 PARKED：
 
-- Report refund 后 entitlement revoke / historical access policy
-- Advisor credit expiry
-- credit pack stacking
-- 已消费部分 credits 后全额退款策略；当前 wallet 不允许负余额
-- Production merchant / Provider onboarding 与 product-category approval
+- Payment；
+- AI Advisor / Chat；
+- Supabase Live；
+- Auth / Account；
+- compatibility；
+- referral；
+- ranking / rarity；
+- community / gamification；
+- 流月 / 流日等进一步预测功能。
 
-当前阶段：**Wave 2 Active — Billing Contract Draft Gate**。
+Rule Profile V1 Deferred 继续保持：
+
+- auto true-solar-time authority；
+- exact commander-day table authority；
+- 假从 final；
+- 从儿 / 从势 / 专旺 final；
+- 完整化气；
+- 外格 / 奇格全集；
+- 神煞 / 纳音格局；
+- 独立调候 / 盲派 profile。
+
+## 15. Project Operating Rule
+
+```text
+PRODUCT
+→ ROADMAP
+→ CURRENT_STATE
+→ TASK
+→ BUILD
+→ REVIEW
+→ FREEZE
+→ CURRENT_STATE
+```
+
+当前阶段：
+
+```text
+Rule Audit = DONE
+→ Rule Profile = LOCKED
+→ TraditionalPatternResult Spec = LOCKED
+→ Production Implementation = NEXT / ALLOWED
+```
+
+## 16. Product Integrity Rule
+
+> **命理判断来源讲得清楚，现代人格翻译讲得好看。**
+
+不扩 Scope，不降质量，不自造命理，不使用 legacy numeric model 填补传统规则空白。
