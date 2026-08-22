@@ -57,8 +57,9 @@ Homepage
 - `16_CHARACTER_BATCH_PRODUCTION_V1.md`：Character production contract
 - `17_PRODUCT_DESIGN_REPORT_V1.md`：V1 产品体验与专业报告定位
 - `18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`：传统八字判断 → 现代人格翻译的最高产品契约
-- `20_TRADITIONAL_BAZI_RULE_AUDIT.md`：当前八字规则审计、分类、风险与 TraditionalPatternResult readiness
+- `20_TRADITIONAL_BAZI_RULE_AUDIT.md`：八字规则审计、分类、风险与 Rule Profile 前置缺口
 - `21_AI_PROJECT_OPERATING_SYSTEM.md`：AI 项目管理闭环与每轮 Task / Build / Review / Freeze 规则
+- `22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`：**LOCKED `ziping-v1.0.0`**；Calendar、月令 Host、旺衰、格局范围、成败救应、Mixed、从格、Evidence / Ambiguity 的传统规则 Source of Truth
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口/阶段交接模板
 
 ## AI 工作协议
@@ -91,12 +92,22 @@ CURRENT_STATE
 
 Billing / Payment / Advisor credit 相关实现还必须读取 `docs/14_BILLING_CONTRACT_INTEGRATION.md`，不得绕过 server-side authority、transaction 与 idempotency boundaries。
 
-当前传统人格 authority 相关工作必须读取：
+当前 Traditional Pattern / Public Personality authority 相关工作必须读取：
 
 1. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 2. `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
-3. `docs/09_CURRENT_STATE.md`
-4. `docs/10_ROADMAP.md`
+3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+4. `docs/09_CURRENT_STATE.md`
+5. `docs/10_ROADMAP.md`
+
+当前状态：
+
+```text
+Traditional Bazi Rule Audit = DONE
+Traditional Bazi Rule Profile = LOCKED
+rule_profile_version = ziping-v1.0.0
+NEXT P0 = TraditionalPatternResult Implementation
+```
 
 原则：
 
@@ -104,4 +115,4 @@ Billing / Payment / Advisor credit 相关实现还必须读取 `docs/14_BILLING_
 
 重要信息必须回写仓库，不得只存在于聊天记录中。
 
-最后更新：2026-08-22
+最后更新：2026-08-23
