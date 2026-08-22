@@ -1,7 +1,7 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — Traditional Rule Profile PROPOSED / Owner Approval Required**  
-最后更新：2026-08-22
+状态：**V1 Release Freeze — Traditional Rule Profile LOCKED / TraditionalPatternResult Next**  
+最后更新：2026-08-23
 
 ## 0. Source of Truth
 
@@ -9,19 +9,16 @@
 
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
-3. `docs/09_CURRENT_STATE.md`
-4. `docs/10_ROADMAP.md`
-5. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+4. `docs/09_CURRENT_STATE.md`
+5. `docs/10_ROADMAP.md`
+6. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
 项目执行流程见：
 
 `docs/21_AI_PROJECT_OPERATING_SYSTEM.md`
 
-当前 Traditional Rule Profile 提案见：
-
-`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
-
-本文件只记录当前事实。
+本文件只记录当前真实状态。
 
 ## 1. 当前产品方向
 
@@ -40,7 +37,7 @@
 - Base：`main`
 - Production：`bazi-ai-advisor.vercel.app`
 
-PR 继续保持 Draft，直到传统判断链、固定 10-IP、最终 QA 均完成。
+PR 继续保持 Draft，直到传统判断链、固定 Character IP、最终 QA 均完成。
 
 ## 3. 已完成的确定性基础
 
@@ -55,126 +52,184 @@ Birth
 现有 Bazi Engine 已具备：
 
 - 四柱计算；
-- 节气边界；
+- 精确节气边界；
 - 十神映射；
 - 藏干；
-- 五行分布；
-- 十神分布；
+- 五行 / 十神工程分布；
 - 基础关系；
-- 日主强弱 baseline；
+- legacy 日主强弱 baseline；
 - 大运基础结构。
 
-这些代码具有 deterministic / reproducible 基础价值。
+其中工程分布与 legacy strength 可以保留作历史 / analytics，但不得承担 `ziping-v1.0.0` Traditional Pattern authority。
 
-## 4. Traditional Bazi Rule Audit — COMPLETE
+## 4. Traditional Bazi Rule Audit — DONE
 
-2026-08-22 已完成正式 Traditional Bazi Rule Audit：
+审计文档：
 
 `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
 
-审计 Commit：
-
-`cb8d55f1cbe7e50046c3fa872a765b4beb07cbc2`
-
 审计结论：
 
-- 共审计 43 条重要规则 / 能力；
 - `TRADITIONAL_CORE`：13；
 - `SCHOOL_CHOICE`：9；
 - `IMPLEMENTATION_DETAIL`：7；
 - `EXPERIMENTAL`：14；
-- 当前可直接保留或以 non-authority 工程统计保留：15 条；
-- 审计时 `TraditionalPatternResult Readiness`：**NOT READY**。
+- 审计时 `TraditionalPatternResult Readiness = NOT READY`；
+- Audit 本身没有修改 production logic。
 
-Audit 本身没有修改 production logic。
-
-## 5. 当前核心风险
-
-当前 `personality-map/0.2.0` 的主人格候选排序使用现代工程化组合权重，包括：
+核心风险仍成立：
 
 ```text
-52% canonical Ten-God score
-18% family score
-22% personality dimension fit
-8% strength fit
+personality-map/0.2.0
+52% Ten-God
+18% family
+22% dimensions
+8% strength
 ```
 
-审计已确认：这属于 `EXPERIMENTAL`，不是传统命理标准。
+属于 `EXPERIMENTAL`，不得承担正式传统格局判定权。
 
-因此：
+## 5. Traditional Bazi Rule Profile V1 — LOCKED
 
-- 不得继续把该 candidate ranking 包装为“传统八字算出来的准确人格”；
-- 不得让它继续承担未来正式 `TraditionalPatternResult` authority；
-- 不得把 `tenGodDistribution` 或 `candidate_score` 转成公网人格百分比；
-- 15 dimensions 可作为现代行为解释辅助，但不得反向决定传统格局。
-
-## 6. Traditional Pattern 当前缺口
-
-当前完整、可用于专业报告的 `TraditionalPatternResult` 尚未 Production-ready。
-
-仍缺 production implementation：
-
-- 月令 Host Selection；
-- 透干 evidence；
-- 根气 evidence；
-- 定性旺衰 context；
-- 格局候选与主 / 副结构；
-- 成格 / 败格 / 破格 / 救应；
-- 兼格 / 混合格局；
-- 从格 / 特殊格局；
-- evidence / counter evidence；
-- ambiguity；
-- relation transformation state。
-
-当前身强弱的 support ratio 与 0.58 / 0.42 阈值仍属于实验工程模型，不能直接承担传统旺衰 authority。
-
-## 7. Traditional Bazi Rule Profile V1 — PROPOSED
-
-本轮已完成 Rule Profile research / specification 提案：
-
-`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
-
-提议版本：
+2026-08-23 Owner 已批准 OA-01 ～ OA-07，正式冻结：
 
 ```text
 rule_profile_version = ziping-v1.0.0
-status = PROPOSED
+status = LOCKED
 ```
 
-核心提案：
+Source of Truth：
+
+`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
+
+核心体系：
 
 ```text
 子平月令格局法
 《子平真诠》作为主要格局结构来源
 《渊海子平》+《三命通会》作传统交叉参考
-
-Year = exact LiChun
-Month = exact Jie
-Month Host = ordered hidden qi + exposure
-Strength = 得令 / 得地 / 得势 / 制化的定性 evidence
-Patterns = 八个 regular + 建禄 + 月劫 + proposed 阳刃
-Formation = pattern-specific 成败 / damage / rescue
-Mixed / no stable single pattern = first-class results
-Follow = strict whitelist
-Evidence / Counter Evidence / Ambiguity = first-class
 ```
 
-Rule Profile **尚未 LOCKED**。
-
-需要 Owner 明确批准：
-
-1. OA-01：日界采用 local civil midnight `00:00`，还是子初 `23:00`；
-2. OA-02：晚子时采用 night-Zi / Zi-zheng split profile；
-3. OA-03：V1 默认 civil time，不自动真太阳时校正；
-4. OA-04：月令 host 采用 hidden-qi hierarchy + exposure，不启用精确人元司令日表 authority；
-5. OA-05：阳刃采用五阳有刃、五阴无真刃，并作为 special self-rooted host；
-6. OA-06：旺衰采用定性 evidence profile，不恢复 numeric percentage / threshold；
-7. OA-07：从格 final verdict 仅 strict 从财 / strict 从杀，其余 candidate / ambiguous / deferred。
-
-Owner Approval 之前：
+### Calendar Lock
 
 ```text
-TraditionalPatternResult Implementation = BLOCKED
+YEAR_BOUNDARY = EXACT_LICHUN_INSTANT
+MONTH_BOUNDARY = EXACT_JIE_INSTANT
+DAY_BOUNDARY = LOCAL_CIVIL_MIDNIGHT_00_00
+LATE_ZI = NIGHT_ZI / ZI_ZHENG_SPLIT_PROFILE
+TIME_STANDARD = HISTORICAL_IANA_CIVIL_TIME
+TRUE_SOLAR_TIME = NOT_AUTO_APPLIED_IN_V1
+```
+
+Near-boundary cases 必须保留 ambiguity。
+
+### Month Host Lock
+
+```text
+month branch
+→ ordered hidden qi (main > middle > residual)
+→ exposure
+→ base Pattern Host
+```
+
+重要限制：该 hierarchy 只选择 **base Host**。最终 pattern verdict 仍需继续检查 exposure context、combination / transformation、formation、damage / rescue、root / strength、mixed / follow structure。
+
+明确禁止：
+
+```text
+month numeric multiplier authority
+exact commander-day table authority
+Ten-God max authority
+candidate score authority
+```
+
+### Strength Lock
+
+```text
+DAY_MASTER_STRENGTH = QUALITATIVE_EVIDENCE_PROFILE
+```
+
+看：得令、得地 / 通根、得势 / 得助、生克制化；不使用 personality percentage 或 numeric threshold authority。
+
+### Pattern Scope Lock
+
+```text
+8 regular patterns
++ Jianlu
++ Yuejie
++ five-yang Yangren structural host
+```
+
+Yangren：
+
+```text
+甲→卯
+丙→午
+戊→午
+庚→酉
+壬→子
+```
+
+### Follow Lock
+
+```text
+FINAL = STRICT_FOLLOW_WEALTH + STRICT_FOLLOW_KILLING
+```
+
+其他从格：candidate / evidence-only / ambiguous / deferred。
+
+### Structural Lock
+
+- Pattern-specific 成 / 败 / damage / rescue；
+- Primary + Secondary / Mixed / No Stable Single Pattern 均为合法结果；
+- directional combinations 必须保留 Host direction；
+- Evidence / Counter Evidence / Ambiguity 必须 first-class；
+- LLM / Personality Dimensions 不得参与 Traditional verdict。
+
+## 6. TraditionalPatternResult 当前状态
+
+```text
+Rule Profile prerequisite = SATISFIED
+Implementation status = NOT STARTED / NEXT P0
+```
+
+现在允许进入 `TraditionalPatternResult` implementation，但尚未实现。
+
+实现前 / 实现中至少需要补齐：
+
+- base month-host evidence；
+- exposure evidence；
+- root evidence；
+- qualitative strength context；
+- 三合 / 三会 existence；
+- 刑 / 破 existence；
+- relation transformation state；
+- pattern-specific formation support / damage / rescue；
+- primary / secondary / mixed adjudication；
+- strict follow adjudication；
+- evidence / counter evidence / ambiguities。
+
+## 7. 下一 P0 — TraditionalPatternResult Implementation
+
+当前新的最高优先级：
+
+> **按 `ziping-v1.0.0` 实现 deterministic TraditionalPatternResult。**
+
+必须先做 Implementation Plan（实现计划），再 Build；不得重新开放已经 Freeze 的 Rule Profile 讨论，除非发现真正 blocker 并通过 Superseding Decision。
+
+未来正式链路：
+
+```text
+Birth
+→ Bazi Calendar / Chart Facts
+→ Traditional Structural Facts
+→ TraditionalPatternResult
+  + Evidence
+  + Counter Evidence
+  + Ambiguity
+  + ziping-v1.0.0
+→ Modern Personality Translation
+→ Public Personality
 ```
 
 ## 8. 10 Public Personalities — LOCKED
@@ -192,11 +247,7 @@ TraditionalPatternResult Implementation = BLOCKED
 | `zheng_yin` | 活菩萨 |
 | `pian_yin` | 道长 |
 
-10 个名字继续锁定，语义为：
-
-> **传统十神 / 格局原型的现代人格翻译标签。**
-
-它们不等于传统格局本身，也不允许通过自造评分反向决定传统格局。
+这些名字是现代翻译标签，不等于 Traditional Pattern 本身。
 
 ## 9. Character System — LOCKED
 
@@ -207,11 +258,9 @@ TraditionalPatternResult Implementation = BLOCKED
 public/characters/v1/{ten_god}.webp
 ```
 
-取消用户性别驱动的男女双角色映射。
+用户性别不改变 Character identity。
 
-当前正式 Character binary：**0 / 10**。
-
-Style 继续 LOCKED：
+Style Source of Truth：
 
 - `docs/assets/character-style-master-v1.webp`
 - `docs/15_CHARACTER_STYLE_LOCK_V1.md`
@@ -229,40 +278,34 @@ Style 继续 LOCKED：
 - Share Card rendering；
 - professional evidence section 基础 UI。
 
-但 Result 的人格 authoritative source 仍需在 Rule Profile LOCK + TraditionalPatternResult 后调整。
+但 Result 当前 authoritative personality source 仍需在 `TraditionalPatternResult` 完成后切换。
 
 ## 11. 当前 Release Blockers
 
 当前顺序：
 
-1. **Owner review / approval of `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md` OA-01 ～ OA-07**；
-2. 将 `ziping-v1.0.0` Rule Profile 正式 LOCK；
-3. 建立 `TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity`；
-4. 将 Public Personality 改为传统结果的 translation layer；
-5. 降级 / 隔离 legacy engineering personality authority；
-6. Refactor legacy gender-based Character routing；
-7. 10 / 10 Character Masters；
-8. Result / Share integration QA；
-9. mobile browser QA；
-10. full CI；
-11. PR #16 Ready；
-12. merge main；
-13. Vercel Production；
-14. final public smoke test。
-
-已完成 Gate：
-
-- ✅ Traditional Bazi Rule Audit；
-- ✅ Rule Profile Research / Specification；
-- ⏳ Rule Profile Owner Approval / Freeze。
+1. ✅ Traditional Bazi Rule Audit；
+2. ✅ Rule Profile Research / Specification；
+3. ✅ Owner Approval OA-01 ～ OA-07；
+4. ✅ `ziping-v1.0.0` Rule Profile Freeze；
+5. **TraditionalPatternResult Implementation — NEXT P0**；
+6. Public Personality authoritative translation；
+7. 隔离 legacy engineering personality authority；
+8. Character asset completion / routing cleanup；
+9. Result / Share integration QA；
+10. mobile browser QA；
+11. full CI；
+12. PR #16 Ready；
+13. merge main；
+14. Vercel Production；
+15. final public smoke test。
 
 ## 12. 当前不做
 
 仍不作为首发 blocker：
 
 - Payment；
-- AI Advisor；
-- AI Chat；
+- AI Advisor / Chat；
 - Supabase Live；
 - Auth / Account；
 - compatibility；
@@ -271,11 +314,15 @@ Style 继续 LOCKED：
 - community / gamification；
 - 流月 / 流日等进一步预测功能。
 
-同时在 Rule Profile Freeze 前明确禁止：
+Rule Profile V1 同时继续 Deferred：
 
-- 实现 `TraditionalPatternResult`；
-- 修改 Bazi production algorithm；
-- 修改 Personality authoritative mapping。
+- 自动真太阳时 authority；
+- exact 人元司令日表 authority；
+- 假从 final；
+- 从儿 / 从势 / 专旺 final；
+- 完整化气格；
+- 外格 / 奇格全集；
+- 独立调候 / 盲派 rule profile。
 
 ## 13. Project Operating Rule
 
@@ -292,9 +339,17 @@ PRODUCT
 → CURRENT_STATE
 ```
 
-完整规则：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
+当前阶段顺序：
 
-## 14. Product integrity rule
+```text
+Rule Profile = FROZEN
+→ TraditionalPatternResult Spec / Plan
+→ Build
+→ Review
+→ Freeze implementation
+```
+
+## 14. Product Integrity Rule
 
 V1 可以年轻、好笑、传播性强，但不能通过自造命理算法换取“看起来很准”。
 
