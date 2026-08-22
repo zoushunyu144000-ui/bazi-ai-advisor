@@ -191,6 +191,21 @@ Style 继续 LOCKED：
 状态：等待审查方在 `9dcd42e` 复核；复核通过后由 Product Owner 决定是否合并回
 `release/v1-personality-rc`。
 
+### 8.3 Pilot 复核结论（2026-08-22，最终）
+
+外部审查在 HEAD `b92d5b3` 完成复核，结论：**APPROVE**。
+
+- Result mix bar 两层修复 → PASS；
+- 首页移动端 feature 卡 + 横向 strip 结构 → PASS（PARTIAL 升级）;
+- 其余首轮 PASS 项全部维持。
+
+审查方确认「`b92d5b3` 可进入后续合并流程」。
+
+**合并决策待 Product Owner 批准**：批准后由 `design/mobile-ui-pilot-v1` 合入
+`release/v1-personality-rc`；本分支不直接部署 Production。视觉方向仍不宣布
+Design Freeze —— 正式 Character 资产到位后需再做一轮编辑排版增强（见 §8.2
+下一轮候选清单）。
+
 ## 9. 当前最大 Release Blockers
 
 当前 blocker 顺序已改变：
