@@ -1,58 +1,42 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — Fixed 10-IP + Personality Mix + Final QA Active**  
+状态：**V1 Release Freeze — Traditional Rule Audit Required Before Personality Finalization**  
 最后更新：2026-08-22
 
-## 0. Source of Truth boundary
+## 0. Source of Truth
 
-本文件只描述：**现在真实做到哪里**。
-
-Source of Truth precedence：
+优先级：
 
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
-2. `docs/09_CURRENT_STATE.md`
-3. `docs/10_ROADMAP.md`
-4. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
-5. older docs / experiments / historical research
+2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
+3. `docs/09_CURRENT_STATE.md`
+4. `docs/10_ROADMAP.md`
+5. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
-如果本文件与 `docs/13_PERSONALITY_IP_BIBLE.md` 冲突，以 Personality IP Bible 为准。
+本文件只记录当前事实。
 
-## 1. 当前产品与 Release Freeze
+## 1. 当前产品方向
 
-产品已正式收敛为：
+产品正式定义为：
 
-**八字版 SBTI + 10 个固定人格 IP + 免费主人格完整解析 + 免费人格因子配比 + 分享传播 + Post-V1 深度人格光谱付费解析。**
+**传统八字判断 + 现代人格翻译 + 10 固定官方 IP + 免费完整 Dossier + 分享传播 + 后续专业付费报告。**
 
-V1 唯一发布目标：
+最高原则：
 
-```text
-Homepage
-→ Birth
-→ deterministic Bazi
-→ Interpretation
-→ Personality Mix
-→ 10 Public Personalities
-→ dominant full Personality Dossier
-→ fixed official Character IP
-→ Share Card
-→ friend can open the website and test
-```
+> **传统命理负责判断，现代产品负责翻译。**
 
-AI、Payment、Supabase、Advisor、Relationship 不是当前 V1 release blocker。
+## 2. Repository / PR
 
-## 2. Repository / PR baseline
+- Branch：`release/v1-personality-rc`
+- Draft PR：`#16 release: V1 public personality experience`
+- Base：`main`
+- Production：`bazi-ai-advisor.vercel.app`
 
-当前工作分支：`release/v1-personality-rc`  
-当前 Draft PR：`#16 release: V1 public personality experience`  
-PR base：`main`。
+PR 继续保持 Draft，直到传统判断链、固定 10-IP、最终 QA 均完成。
 
-Vercel Production：`bazi-ai-advisor.vercel.app`。
+## 3. 已完成的确定性基础
 
-Preview 可用于 QA；PR #16 在 Personality Mix、10 / 10 fixed formal Character assets 与最终 QA 完成前保持 Draft。
-
-## 3. Deterministic Core Chain
-
-已经进入 `main` 的核心事实链保持为：
+现有核心链：
 
 ```text
 Birth
@@ -60,242 +44,146 @@ Birth
 → Interpretation
 ```
 
-公网 V1 正式复用：
+现有 Bazi Engine 已具备：
+
+- 四柱计算；
+- 节气边界；
+- 十神映射；
+- 藏干；
+- 五行分布；
+- 十神分布；
+- 基础关系；
+- 日主强弱 baseline；
+- 大运基础结构。
+
+这些代码具有 deterministic / reproducible 基础价值。
+
+## 4. 当前发现的核心风险
+
+当前 `personality-map/0.2.0` 的主人格候选排序使用现代工程化组合权重，包括：
 
 ```text
-normalizeBirthProfile()
-→ calculateBazi()
-→ interpretBaziChart()
-→ selectArchetypeCandidate()
+52% canonical Ten-God score
+18% family score
+22% personality dimension fit
+8% strength fit
 ```
 
-Presentation Layer 不重新排八字，不随机生成十神，不随机生成 dimensions。
+这属于产品/工程假设，不是传统命理标准。
 
-### Personality Mix — NEW V1 CONTRACT / NOT YET IMPLEMENTED
+因此当前状态正式标记为：
 
-2026-08-22 Product Owner 已新增 V1 正式要求：
+**PROVISIONAL / EXPERIMENTAL FOR PROFESSIONAL USE**。
 
-> 免费结果必须显示用户的 10 个 Public Personality 因子比例；但只完整详细解析主人格，其他人格主要显示名称 + 比例。
+不得把该 candidate ranking 继续包装为“传统八字算出来的准确人格”。
 
-当前仓库已存在 dominant / secondary personality 与 15 dimensions，但尚未确认现有 `personality-map/0.2.0` 是否已经提供可直接公开、归一化到统一尺度的 10 因子权重。
+同时此前计划的 10 人格精确百分比暂停实现；不得直接把 `tenGodDistribution` 或 `candidate_score` 转成公网人格百分比。
 
-因此当前真实状态是：
+## 5. Traditional Pattern 缺口
 
-- 主人格：implemented
-- 第二人格：implemented
-- 15 dimensions：implemented
-- **10 因子 Personality Mix：product contract locked / implementation pending**
+当前完整、可用于专业报告的 `TraditionalPatternResult` 尚未 Production-ready。
 
-实现必须使用 deterministic / versioned normalization rules；不得由 LLM 或前端随机生成百分比。
+仍需明确处理：
 
-### Birth V1 UX
+- 月令取格；
+- 透干 / 藏干 / 根气；
+- 格局候选；
+- 成格 / 败格 / 破格 / 救应；
+- 从格 / 假从；
+- 兼格 / 不成单一格；
+- 流派规则选择；
+- evidence / ambiguity。
 
-release branch 已接入：
+这已经成为当前人格系统可信度的核心 blocker。
 
-- 阳历出生日期
-- 知道 / 不知道出生时间
-- approximate time 支持
-- 用户性别字段
-- V1 真实静态城市表
-- IANA timezone resolution
-- 手动 location / timezone fallback
-- DST ambiguous / nonexistent time 错误提示
+## 6. 10 Public Personalities — LOCKED
 
-**重要：2026-08-22 新产品 contract 已取消“用户性别 → 男 / 女 Character”的映射。**
+| key | Public Personality |
+| --- | --- |
+| `bi_jian` | 犟种 |
+| `jie_cai` | 撒币 |
+| `shi_shen` | 享乐主义 |
+| `shang_guan` | 天生反骨 |
+| `zheng_cai` | 抠抠搜搜 |
+| `pian_cai` | 搞钱圣体 |
+| `zheng_guan` | 老干部 |
+| `qi_sha` | 狠人 |
+| `zheng_yin` | 活菩萨 |
+| `pian_yin` | 道长 |
 
-用户性别若仍为 deterministic Bazi Engine 所需，可继续作为排盘数据；但现有 UI / character routing 中任何“male / female character selection”语义都属于 **legacy pending refactor**。
+10 个名字继续锁定，但语义更新为：
 
-## 4. 10 Public Personalities — LOCKED
+> **传统十神 / 格局原型的现代人格翻译标签。**
 
-| Machine key | Ten-God | Public personality |
-| --- | --- | --- |
-| `bi_jian` | 比肩 | 犟种 |
-| `jie_cai` | 劫财 | 撒币 |
-| `shi_shen` | 食神 | 享乐主义 |
-| `shang_guan` | 伤官 | 天生反骨 |
-| `zheng_cai` | 正财 | 抠抠搜搜 |
-| `pian_cai` | 偏财 | 搞钱圣体 |
-| `zheng_guan` | 正官 | 老干部 |
-| `qi_sha` | 七杀 | 狠人 |
-| `zheng_yin` | 正印 | 活菩萨 |
-| `pian_yin` | 偏印 | 道长 |
+它们不等于传统格局本身，也不允许通过自造评分反向决定传统格局。
 
-Canonical Registry：`lib/public-personalities.ts`。
+## 7. Character System — LOCKED
 
-当前覆盖：
+正式 contract：
 
-- Registry：**10 / 10 implemented**
-- Complete Public Copy：**10 / 10 implemented**
-- six Tags：**10 / 10 implemented**
-- Result copy contract：**10 / 10 implemented**
-- Share copy contract：**10 / 10 implemented**
+```text
+10 Public Personality = 10 fixed official Character IPs
+public/characters/v1/{ten_god}.webp
+```
 
-完整 `TraditionalPatternResult` 仍未 Production-ready；`bi_jian → 建禄` 与 `jie_cai → 月劫` 仍只是 Presentation Proxy Mapping。
+取消男女双角色映射。
 
-## 5. Public experience implementation
+当前正式 Character binary：**0 / 10**。
 
-### Second Personality / Dimensions
-
-Second Personality 正式消费 `archetype_seed.secondary_ten_god`。
-
-Personality Dimensions 正式消费 `personality-map/0.2.0` 的真实 15 项 machine output。
-
-### Homepage
-
-release branch 已实现：首屏定位与 CTA、10 人格预览、确定性工作方式说明、Dossier Preview、Share Card Preview、再次 CTA。
-
-### Result
-
-已实现完整 18 段 Personality Dossier，并展示真实 second personality、15 dimensions 与专业八字依据折叠区。
-
-**待更新：**在 Result 中新增免费 Personality Mix 展示；主人格继续保留完整 Dossier，其他人格只显示比例 / 简短标记，不展开深度解析。
-
-### Share Loop
-
-已实现：
-
-- 1080 × 1350 feed card Canvas rendering
-- 1080 × 1920 Story / XHS card Canvas rendering
-- Web Share files（支持时）
-- PNG download fallback
-- copy result
-- stable production return URL
-
-**待更新：**Share Card 建议加入 Top 3 Personality Mix 摘要，强化同主人格用户之间的个体差异与比较传播。
-
-正式 Character asset 缺失时 Share Card 必须显式失败，不允许 placeholder。
-
-## 6. Character Visual System V1 — FIXED 10-IP / PRODUCTION ACTIVE
-
-Character Style selection 已完成。
-
-Canonical references：
+Style 继续 LOCKED：
 
 - `docs/assets/character-style-master-v1.webp`
 - `docs/15_CHARACTER_STYLE_LOCK_V1.md`
 - `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
-- `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
-正式风格：**Bold Graphic Character / Flat Editorial Character**。  
-世界观：**City Observation Editorial / 城市观察体**。
+## 8. Public Experience 当前状态
 
-硬规则：**pose may be redesigned; style may not be reinterpreted.**
+已有：
 
-### New formal asset contract
+- Homepage；
+- Birth；
+- Result Dossier；
+- second personality；
+- 15 dimensions；
+- Share Card rendering；
+- professional evidence section 基础 UI。
 
-```text
-public/characters/v1/{ten_god}.webp
-```
+但 Result 的人格 authoritative source 仍需在 Traditional Rule Audit 后调整。
 
-共 **10 fixed Character Master assets**。
+15 dimensions 可以保留为现代行为解释辅助，但不得反向决定传统格局。
 
-当前仓库真实状态：`public/characters/v1/` 只有 `README.md`，因此正式 Character binary 数量仍是：**0 / 10**。
+## 9. 当前最大 Release Blockers
 
-旧 `{ten_god}-{gender}.webp` 以及任何用户性别驱动角色选择逻辑，均属于 **legacy pending refactor**，不得继续作为新生产标准。
+当前 blocker 顺序已改变：
 
-当前最大 Release Blocker：
+1. **Traditional Bazi Rule Audit**；
+2. 锁定传统 rule profile / school choices；
+3. 建立 `TraditionalPatternResult + Evidence`；
+4. 将 Public Personality 改为传统结果的 translation layer；
+5. 清理 legacy engineering personality authority；
+6. legacy gender Character routing refactor；
+7. 10 / 10 Character Masters；
+8. Result / Share integration QA；
+9. mobile / CI / production QA。
 
-**Personality Mix implementation + fixed 10-IP contract refactor + 10 / 10 formal Character Masters + final QA**。
+## 10. 当前不做
 
-## 7. 当前 V1 P0 执行顺序
+仍不作为首发 blocker：
 
-1. 固定 10-IP / Personality Mix contract 文档同步
-2. 确认现有 machine output 是否足够构建 10 因子权重
-3. 实现 versioned Personality Mix normalization contract
-4. 重构 legacy gender-based Character routing / filenames
-5. Result / Share Card 接入免费 Personality Mix
-6. 10 / 10 formal Character Masters
-7. Homepage Character integration QA
-8. Result Character integration QA
-9. Share Card real-image QA
-10. mobile browser QA
-11. full CI
-12. PR #16 Ready
-13. merge main
-14. Vercel Production
-15. final public smoke test
+- Payment；
+- AI Advisor；
+- AI Chat；
+- Supabase Live；
+- Auth / Account；
+- compatibility；
+- referral；
+- ranking / rarity；
+- community / gamification。
 
-## 8. 完整产品设计已补齐
+## 11. Product integrity rule
 
-`docs/17_PRODUCT_DESIGN_REPORT_V1.md` 已正式定义：
+V1 可以年轻、好笑、传播性强，但不能通过自造命理算法换取“看起来很准”。
 
-- 10 个固定官方 IP
-- 免费主人格完整 Personality Dossier
-- 免费 10 因子 Personality Mix
-- 其他人格免费显示比例、不展开详细解析
-- 《疯传》传播结构
-- Post-V1 `Bazi Personality Spectrum / 八字人格光谱` 深度解析
-- `1 主人格 + 1–2 副人格 + N deterministic 修正因子`
-- 人格纯度 / 结构清晰度概念
-- 免费 → 付费转化逻辑
-- LLM 只解释、不重新排盘、不编造比例的专业边界
+当前发布标准调整为：
 
-付费不卖“看比例”的资格，而卖“为什么会是这些比例、它们怎样互相作用”的解释。
-
-## 9. CI / Browser acceptance pending
-
-最终 asset-integrated HEAD 仍必须通过：
-
-```text
-npm ci
-npm run lint
-npm run typecheck
-npm test
-npm run build
-```
-
-最终浏览器验收至少覆盖：390px / 430px / 768px / 1440px。
-
-重点检查 Homepage、Birth、Personality Mix、Result Hero、Long Result、fixed Characters、Share Card、Save / Share、Navigation、Reload、Back、Error、Unknown birth time。
-
-## 10. Post-V1 / V1.1 Parking Lot
-
-当前仍 PARKED：
-
-- 双人人格关系 / compatibility
-- referral / invitation challenge
-- AI Advisor / AI Chat
-- payment / ¥9.9 report checkout
-- **Bazi Personality Spectrum 深度解析 / checkout**
-- Supabase Live / Auth / Account
-- Analytics full system
-- ranking / rarity
-- new personality types
-- new Character Style
-- 用神 / 流月 / 流日
-- complex Traditional Pattern expansion
-- community / gamification
-
-注意：**免费 Personality Mix 已从 Post-V1 移入 V1 P0；只有深度光谱解析仍属于 Post-V1。**
-
-## 11. Production release gate
-
-已完成：
-
-- [x] 10 / 10 Public Registry
-- [x] 10 / 10 complete Public Copy
-- [x] deterministic Birth → Bazi → Interpretation → Public mapping
-- [x] real secondary personality
-- [x] real dimensions
-- [x] full dominant Result Dossier implementation
-- [x] Share rendering implementation
-- [x] Character Style selected and LOCKED
-- [x] fixed 10-IP product contract approved
-- [x] free Personality Mix product contract approved
-- [x] complete paid-spectrum design documented
-
-仍阻塞发布：
-
-- [ ] deterministic / versioned 10-factor Personality Mix implementation
-- [ ] Result Personality Mix UI
-- [ ] Share Card Top-factor mix integration
-- [ ] legacy gender-based character routing refactor
-- [ ] 10 / 10 formal Character Masters
-- [ ] Homepage / Result / Share Card real-image QA
-- [ ] mobile / viewport browser QA
-- [ ] full CI on final asset-integrated HEAD
-- [ ] PR #16 Ready / merge main
-- [ ] Vercel Production
-- [ ] final public smoke test
-
-**V1 必须完整；免费用户可以看到自己的真实人格配方，但详细多因子解析留给付费层。**
+> **命理判断来源讲得清楚，现代人格翻译讲得好看。**
