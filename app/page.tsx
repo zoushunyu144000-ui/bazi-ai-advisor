@@ -158,35 +158,22 @@ export default function HomePage() {
           <span className="text-xs tracking-[0.18em] text-muted">滑动 / hover / 点按</span>
         </div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-6">
-          {PUBLIC_PERSONALITY_ORDER.map((key, index) => {
-            const item = PUBLIC_PERSONALITIES[key];
-            const span =
-              index === 0
-                ? "lg:col-span-3"
-                : index === 1
-                ? "lg:col-span-3"
-                : index === 2
-                ? "lg:col-span-2"
-                : index === 3
-                ? "lg:col-span-2"
-                : index === 4
-                ? "lg:col-span-2"
-                : "lg:col-span-2";
-            const cardHeight =
-              index === 0 || index === 1
-                ? "min-h-[360px] sm:min-h-[400px]"
-                : "min-h-[280px] sm:min-h-[300px]";
-            return (
-              <Link
-                key={key}
-                href="/birth"
-                className={`group relative overflow-hidden rounded-[1.6rem] border border-line bg-canvas p-5 transition-transform duration-200 hover:-translate-y-0.5 ${span} ${cardHeight}`}
-                style={accentStyle(key)}
-                aria-label={`用 ${item.display_name} 测一次`}
-              >
-                <div className="absolute inset-0 -z-10 bg-[var(--p-paper,oklch(0.97_0.02_60))]" />
-                <div className="relative flex h-full flex-col justify-between">
+        {/* Mobile: first 2 as full-width feature cards, remaining 8 as a
+            horizontal snap strip. Desktop (lg+): asymmetric 6-col grid.
+            This avoids the mobile "vertical card catalogue" failure mode. */}
+        <div className="mt-12">
+          <div className="grid gap-4 sm:grid-cols-2 lg:hidden">
+            {PUBLIC_PERSONALITY_ORDER.slice(0, 2).map((key, index) => {
+              const item = PUBLIC_PERSONALITIES[key];
+              return (
+                <Link
+                  key={key}
+                  href="/birth"
+                  className="group relative block overflow-hidden rounded-[1.6rem] border border-line bg-canvas p-5 transition-transform duration-200 active:-translate-y-0.5"
+                  style={accentStyle(key)}
+                  aria-label={`用 ${item.display_name} 测一次`}
+                >
+                  <div className="absolute inset-0 -z-10 bg-[var(--p-paper,oklch(0.97_0.02_60))]" />
                   <div className="flex items-start justify-between gap-3">
                     <p className="font-mono text-[10px] font-bold tracking-[0.3em] text-[var(--p-ink,var(--color-ink-deep))]">
                       {String(index + 1).padStart(2, "0")} · {key.toUpperCase()}
@@ -195,22 +182,92 @@ export default function HomePage() {
                       {item.traditional_label.split(" · ")[0]}
                     </p>
                   </div>
-                  <div className="my-4 h-44 overflow-hidden rounded-2xl sm:h-56">
+                  <div className="my-4 h-52 overflow-hidden rounded-2xl">
                     <CharacterSlot tenGod={key} variant="compact" showMeta={false} />
                   </div>
-                  <div>
-                    <h3 className="font-display text-2xl font-bold text-[var(--p-ink,var(--color-ink-deep))] sm:text-3xl">
-                      {item.display_name}
-                    </h3>
-                    <p className="mt-2 text-sm leading-6 text-soft">「{item.anchor_quote.replace(/[“”]/g, "")}」</p>
-                    <p className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold tracking-[0.16em] text-[var(--p-ink,var(--color-ink-deep))] opacity-80 transition group-hover:opacity-100">
-                      用这个测一次 ↗
+                  <h3 className="font-display text-3xl font-bold text-[var(--p-ink,var(--color-ink-deep))]">{item.display_name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-soft">「{item.anchor_quote.replace(/[“”]/g, "")}」</p>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="no-scrollbar mt-4 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 lg:hidden">
+            {PUBLIC_PERSONALITY_ORDER.slice(2).map((key, index) => {
+              const item = PUBLIC_PERSONALITIES[key];
+              return (
+                <Link
+                  key={key}
+                  href="/birth"
+                  className="group relative flex w-[62vw] shrink-0 snap-start flex-col overflow-hidden rounded-[1.6rem] border border-line bg-canvas p-5"
+                  style={accentStyle(key)}
+                  aria-label={`用 ${item.display_name} 测一次`}
+                >
+                  <div className="absolute inset-0 -z-10 bg-[var(--p-paper,oklch(0.97_0.02_60))]" />
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-mono text-[10px] font-bold tracking-[0.3em] text-[var(--p-ink,var(--color-ink-deep))]">
+                      {String(index + 3).padStart(2, "0")}
+                    </p>
+                    <p className="text-[10px] tracking-[0.2em] text-[var(--p-ink,var(--color-ink-deep))] opacity-70">
+                      {item.traditional_label.split(" · ")[0]}
                     </p>
                   </div>
-                </div>
-              </Link>
-            );
-          })}
+                  <div className="my-4 h-40 overflow-hidden rounded-2xl">
+                    <CharacterSlot tenGod={key} variant="compact" showMeta={false} />
+                  </div>
+                  <h3 className="font-display text-2xl font-bold text-[var(--p-ink,var(--color-ink-deep))]">{item.display_name}</h3>
+                  <p className="mt-1.5 text-sm leading-6 text-soft">「{item.anchor_quote.replace(/[“”]/g, "")}」</p>
+                </Link>
+              );
+            })}
+          </div>
+
+          <div className="hidden gap-4 lg:grid lg:grid-cols-6">
+            {PUBLIC_PERSONALITY_ORDER.map((key, index) => {
+              const item = PUBLIC_PERSONALITIES[key];
+              const span =
+                index === 0 || index === 1
+                  ? "lg:col-span-3"
+                  : "lg:col-span-2";
+              const cardHeight =
+                index === 0 || index === 1
+                  ? "min-h-[400px]"
+                  : "min-h-[300px]";
+              return (
+                <Link
+                  key={key}
+                  href="/birth"
+                  className={`group relative overflow-hidden rounded-[1.6rem] border border-line bg-canvas p-5 transition-transform duration-200 hover:-translate-y-0.5 ${span} ${cardHeight}`}
+                  style={accentStyle(key)}
+                  aria-label={`用 ${item.display_name} 测一次`}
+                >
+                  <div className="absolute inset-0 -z-10 bg-[var(--p-paper,oklch(0.97_0.02_60))]" />
+                  <div className="relative flex h-full flex-col justify-between">
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="font-mono text-[10px] font-bold tracking-[0.3em] text-[var(--p-ink,var(--color-ink-deep))]">
+                        {String(index + 1).padStart(2, "0")} · {key.toUpperCase()}
+                      </p>
+                      <p className="text-[10px] tracking-[0.2em] text-[var(--p-ink,var(--color-ink-deep))] opacity-70">
+                        {item.traditional_label.split(" · ")[0]}
+                      </p>
+                    </div>
+                    <div className="my-4 h-44 overflow-hidden rounded-2xl sm:h-56">
+                      <CharacterSlot tenGod={key} variant="compact" showMeta={false} />
+                    </div>
+                    <div>
+                      <h3 className="font-display text-2xl font-bold text-[var(--p-ink,var(--color-ink-deep))] sm:text-3xl">
+                        {item.display_name}
+                      </h3>
+                      <p className="mt-2 text-sm leading-6 text-soft">「{item.anchor_quote.replace(/[“”]/g, "")}」</p>
+                      <p className="mt-4 inline-flex items-center gap-1 text-[11px] font-bold tracking-[0.16em] text-[var(--p-ink,var(--color-ink-deep))] opacity-80 transition group-hover:opacity-100">
+                        用这个测一次 ↗
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
 

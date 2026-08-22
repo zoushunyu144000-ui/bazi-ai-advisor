@@ -151,7 +151,8 @@ function drawWrappedText(
   if (line && lineNumber < maxLines) ctx.fillText(line, x, y + lineNumber * lineHeight);
 }
 
-const MIX_BLOCKS = ["主导", "明显副倾向", "辅助"] as const;
+// MIX_BLOCKS removed: the engine only emits two tiers (dominant + secondary).
+// A fabricated third "辅助" tier would violate docs/13 §4 + docs/18 §2.
 
 export default function ResultPage() {
   const [bundle, setBundle] = useState<PublicResultBundle | null>(null);
@@ -295,19 +296,20 @@ export default function ResultPage() {
             <CharacterSlot tenGod={dominantKey} className="h-full w-full" />
           </div>
         </div>
-        {/* Mix summary bar */}
+        {/* Mix summary bar — ONLY the two tiers the engine actually emits.
+            A third "辅助" tier must NOT be fabricated here: per
+            docs/18 §2 engineering ranking may not enter the authoritative
+            path, and per docs/13 §4 every tier needs traditional-rule
+            evidence. Until TraditionalPatternResult lands, two tiers only. */}
         <div className="border-y border-line bg-paper/60 backdrop-blur-sm">
-          <div className="mx-auto grid max-w-6xl grid-cols-3 gap-4 px-5 py-4 text-sm sm:px-8">
-            {MIX_BLOCKS.map((label, idx) => {
-              const items = [
-                { key: dominantKey, accent: dominantStyle },
-                { key: secondaryKey, accent: secondaryStyle },
-                { key: dominantKey, accent: dominantStyle },
-              ];
-              const item = items[idx];
-              const personality = PUBLIC_PERSONALITIES[item.key];
+          <div className="mx-auto grid max-w-6xl grid-cols-2 gap-4 px-5 py-4 text-sm sm:px-8">
+            {[
+              { label: "主导", key: dominantKey, accent: dominantStyle },
+              { label: "明显副倾向", key: secondaryKey, accent: secondaryStyle },
+            ].map(({ label, key, accent }) => {
+              const personality = PUBLIC_PERSONALITIES[key];
               return (
-                <div key={label} className="flex items-center gap-3" style={item.accent}>
+                <div key={label} className="flex items-center gap-3" style={accent}>
                   <span className="font-mono text-[10px] font-bold tracking-[0.22em] text-[var(--p-ink,var(--color-muted))]">
                     {label}
                   </span>
