@@ -1,6 +1,6 @@
 # 13 — Personality IP Bible V1
 
-状态：**V1 Release Freeze / Product LOCKED / Character Style LOCKED**  
+状态：**V1 Release Freeze / Product LOCKED / Character Style LOCKED / Traditional Translation Doctrine LOCKED**  
 最后更新：2026-08-22
 
 ## 0. Governance / Source of Truth precedence
@@ -8,111 +8,143 @@
 V1 项目治理优先级固定为：
 
 1. `docs/13_PERSONALITY_IP_BIBLE.md`
-2. `docs/09_CURRENT_STATE.md`
-3. `docs/10_ROADMAP.md`
-4. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
-5. older docs / experiments / historical research
+2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
+3. `docs/09_CURRENT_STATE.md`
+4. `docs/10_ROADMAP.md`
+5. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+6. older docs / experiments / historical research
 
-如果旧文档、试制记录、历史研究与本文件冲突，**以 Personality IP Bible 为准**。
-
-文档职责：
-
-- Personality IP Bible：锁定产品定义、人格体系、Character contract 与 V1 边界；
-- Current State：只描述现在真实做到哪里；
-- Roadmap：只描述接下来做什么；
-- Product Design Report：解释完整产品、传播与付费架构；
-- older docs / experiments：只作为历史上下文。
+如果旧文档、实验代码或历史研究与本文件冲突，以本文件为准。
 
 ## 1. 产品定位
 
-V1 是 **八字版 SBTI + 固定人格 IP + 免费主人格完整解析 + 免费人格因子配比 + 分享传播闭环**。
+V1 是：
 
-核心体验：
+**传统八字命理结构 → 现代人格翻译 → 10 个固定官方 IP → 完整免费人格 Dossier → 分享传播闭环。**
+
+核心原则：
+
+> **传统命理负责判断，现代产品负责翻译。**
+
+产品语气：
+
+> **里面认真算，外面认真发疯。**
+
+本产品不创造新的“八字人格学”，不通过自造权重重新定义格局，也不让 LLM 重新排盘或取格。
+
+完整方向：
 
 ```text
 出生信息
 → deterministic Birth normalization
-→ deterministic Bazi Engine
-→ Interpretation personality-map/0.2.0
-→ versioned personality weighting / normalization
-→ 10 Public Personality factor mix
-→ dominant Public Personality
-→ full dominant Personality Dossier
+→ deterministic Bazi calculation
+→ Traditional Structure / Pattern judgment
+→ evidence-backed modern translation
+→ Public Personality
 → fixed official Character IP
+→ full Personality Dossier
 → Share Card
 ```
 
-产品语气：**里面认真算，外面认真发疯。**
-
-第一反应应该是“这什么鬼”，第二反应是“好像真有点像我”，第三反应是“原来我还混了这么多别的人格”，最后愿意截图或生成卡片发给朋友。
-
-V1 必须是完整可用产品，不是低质量 prototype；但 payment / AI Advisor / 深度付费报告仍可按 Roadmap 延后，不得因此降低免费 V1 的完整度。
-
 ## 2. 10 Public Personalities — LOCKED
 
-| Machine Ten-God | Public name | Public traditional label |
-| --- | --- | --- |
-| `bi_jian` | 犟种 | 比肩型人格 · V1 展示代理「建禄」 |
-| `jie_cai` | 撒币 | 劫财型人格 · V1 展示代理「月劫」 |
-| `shi_shen` | 享乐主义 | 食神型人格 |
-| `shang_guan` | 天生反骨 | 伤官型人格 |
-| `zheng_cai` | 抠抠搜搜 | 正财型人格 |
-| `pian_cai` | 搞钱圣体 | 偏财型人格 |
-| `zheng_guan` | 老干部 | 正官型人格 |
-| `qi_sha` | 狠人 | 七杀型人格 |
-| `zheng_yin` | 活菩萨 | 正印型人格 |
-| `pian_yin` | 道长 | 偏印型人格 |
+| Machine / traditional archetype | Public Personality |
+| --- | --- |
+| `bi_jian` | 犟种 |
+| `jie_cai` | 撒币 |
+| `shi_shen` | 享乐主义 |
+| `shang_guan` | 天生反骨 |
+| `zheng_cai` | 抠抠搜搜 |
+| `pian_cai` | 搞钱圣体 |
+| `zheng_guan` | 老干部 |
+| `qi_sha` | 狠人 |
+| `zheng_yin` | 活菩萨 |
+| `pian_yin` | 道长 |
 
-以上 display name 在 V1 公网期间禁止自行改名。
+`shi_shen → 享乐主义` 已替代旧名称“好吃懒做”；旧名 retired。
 
-`shi_shen → 享乐主义` 已替代旧试制名“好吃懒做”。旧名称已 **retired**。
+### 重要语义
 
-### Proxy boundary
-
-当前完整 `TraditionalPatternResult` 尚未进入 Production。
+10 个 Public Personality 是 **传统十神 / 格局原型的现代人格翻译标签**，不是传统格局本身。
 
 因此：
 
-- `bi_jian → 犟种 / 建禄` 只是 Presentation Proxy Mapping；
-- `jie_cai → 撒币 / 月劫` 只是 Presentation Proxy Mapping；
-- 不得描述为 Engine 已经正式完成建禄/月劫格局判定。
+- `天生反骨` 不等于“用户一定是标准伤官格”；
+- `搞钱圣体` 不等于“财星数量最大”；
+- Public Personality 必须能回溯到传统命盘结构与证据；
+- 不成格、兼格、破格、从格、混合结构都必须被允许，不能为了人格分类强行判成纯型。
 
-## 3. 公网人格机器边界
+## 3. Traditional Bazi → Personality Translation Contract
 
-公网人格唯一输入来自现有确定性链路：
+正式规则见：
+
+`docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
+
+核心边界：
+
+### 3.1 Traditional Layer
+
+负责判断：
+
+- 月令 / 透干 / 藏干 / 根气；
+- 十神结构；
+- 旺衰；
+- 格局候选；
+- 成格 / 败格 / 破格 / 救应；
+- 从格 / 特殊格局；
+- 组合关系；
+- 不确定性与流派差异。
+
+### 3.2 Translation Layer
+
+只负责把已经得到的传统结构翻译成：
+
+- 主 Public Personality；
+- 明显副倾向；
+- 场景化现代文案；
+- Character IP；
+- Share Card 文案。
+
+Translation Layer 不得反向修改传统命理结果。
+
+### 3.3 Existing personality-map/0.2.0 status
+
+当前 `personality-map/0.2.0` 中存在现代工程化 candidate ranking / dimension weighting。
+
+这些内容可以保留作：
+
+- historical experiment；
+- presentation research；
+- future calibration reference。
+
+但不得再被描述为“传统命理本身的准确人格算法”，也不得成为未来专业报告的 Traditional Pattern Source of Truth。
+
+## 4. 关于人格比例 / Personality Mix
+
+此前规划的“10 人格精确百分比”暂停作为正式 V1 contract。
+
+原因：传统八字没有一套跨流派统一、天然等同于人格百分比的标准。
+
+在没有锁定传统依据的量化方法之前：
+
+- 禁止展示伪精确 `41% 天生反骨 / 26% 搞钱圣体`；
+- 禁止把现有工程化 `candidate_score` 归一化后包装成人格比例；
+- 禁止把 `tenGodDistribution` 直接等同于 Public Personality 百分比。
+
+V1 免费层可以展示：
 
 ```text
-normalizeBirthProfile()
-→ calculateBazi()
-→ interpretBaziChart()
-→ versioned personality weighting / normalization
-→ selectArchetypeCandidate()
+主导：天生反骨
+明显副倾向：搞钱圣体
+辅助：狠人
+结构状态：混合 / 较清晰 / 存在争议
 ```
 
-主人格使用确定性人格权重中的 dominant result，并必须与 `archetype_seed.dominant_ten_god` 兼容或通过版本迁移明确替代关系。
+这些强弱与层级必须来自传统规则证据。
 
-第二人格使用确定性人格权重中的 secondary result，并必须与 `archetype_seed.secondary_ten_god` 兼容或通过版本迁移明确替代关系。
+未来若实现百分比，必须先完成传统来源锁定、规则版本化、典型命例回测与可复算验证。
 
-Personality Dimensions 继续消费 `personality-map/0.2.0` 的真实 15 个 dimensions，不允许 Presentation 随机造数。
-
-### Free Personality Mix Contract
-
-V1 免费结果必须展示用户的 **10 个 Public Personality 因子权重 / Personality Mix**。
-
-这些比例必须：
-
-- 来自 deterministic engine 或明确版本化 normalization rules；
-- 同一命盘可复算；
-- 总体归一化到统一尺度，建议 100%；
-- 不得由 LLM 或前端随机生成；
-- 不得为了视觉效果手工修改；
-- 明确是“人格因子权重”，不是宣称传统命理里存在天然固定百分比。
-
-如当前 `personality-map/0.2.0` 尚不能直接产出合格的 10 因子比例，则必须先实现版本化 normalization contract，再对公网展示数字。
-
-`lib/personality-archetypes.ts` 的 5 Elements × 5 Families = 25 archetypes 归类为 **experimental / legacy presentation experiment**，V1 公网人格判断不再消费。
-
-## 4. Public Copy Contract
+## 5. Public Copy Contract
 
 每个 Public Personality 必须完整提供：
 
@@ -142,19 +174,15 @@ V1 免费结果必须展示用户的 **10 个 Public Personality 因子权重 / 
 
 Canonical implementation：`lib/public-personalities.ts`。
 
-## 5. Character Visual System V1 — FIXED 10-IP CONTRACT
-
-### 5.1 核心决策
+## 6. Character Visual System V1 — FIXED 10-IP CONTRACT
 
 **10 Public Personality = 10 个固定官方 Character IP。**
 
-取消旧的“每个人格 male + female 两个正式角色”产品 contract。
+取消旧的“每个人格 male + female 两个正式角色”contract。
 
 Character 代表人格本身，不代表用户本人。用户性别不得改变 Character identity。
 
-出生性别如果 deterministic Bazi Engine 仍需要，可继续作为排盘输入；但不得再作为角色选择器或角色资产路由条件。
-
-### 5.2 Canonical Character identities
+### Canonical Character identities
 
 | Machine key | Public personality | Canonical Character |
 | --- | --- | --- |
@@ -169,48 +197,15 @@ Character 代表人格本身，不代表用户本人。用户性别不得改变 
 | `zheng_yin` | 活菩萨 | 固定男性角色 |
 | `pian_yin` | 道长 | 固定女性角色 |
 
-整体 5 男 + 5 女，只用于 Character 世界观平衡，不建立用户性别映射。
+整体 5 男 + 5 女，仅用于 IP 世界观平衡。
 
-### 5.3 Hard release gate
-
-正式公网不接受：
-
-- CSS 小人
-- 几何 SVG 人物
-- 程序自动 silhouette
-- placeholder character
-- 旧 25 archetype 临时人物
-- 同人格男女双资产依赖
-- 彼此无统一世界观的随机 AI 图
-
-角色必须是 18–28 岁视觉年龄的年轻东方人，有人格、互联网感、生活感与 Editorial 感。
-
-角色不是十神职业 cosplay：道长 ≠ 道袍；老干部 ≠ 中年干部；活菩萨 ≠ 和尚；狠人 ≠ 黑帮；搞钱圣体 ≠ 拿人民币。
-
-### 5.4 Character Style — LOCKED
-
-Canonical references：
-
-- `docs/assets/character-style-master-v1.webp`
-- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
-- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
-
-主风格：**Bold Graphic Character / Flat Editorial Character**  
-世界观：**City Observation Editorial / 城市观察体**
-
-硬规则：**pose may be redesigned; style may not be reinterpreted.**
-
-### 5.5 Asset contract
-
-正式目录：`public/characters/v1/`
-
-正式命名：
+### Asset contract
 
 ```text
-{ten_god}.webp
+public/characters/v1/{ten_god}.webp
 ```
 
-V1 共 **10 formal Character Master assets**：
+正式资产：
 
 ```text
 bi_jian.webp
@@ -225,189 +220,133 @@ zheng_yin.webp
 pian_yin.webp
 ```
 
-必须 10 / 10 到位后才能解除 Production Visual Gate。
+角色风格仍以：
 
-同一个 Character Master 可用于 Homepage / Result / Share Card / Avatar 等裁切与排版，不要求重复画人物。
+- `docs/assets/character-style-master-v1.webp`
+- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
+- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
 
-后续扩展优先做同一角色的表情、动作、工作、关系、压力等 Variant，不重新建立男女双角色体系。
+为唯一视觉锚点。
 
-## 6. Result Dossier Contract
+硬规则：**pose may be redesigned; style may not be reinterpreted.**
+
+## 7. Free Result Dossier
+
+免费产品必须完整、有价值、可分享。
 
 V1 Result 至少包含：
 
-1. 你到底是什么东西 / 主人格 Hero
-2. 你的 10 因子人格配比
-3. 朋友眼里的你
-4. 你的 A 面
-5. 你的翻车面
-6. 你的第二人格名称 + 比例
-7. Personality Dimensions
-8. 工作中的你
-9. 学习中的你
-10. 关系里的你
-11. 冲突中的你
-12. 压力大的你
-13. 你的回血方式
-14. 你的决策方式
-15. 你的金钱模式
-16. 你最容易卡在哪里
-17. 成长建议
-18. 为什么会得到这个主人格
-19. 专业八字依据折叠区
+1. 主人格 Hero；
+2. 主导 / 明显副倾向 / 辅助结构摘要；
+3. 朋友眼里的你；
+4. A 面；
+5. 翻车面；
+6. 第二人格 / 次级倾向；
+7. 现代行为维度（只能作为解释辅助，不能反向决定传统格局）；
+8. 工作；
+9. 学习；
+10. 关系；
+11. 冲突；
+12. 压力；
+13. 恢复；
+14. 决策；
+15. 金钱；
+16. 卡点；
+17. 成长建议；
+18. 为什么得到这个人格；
+19. 专业八字依据折叠区。
 
-### Free interpretation boundary
+免费层完整解析主人格；其他倾向只做轻量提示。
 
-免费层：
+## 8. Professional / Paid Report Direction
 
-- **完整详细解析主人格**；
-- 显示其他人格因子的名称与比例；
-- 可标记第二人格 / Top factors；
-- 其他人格最多一句极短提示，不做详细解释。
+付费报告的价值不是“多写几千字”，而是解释传统结构为什么形成这种现代人格表达。
 
-免费层不详细解释：
+专业报告应明确分区：
 
-- 主人格与其他因子的组合机制；
-- 为什么会形成这些具体比例；
-- 多因子之间的冲突 / 协同；
-- 混合度 / 结构清晰度的专业含义；
-- 多因子在工作、金钱、关系等场景里的联动效应。
+### A. Traditional Bazi Structure
 
-这些属于 Post-V1 付费 `Bazi Personality Spectrum` 解析价值。
+- 采用的规则体系；
+- 月令 / 十神 / 透藏 / 根气；
+- 旺衰；
+- 格局判断；
+- 成败 / 破格 / 救应；
+- 从格 / 特殊结构；
+- 组合关系；
+- 不确定性 / 流派差异。
 
-传统内容不得抢占第一体验。
+### B. Modern Personality Translation
 
-## 7. Share Loop V1
+- 主人格为什么这样翻译；
+- 次级倾向从哪里来；
+- 为什么同一个 Public Personality 的两个人仍然不同；
+- 工作 / 金钱 / 关系 / 压力下如何表达。
+
+付费层卖的是：**传统结构的深入解释与现代化翻译**，不是自造人格算法。
+
+## 9. Share Loop V1
 
 至少提供：
 
-- 主分享卡：1080 × 1350
-- Story / 小红书版：1080 × 1920
-- 生成 / 保存图片
-- Web Share API（支持时）
-- 下载 fallback
-- 复制结果
+- 1080 × 1350 主分享卡；
+- 1080 × 1920 Story / 小红书版；
+- 保存图片；
+- Web Share API（支持时）；
+- 下载 fallback；
+- 复制结果。
 
-分享卡必须包含人格大名、固定官方 Hero Character、锚点句、3–5 Tags、毒舌总结、品牌和回流 URL。
+分享卡包含：人格大名、固定 Character、锚点句、3–5 Tags、毒舌总结、品牌、回流 URL。
 
-建议增加 **Top 3 人格配比摘要**，例如：
-
-```text
-天生反骨 41%
-搞钱圣体 26%
-狠人 14%
-```
-
-这样同一主人格用户的分享卡仍有个人差异，增强比较与二次传播。
-
-正式 Character asset 缺失时，Share Card 必须显式失败，不允许静默 placeholder。
-
-## 8. Free / Paid boundary
-
-### Free V1
-
-免费 V1 必须完整爽，不做残缺诱导付费。
-
-免费必须包含：
-
-- 主人格完整解析；
-- 固定官方 Character；
-- 10 因子人格配比；
-- 第二人格名称 + 比例；
-- 朋友视角、A 面、翻车面；
-- Dimensions；
-- 主要生活场景；
-- 八字依据；
-- Share Card。
-
-免费层回答：**“我主要是什么人，以及我的人格配方是什么？”**
-
-### Post-V1 paid design — Bazi Personality Spectrum
-
-付费层方向正式定义为：**八字人格光谱 / Bazi Personality Spectrum**。
-
-付费不卖“看比例”的权限。**比例免费可见，付费卖的是比例背后的解释。**
-
-它解释：
+可以加入：
 
 ```text
-1 个主人格
-+ 1–2 个显著副人格 / 次级动力
-+ N 个 deterministic 八字结构修正因子
+主导：天生反骨
+明显副倾向：搞钱圣体
 ```
 
-重点回答：
-
-- 为什么会形成这个比例；
-- 主人格与副人格怎样互相作用；
-- 哪些结构造成内在矛盾；
-- 混合度 / 清晰度意味着什么；
-- 在工作、金钱、关系、压力、决策里怎样表现。
-
-可扩展因子包括经过版本化规则验证的：十神权重、日主状态、五行结构、格局清晰度 / 混合度、关键组合关系等。
-
-任何比例、纯度、权重或结构标签必须来自 deterministic engine / versioned rules，LLM 不得自行编造。
-
-支付未接前，付费区只允许显示“即将开放”，不得伪造支付成功。
-
-完整产品说明见 `docs/17_PRODUCT_DESIGN_REPORT_V1.md`。
-
-## 9. 传播原则
-
-增长设计参考《疯传》类传播框架，但不把传播做成外挂功能。
-
-核心必须同时满足：
-
-- 社交货币：人格名和人格配方值得说出口；
-- 情绪：好笑、被说中、反差；
-- 公开性：固定角色、分享卡、Top factor mix 可识别；
-- 触发：工作、关系、金钱、压力等生活场景；
-- 实用价值：免费结果本身有自我理解价值；
-- 故事：朋友眼中的你 / 真正的你 / 翻车面 / 第二人格 / 混合配方形成可讲述结构。
+暂不加入没有传统依据的精确人格百分比。
 
 ## 10. V1 Release Freeze
 
-V1 唯一发布目标：
+当前 V1 不再以 Personality Mix 数字化为 release requirement。
+
+新的 P0 顺序必须先保证传统命理判断链可信：
 
 ```text
-Homepage
-→ Birth
-→ deterministic Bazi
-→ Interpretation
-→ versioned Personality Mix
-→ 10 Public Personalities
-→ dominant full Personality Dossier
-→ 10 fixed formal Characters
-→ Share Card with personalized mix summary
-→ friend can open the website and test
+Audit existing Bazi rules
+→ classify traditional / school-choice / experimental rules
+→ define TraditionalPatternResult contract
+→ remove engineering personality ranking from authoritative path
+→ modern translation mapping
+→ fixed 10 Character IPs
+→ Result / Share integration
+→ QA / CI / Production
 ```
 
-当前 release 不要求 payment / AI Advisor / Bazi Personality Spectrum 深度付费解析已实现，但 **免费 Personality Mix 属于 V1 正式体验，不得延后到付费版。**
+Payment、AI Advisor、Supabase Live 等仍不是首发 blocker。
 
 ## 11. Definition of Done
 
+陌生用户完成测试后：
+
 ```text
-陌生用户打开
-→ 被角色和名字吸引
-→ 愿意填出生信息
-→ 真实排盘与 Interpretation
-→ 得到可复算的人格因子配比
-→ 得到唯一主人格 + 第二人格
-→ 看完主人格完整 Dossier
-→ 看见该人格唯一固定 Character
-→ 看见其他人格比例但不展开深度解析
-→ 生成真的好看的分享卡
-→ 发给朋友
-→ 朋友打开网站继续测
+真实排盘
+→ 传统规则可追溯的结构判断
+→ 明确主导 / 副倾向
+→ 翻译为 Public Personality
+→ 完整主人格 Dossier
+→ 固定 Character IP
+→ 专业依据可展开查看
+→ 生成分享卡
+→ 好友回流继续测试
 ```
 
 同时必须满足：
 
+- 传统判断规则来源可追溯；
+- 自造工程化人格权重不进入 authoritative path；
+- 不成格 / 从格 / 混合结构可以诚实表达；
 - 10 / 10 Character Master 到位；
-- Personality Mix 来自 deterministic / versioned rules；
-- 无 male/female 双角色资产依赖；
+- 无 gender 双角色依赖；
 - 无 placeholder；
-- mobile QA 通过；
-- final CI 通过；
-- public smoke test 通过。
-
-只有完整闭环成立，才算 V1 Release Candidate 完成。Build success 本身不等于完成。
+- mobile QA / final CI / smoke test 通过。
