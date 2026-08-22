@@ -1,7 +1,7 @@
 # 21 — AI Project Operating System
 
 状态：**APPROVED / ACTIVE**  
-日期：2026-08-22
+日期：2026-08-23
 
 本文件定义本仓库所有 AI / GPT / Codex / Agent 的项目执行闭环。
 
@@ -285,6 +285,7 @@ PRODUCTION READY
 | TASK（本轮任务） | 当前任务 Prompt / PR Scope / 必要时专题 Task 文档 |
 | DESIGN_SYSTEM（设计系统） | `03_DESIGN_SYSTEM.md` + Character Style contracts |
 | DECISIONS（冻结决定） | `08_DECISION_LOG.md` |
+| RULE PROFILE（传统规则体系） | `22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md` |
 | BUILD（开发） | feature / release branch production changes |
 | REVIEW（审核） | tests + CI + browser / domain review + PR review |
 | FREEZE（冻结） | Decision Log + Approved Contract + merged state |
@@ -343,17 +344,33 @@ Idea 阶段可以发散；一旦进入 Task / Build，必须收敛。
 
 当前 V1 不允许为了“更像人格测试”而自造传统判断 authority。
 
-截至 2026-08-22：
+截至 2026-08-23：
 
 - Traditional Bazi Rule Audit 已完成；
-- `TraditionalPatternResult` Readiness = `NOT READY`；
-- 下一 P0 是 Rule Profile / School Choice Lock；
-- Rule Profile 冻结前，不实现正式 `TraditionalPatternResult`；
+- Traditional Bazi Rule Profile 已完成 Owner Approval + Freeze；
+- 正式 `rule_profile_version = ziping-v1.0.0`；
+- Rule Profile Source of Truth：`docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`；
+- 下一 P0 已推进为 `TraditionalPatternResult + Evidence + Counter Evidence + Ambiguity` implementation；
+- `TraditionalPatternResult` 当前仍是 **NOT IMPLEMENTED**，Rule Profile Freeze 不等于 production implementation 完成；
+- implementation 必须先 Spec / Plan，再 Build，不得重新混入 `support_ratio`、month multiplier、candidate score、Personality Dimensions 或 LLM pattern judgment；
 - Payment、AI Advisor、Supabase Live、Auth 等继续 parked，不得抢当前 P0。
 
-详细审计见：
+当前顺序：
 
-`docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
+```text
+Rule Audit = DONE
+→ ziping-v1.0.0 Rule Profile = LOCKED
+→ TraditionalPatternResult Spec / Plan
+→ Build
+→ Review
+→ Freeze implementation
+→ Public Personality Translation
+```
+
+详细规则见：
+
+- `docs/20_TRADITIONAL_BAZI_RULE_AUDIT.md`
+- `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 
 ---
 
