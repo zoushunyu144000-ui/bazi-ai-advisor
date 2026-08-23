@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE NEXT**  
+状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE / Phase 2 Structural Evidence**
 最后更新：2026-08-23
 
 ## 0. Roadmap Boundary
@@ -174,27 +174,33 @@ ziping-v1.0.0
 
 ### Phase 1 — Contract + Profile Guard
 
-- `types/domain/traditional-pattern.ts`
-- shared enums / result types
-- `pattern_schema_version`
-- `modules/bazi/traditional-pattern/**` skeleton
-- `assertZipingRuleProfile()`
-- architecture test：no Interpretation imports
-- no public cutover
+状态：**COMPLETE IN DRAFT PR #19**。
+
+- ✅ `types/domain/traditional-pattern.ts`
+- ✅ shared enums / result types
+- ✅ `pattern_schema_version`
+- ✅ `modules/bazi/traditional-pattern/**` skeleton
+- ✅ `assertZipingRuleProfile()`
+- ✅ architecture test：no Interpretation imports
+- ✅ no public cutover
 
 ### Phase 2 — Ziping Calculation Path + Structural Evidence
 
-- versioned `ziping-v1.0.0` calculation path
-- frozen night-Zi hour-stem behavior
-- exact LiChun / Jie
-- historical IANA / DST
-- boundary ambiguity
-- Month Host / exposure
-- roots
-- qualitative strength
-- 三合 / 三会 / 刑 / 破
-- transformation state
-- Evidence generation
+状态：**ACTIVE**。
+
+- ✅ versioned `ziping-v1.0.0` calculation path
+- ✅ frozen night-Zi hour-stem behavior
+- ✅ exact LiChun / Jie
+- ✅ historical IANA / DST primitive reuse
+- **NEXT：boundary ambiguity generation**
+- ✅ Month Host / exposure
+- ✅ exact Jianlu / month-command Yuejie / five-yang Yangren Host rules
+- ✅ Month Host structured evidence + fail-closed unsupported peer ambiguity
+- ⏳ root evaluator
+- ⏳ qualitative strength
+- ⏳ 三合 / 三会 / 刑 / 破
+- ⏳ transformation state
+- ⏳ broader Evidence generation
 
 Phase 2 完成前：
 
@@ -466,7 +472,11 @@ PRODUCT
 Rule Audit = DONE
 → Rule Profile = LOCKED
 → TraditionalPatternResult Spec = LOCKED
-→ TraditionalPatternResult Implementation = ACTIVE NEXT
+→ TraditionalPatternResult Implementation = ACTIVE
+   Phase 1 = COMPLETE
+   Phase 2 calendar + Month Host = COMPLETE
+   next = boundary ambiguity generation
+   then = roots
 ```
 
 ## 16. Release Rule
