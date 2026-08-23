@@ -7,4 +7,5 @@ export * from "./conversation";
 export * from "./memory";
 export * from "./personality";
 export * from "./report";
+export * from "./traditional-pattern";
 export * from "./versions";

@@ -6,7 +6,13 @@ const TEN_GODS:TenGod[]=['bi_jian','jie_cai','shi_shen','shang_guan','pian_cai',
 const round=(n:number)=>Math.round(n*1_000_000)/1_000_000;
 const percentage=(value:number,total:number)=>round((value/total)*100);
 
-export function deriveFeatures(chart:BaziChart,relations:BaziRelation[],calculatedAt:string,birthTimeQuality:'exact'|'approximate'|'unknown'):BaziDerivedFeatures {
+export function deriveFeatures(
+  chart:BaziChart,
+  relations:BaziRelation[],
+  calculatedAt:string,
+  birthTimeQuality:'exact'|'approximate'|'unknown',
+  ruleProfileVersion:string=RULE_PROFILE_VERSION,
+):BaziDerivedFeatures {
   const elementScores=Object.fromEntries(ELEMENTS.map(e=>[e,0])) as Record<FiveElement,number>;
   const tenGodScores=Object.fromEntries(TEN_GODS.map(t=>[t,0])) as Record<TenGod,number>;
   const entries=Object.entries(chart.pillars) as [keyof BaziChart['pillars'],BaziChart['pillars'][keyof BaziChart['pillars']]][];
@@ -38,7 +44,7 @@ export function deriveFeatures(chart:BaziChart,relations:BaziRelation[],calculat
   ];
   const confidence=birthTimeQuality==='exact'?0.72:birthTimeQuality==='approximate'?0.62:0.5;
   return {
-    id:'',chartId:chart.id,engine_version:ENGINE_VERSION,rule_profile_version:RULE_PROFILE_VERSION,mapping_version:MAPPING_VERSION,
+    id:'',chartId:chart.id,engine_version:ENGINE_VERSION,rule_profile_version:ruleProfileVersion,mapping_version:MAPPING_VERSION,
     dayMasterStrength,elementDistribution,tenGodDistribution,
     seasonalContext:`month_branch=${chart.pillars.month.branch};month_element=${monthElement};resource_element=${resource};support_ratio=${round(support)}`,
     structuralTags,confidence,derivedAt:calculatedAt,
