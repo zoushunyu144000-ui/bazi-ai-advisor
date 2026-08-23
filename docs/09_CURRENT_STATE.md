@@ -1,6 +1,6 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — TraditionalPatternResult Spec LOCKED / Implementation NEXT**  
+状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE / Phase 2A Month Host COMPLETE IN DRAFT PR #19**
 最后更新：2026-08-23
 
 ## 0. Source of Truth
@@ -31,12 +31,14 @@
 
 ## 2. Repository / PR
 
-- Branch：`release/v1-personality-rc`
-- Draft PR：`#16 release: V1 public personality experience`
-- Base：`main`
+- Release Branch：`release/v1-personality-rc`
+- Release Draft PR：`#16 release: V1 public personality experience`
+- Traditional Implementation Branch：`feature/traditional-pattern-result-v1`
+- Traditional Draft PR：`#19 feat: establish ziping TraditionalPatternResult foundation`
+- PR #19 scope：Phase 1 foundation + Phase 2 structural evidence implementation
 - Production：`bazi-ai-advisor.vercel.app`
 
-PR 继续保持 Draft，直到传统判断链、固定 Character IP、最终 QA 均完成。
+PR #16 与 PR #19 均继续保持 Draft。TraditionalPatternResult 在 PR #19 中开发与 Review；公网 authority 在 Authority Cutover 前仍保持 legacy，不得提前切换。
 
 ## 3. Traditional Bazi Rule Audit — DONE
 
@@ -190,7 +192,23 @@ Birth
 → Public Personality
 ```
 
-`TraditionalPatternResult` production implementation 尚未开始。
+`TraditionalPatternResult` production implementation 已在 Draft PR #19 开始，但尚未合并到 release / main，也尚未完成 Authority Cutover。
+
+PR #19 当前已完成并通过本地 Review 的 implementation slice：
+
+```text
+Phase 1 shared contract + profile guard
+→ versioned calculateBaziZipingV1 path
+→ frozen late-Zi semantics
+→ exact LiChun / Jie compatibility
+→ Month Host / exposure evaluator
+→ exact Jianlu mappings
+→ five-yang Yangren mappings
+→ month-command JieCai Yuejie host
+→ peer-exposure anti-promotion / fail-closed ambiguity
+```
+
+公网运行链仍未消费 TraditionalPatternResult。
 
 当前最重要的 prerequisite：
 
@@ -212,23 +230,42 @@ Build 必须先建立 versioned `ziping-v1.0.0` calculation path，包括 frozen
 
 ## 8. Current Implementation Gaps
 
-下一 Build 至少需要：
+PR #19 implementation status：
 
-1. shared `TraditionalPatternResult` contract；
-2. profile guard；
-3. versioned `ziping-v1.0.0` calculation path；
-4. night-Zi frozen semantics；
-5. Month Host / exposure；
-6. roots；
-7. qualitative strength；
-8. 三合 / 三会 / 刑 / 破；
-9. transformation state；
-10. 8 regular + Jianlu / Yuejie / Yangren candidates；
-11. pattern-specific formation / damage / rescue；
-12. Mixed / No Stable / strict Follow；
-13. Evidence / Counter Evidence / Ambiguity；
-14. canonical semantic determinism；
-15. Golden / boundary / regression tests。
+```text
+✅ shared TraditionalPatternResult contract
+✅ profile guard
+✅ versioned ziping-v1.0.0 calculation path
+✅ frozen night-Zi semantics
+✅ exact LiChun / Jie compatibility
+✅ Month Host / exposure evaluator
+✅ exact Jianlu / month-command Yuejie / five-yang Yangren host rules
+✅ structured Month Host evidence + peer fail-closed ambiguity
+
+NEXT:
+1. boundary ambiguity generation for unknown / approximate / near-boundary cases
+2. root evaluator
+3. qualitative strength evaluator
+4. 三合 / 三会 / 刑 / 破 existence facts
+5. transformation state
+6. 8 regular + Jianlu / Yuejie / Yangren PatternCandidate assembly
+7. pattern-specific formation / damage / rescue
+8. Mixed / No Stable / strict Follow
+9. complete Evidence / Counter Evidence / Ambiguity integration
+10. canonical semantic determinism
+11. Golden / boundary / regression fixtures
+```
+
+Month Host safety invariant implemented in this slice：
+
+```text
+BiJian selected outside approved Jianlu / Yangren mapping
+!= silently coerce to Yuejie
+=> baseMonthHost = null
++ blocking insufficient_evidence ambiguity
+```
+
+This is a fail-closed implementation of the locked taxonomy, not a new Traditional Pattern type。
 
 ## 9. Current P0 — TraditionalPatternResult Implementation
 
@@ -236,16 +273,19 @@ Build 必须先建立 versioned `ziping-v1.0.0` calculation path，包括 frozen
 
 > **严格按 `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md` 开始 TraditionalPatternResult Production Implementation。**
 
-实施顺序：
+实施顺序与当前进度：
 
 ```text
-Phase 1 Contract + profile guard
-Phase 2 ziping calculation path + structural evidence
-Phase 3 pattern candidates
-Phase 4 pattern-specific formation
-Phase 5 mixed + strict follow
-Phase 6 result assembly + shadow
-Phase 7 QA / golden review
+Phase 1 Contract + profile guard = COMPLETE IN PR #19
+Phase 2 ziping calculation path + structural evidence = ACTIVE
+  calendar prerequisite = COMPLETE
+  Month Host / exposure = COMPLETE
+  next = boundary ambiguity + roots
+Phase 3 pattern candidates = PENDING
+Phase 4 pattern-specific formation = PENDING
+Phase 5 mixed + strict follow = PENDING
+Phase 6 result assembly + shadow = PENDING
+Phase 7 QA / golden review = PENDING
 ```
 
 Phase A/B 可以 independent shadow result；Authority Cutover 前必须完成 canonical Bazi / traditional-result boundary integration。
