@@ -52,6 +52,8 @@ Homepage
 - `21_AI_PROJECT_OPERATING_SYSTEM.md`：AI 项目管理闭环与 Task / Build / Review / Freeze 规则
 - `22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`：**LOCKED `ziping-v1.0.0`**；传统规则 Source of Truth
 - `23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`：**LOCKED `traditional-pattern-result/1.0.0`**；TraditionalPatternResult Contract、Evidence / Counter Evidence / Ambiguity、migration、Implementation Plan、Testing / Golden strategy
+- `24_CHARACTER_STYLE_LOCK_V2.md`：**LOCKED `character-visual/2.0.0`**；十个固定 IP、City Observation Editorial 画风、色板与资产合同
+- `handoffs/2026-08-26-personality-ip-system-v2.md`：V2 资产与完整公网旅程的实现、验证和剩余门槛
 - `HANDOFF_TEMPLATE.md`：跨聊天窗口 / 阶段交接模板
 
 ## AI 工作协议
@@ -120,4 +122,4 @@ Legacy `BaziDerivedFeatures` numeric / distribution / strength fields 只保留 
 
 重要信息必须回写仓库，不得只存在于聊天记录中。
 
-最后更新：2026-08-23
+最后更新：2026-08-26

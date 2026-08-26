@@ -16,6 +16,11 @@ const suites = {
     mode: "strip-types",
     extensions: [".test.ts", ".test.mjs"],
   },
+  ui: {
+    directory: "tests/ui",
+    mode: "strip-types",
+    extensions: [".test.mjs", ".test.ts"],
+  },
   backend: {
     directory: "tests/backend",
     mode: "strip-types",

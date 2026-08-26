@@ -123,14 +123,22 @@ export default function BirthPage() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-12 sm:py-16">
-      <header className="mx-auto max-w-2xl text-center">
-        <p className="text-xs font-bold tracking-[.25em] text-cinnabar">BIRTH INPUT · 认真算的部分</p>
-        <h1 className="mt-4 font-display text-4xl font-bold tracking-tight sm:text-5xl">先交代一下，你什么时候掉到地球上的。</h1>
-        <p className="mt-5 leading-8 text-soft">这些信息会进入确定性 Birth → Bazi → Interpretation 链路。不是抽签，也不会把出生日期丢给 AI 猜人格。</p>
+    <main data-page="birth-intake" className="editorial-frame grid lg:grid-cols-[.68fr_1.32fr]">
+      <header className="border-b border-line bg-navy px-5 py-12 text-paper sm:px-8 sm:py-16 lg:border-b-0 lg:border-r lg:py-20">
+        <p className="text-xs font-black tracking-[.2em] text-mustard">BIRTH INPUT / 认真算的部分</p>
+        <h1 className="display-lg mt-6">先交代一下，<br />你什么时候掉到地球上的。</h1>
+        <p className="mt-7 max-w-md leading-8 text-paper/75">这些信息会进入确定性 Birth → Bazi → Interpretation 链路。不是抽签，也不会把出生日期丢给 AI 猜人格。</p>
+        <ol className="mt-10 border-y border-paper/20 text-sm">
+          {["输入出生信息", "本机完成排盘", "认领固定人格 IP"].map((item, index) => <li key={item} className="flex items-center gap-4 border-b border-paper/20 py-4 last:border-b-0"><span className="font-display text-xl font-black text-mustard">0{index + 1}</span><span className="font-bold">{item}</span></li>)}
+        </ol>
       </header>
 
-      <form onSubmit={handleSubmit} className="mx-auto mt-10 max-w-2xl rounded-[1.6rem] border border-line bg-surface p-5 shadow-[0_28px_80px_-60px_rgba(0,0,0,.55)] sm:p-8">
+      <form onSubmit={handleSubmit} className="bg-surface px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+        <div className="mb-9 border-b border-line pb-5">
+          <p className="editorial-kicker">YOUR DETAILS</p>
+          <h2 className="display-md mt-4">出生信息登记表</h2>
+          <p className="mt-3 text-sm leading-6 text-muted">标有阳历与传统规则的字段会参与计算；人格角色形象始终使用固定 IP。</p>
+        </div>
         <div className="space-y-7">
           <div>
             <label htmlFor="name" className="field-label">怎么称呼你 <span className="font-normal text-muted">· 可选</span></label>
@@ -140,21 +148,21 @@ export default function BirthPage() {
           <div className="grid gap-5 sm:grid-cols-2">
             <div><label htmlFor="birthDate" className="field-label">出生日期 · 阳历</label><input id="birthDate" type="date" className="input-base" value={birthDate} onChange={(e)=>setBirthDate(e.target.value)} required /></div>
             <div>
-              <span className="field-label">角色版本</span>
+              <span className="field-label">传统排盘所需性别</span>
               <div className="grid grid-cols-2 gap-2">
-                {(["male","female"] as CharacterGender[]).map((item)=><button key={item} type="button" onClick={()=>setGender(item)} className={`rounded-xl border px-4 py-3 text-sm font-semibold transition ${gender===item?"border-cinnabar bg-cinnabar-soft text-cinnabar":"border-line bg-paper text-soft"}`}>{item==="male"?"男生角色":"女生角色"}</button>)}
+                {(["male","female"] as CharacterGender[]).map((item)=><button key={item} type="button" aria-pressed={gender===item} onClick={()=>setGender(item)} className={`border px-4 py-3 text-sm font-semibold transition ${gender===item?"border-ink bg-mustard text-ink":"border-line-strong bg-paper text-soft"}`}>{item==="male"?"男":"女"}</button>)}
               </div>
-              <p className="mt-2 text-xs leading-5 text-muted">角色性别不进入人格评分；传统大运顺逆仍按现有规则使用该选择。</p>
+              <p className="mt-2 text-xs leading-5 text-muted">仅供传统大运顺逆规则使用；固定 IP 不会随此选择改变。</p>
             </div>
           </div>
 
           <fieldset>
             <legend className="field-label">出生时间</legend>
             <div className="grid grid-cols-2 gap-2">
-              <button type="button" onClick={()=>setTimeKnown(true)} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${timeKnown?"border-cinnabar bg-cinnabar-soft text-cinnabar":"border-line bg-paper text-soft"}`}>知道时间</button>
-              <button type="button" onClick={()=>setTimeKnown(false)} className={`rounded-xl border px-4 py-3 text-sm font-semibold ${!timeKnown?"border-cinnabar bg-cinnabar-soft text-cinnabar":"border-line bg-paper text-soft"}`}>真的不知道</button>
+              <button type="button" aria-pressed={timeKnown} onClick={()=>setTimeKnown(true)} className={`border px-4 py-3 text-sm font-semibold ${timeKnown?"border-ink bg-mustard text-ink":"border-line-strong bg-paper text-soft"}`}>知道时间</button>
+              <button type="button" aria-pressed={!timeKnown} onClick={()=>setTimeKnown(false)} className={`border px-4 py-3 text-sm font-semibold ${!timeKnown?"border-ink bg-mustard text-ink":"border-line-strong bg-paper text-soft"}`}>真的不知道</button>
             </div>
-            {timeKnown ? <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center"><input type="time" className="input-base" value={birthTime} onChange={(e)=>setBirthTime(e.target.value)} /><label className="flex items-center gap-2 rounded-xl border border-line bg-paper px-4 py-3 text-sm text-soft"><input type="checkbox" checked={approximate} onChange={(e)=>setApproximate(e.target.checked)} className="accent-[var(--color-cinnabar)]" />大概记得</label></div> : <p className="mt-3 rounded-xl bg-paper px-4 py-3 text-sm leading-6 text-soft">可以继续测，但系统会诚实保留“时柱未知”的不确定性，不会擅自补一个中午 12 点。</p>}
+            {timeKnown ? <div className="mt-3 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center"><input type="time" className="input-base" value={birthTime} onChange={(e)=>setBirthTime(e.target.value)} /><label className="flex items-center gap-2 border border-line bg-paper px-4 py-3 text-sm text-soft"><input type="checkbox" checked={approximate} onChange={(e)=>setApproximate(e.target.checked)} className="accent-[var(--color-cinnabar)]" />大概记得</label></div> : <p className="mt-3 border border-line bg-paper px-4 py-3 text-sm leading-6 text-soft">可以继续测，但系统会诚实保留“时柱未知”的不确定性，不会擅自补一个中午 12 点。</p>}
           </fieldset>
 
           <div>
@@ -166,7 +174,7 @@ export default function BirthPage() {
             {preset && <p className="mt-2 text-xs text-muted">时区：{preset.timezone} · 经纬度来自当前 V1 静态城市表。不会调用假定位服务。</p>}
           </div>
 
-          {custom && <div className="rounded-2xl border border-line bg-paper p-4 sm:p-5">
+          {custom && <div className="border border-line bg-paper p-4 sm:p-5">
             <p className="text-sm font-semibold">手动出生地</p>
             <p className="mt-1 text-xs leading-5 text-muted">为了不伪造定位，V1 需要你明确提供城市、国家代码、经纬度与 IANA 时区。未来可无缝换回 Live Location Provider。</p>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
@@ -179,10 +187,10 @@ export default function BirthPage() {
             </div>
           </div>}
 
-          {error && <div role="alert" className="rounded-xl border border-cinnabar/25 bg-cinnabar-soft px-4 py-3 text-sm leading-6 text-cinnabar">{error}</div>}
+          {error && <div role="alert" className="border border-cinnabar/25 bg-cinnabar-soft px-4 py-3 text-sm leading-6 text-cinnabar">{error}</div>}
 
           <button type="submit" disabled={!canSubmit || pending} className="btn-primary w-full py-3.5 text-base disabled:cursor-not-allowed disabled:opacity-50">{pending ? "正在认真算…" : "看看我到底是什么人格 →"}</button>
-          <p className="text-center text-xs leading-5 text-muted">免费结果保存在当前浏览器 Session。今晚版本不依赖登录、Supabase、AI Secret 或支付系统。</p>
+          <p className="text-center text-xs leading-5 text-muted">免费结果保存在当前浏览器 Session。本版本不依赖登录、Supabase、AI Secret 或支付系统。</p>
         </div>
       </form>
     </main>

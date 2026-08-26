@@ -16,9 +16,10 @@ export function CharacterArt({
   priority?: boolean;
 }) {
   const personality = getPublicPersonality(tenGod);
+  const requestPath = `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${characterAssetPath(tenGod)}`;
   return (
     <Image
-      src={characterAssetPath(tenGod)}
+      src={requestPath}
       alt={`${personality.display_name}固定${personality.canonicalGender === "male" ? "男性" : "女性"}角色`}
       width={1200}
       height={1500}

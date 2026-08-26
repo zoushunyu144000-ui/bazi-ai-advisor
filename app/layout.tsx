@@ -4,21 +4,20 @@ import { SiteNav } from "@/app/_components/site-nav";
 import { SiteFooter } from "@/app/_components/site-footer";
 
 export const metadata: Metadata = {
-  title: "八字人格 · 测测你到底是什么东西",
-  description: "八字版 SBTI：不用答几十道题。用确定性八字排盘与 Interpretation，看看你是犟种、狠人、活菩萨，还是天生反骨。",
+  title: {
+    default: "八字人格俱乐部 · Bazi Personality",
+    template: "%s · 八字人格俱乐部",
+  },
+  description: "用确定性八字排盘认领十怪人格之一。里面认真算，外面认真发疯。",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="zh-Hans">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
-      </head>
-      <body>
+      <body className="paper-grain">
+        <a href="#main-content" className="skip-link">跳到主要内容</a>
         <SiteNav />
-        <div className="min-h-[calc(100vh-4.5rem)]">{children}</div>
+        <div id="main-content" className="min-h-[calc(100vh-4.5rem)]">{children}</div>
         <SiteFooter />
       </body>
     </html>

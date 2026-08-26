@@ -82,23 +82,23 @@ async function renderShareCard(bundle: PublicResultBundle, format: CardFormat): 
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("当前浏览器无法生成分享图片。");
 
-  ctx.fillStyle = "#f4efe6";
+  ctx.fillStyle = "#F6F1E6";
   ctx.fillRect(0, 0, width, height);
-  ctx.fillStyle = "#15130f";
+  ctx.fillStyle = "#111111";
   ctx.font = "600 28px 'Noto Sans SC', sans-serif";
   ctx.fillText("BAZI PERSONALITY · 八字版 SBTI", 72, 86);
-  ctx.fillStyle = "#a6332b";
+  ctx.fillStyle = dominant.accent;
   ctx.fillRect(72, 112, 88, 8);
-  ctx.fillStyle = "#15130f";
+  ctx.fillStyle = "#111111";
   ctx.font = "500 28px 'Noto Sans SC', sans-serif";
   ctx.fillText("我的八字人格是", 72, 190);
   ctx.font = "700 92px 'Noto Serif SC', serif";
   ctx.fillText(dominant.display_name, 72, 300);
-  ctx.fillStyle = "#a6332b";
+  ctx.fillStyle = dominant.accent;
   ctx.font = "600 32px 'Noto Sans SC', sans-serif";
   ctx.fillText(dominant.traditional_label.split(" · ")[0], 76, 352);
 
-  const character = await loadCardImage(characterAssetPath(dominantKey));
+  const character = await loadCardImage(`${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${characterAssetPath(dominantKey)}`);
   const imageTop = format === "story" ? 430 : 390;
   const imageHeight = format === "story" ? 720 : 520;
   const scale = Math.min(620 / character.width, imageHeight / character.height);
@@ -106,7 +106,7 @@ async function renderShareCard(bundle: PublicResultBundle, format: CardFormat): 
   const drawHeight = character.height * scale;
   ctx.drawImage(character, width - 72 - drawWidth, imageTop + imageHeight - drawHeight, drawWidth, drawHeight);
 
-  ctx.fillStyle = "#15130f";
+  ctx.fillStyle = "#111111";
   ctx.font = "700 44px 'Noto Serif SC', serif";
   ctx.fillText(`“${dominant.anchor_quote.replace(/[“”]/g, "")}”`, 72, imageTop + 90);
   ctx.fillStyle = "#57524a";
@@ -114,7 +114,7 @@ async function renderShareCard(bundle: PublicResultBundle, format: CardFormat): 
   drawWrappedText(ctx, dominant.share_card_copy, 72, imageTop + 150, 480, 46, 5);
 
   const tagTop = imageTop + imageHeight + 70;
-  ctx.fillStyle = "#15130f";
+  ctx.fillStyle = "#111111";
   ctx.font = "600 24px 'Noto Sans SC', sans-serif";
   dominant.tags.slice(0, 4).forEach((tag, index) => {
     ctx.fillText(`# ${tag}`, 72 + (index % 2) * 230, tagTop + Math.floor(index / 2) * 46);
@@ -129,7 +129,7 @@ async function renderShareCard(bundle: PublicResultBundle, format: CardFormat): 
   ctx.moveTo(72, footerTop);
   ctx.lineTo(width - 72, footerTop);
   ctx.stroke();
-  ctx.fillStyle = "#15130f";
+  ctx.fillStyle = "#111111";
   ctx.font = "600 24px 'Noto Sans SC', sans-serif";
   ctx.fillText("测测你是什么东西", 72, footerTop + 42);
   ctx.fillStyle = "#777066";
@@ -241,24 +241,24 @@ export default function ResultPage() {
   }
 
   return (
-    <main className="pb-24">
-      <section className="border-b border-line">
-        <div className="mx-auto grid max-w-6xl gap-7 px-5 py-10 md:grid-cols-[1.08fr_.92fr] md:items-end md:py-16">
-          <div>
-            <p className="text-xs font-bold tracking-[.24em] text-cinnabar">01 · 你到底是什么东西</p>
+    <main data-result-dossier className="pb-24">
+      <section className="editorial-frame border-b border-line">
+        <div className="grid md:grid-cols-[1.08fr_.92fr] md:items-stretch">
+          <div className="px-5 py-10 sm:px-8 md:border-r md:border-line md:py-16">
+            <p className="editorial-kicker">01 · 你到底是什么东西</p>
             <p className="mt-6 text-sm text-soft">你的八字人格是</p>
-            <h1 className="mt-2 font-display text-6xl font-bold tracking-[-.04em] sm:text-7xl">{dominant.display_name}</h1>
+            <h1 className="display-xl mt-2">{dominant.display_name}</h1>
             <div className="mt-4 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-cinnabar-soft px-3 py-1.5 text-sm font-semibold text-cinnabar">{dominant.traditional_label}</span>
-              <span className="rounded-full border border-line px-3 py-1.5 text-sm">第二人格 · {secondary.display_name}</span>
+              <span className="border border-ink bg-mustard px-3 py-1.5 text-sm font-semibold">{dominant.traditional_label}</span>
+              <span className="border border-line px-3 py-1.5 text-sm">第二人格 · {secondary.display_name}</span>
             </div>
             <p className="mt-7 font-display text-3xl font-bold">“{dominant.anchor_quote.replace(/[“”]/g, "")}”</p>
             <p className="mt-5 max-w-xl text-lg leading-8 text-soft">{dominant.one_line_roast}</p>
             <div className="mt-7 flex flex-wrap gap-2">
-              {dominant.tags.map((tag) => <span key={tag} className="rounded-full border border-line bg-surface px-3 py-1.5 text-sm">{tag}</span>)}
+              {dominant.tags.map((tag) => <span key={tag} className="border border-line bg-surface px-3 py-1.5 text-sm"># {tag}</span>)}
             </div>
           </div>
-          <div className="flex min-h-[24rem] items-end justify-center overflow-hidden rounded-[2rem] bg-cinnabar-soft/55">
+          <div className="character-paper flex min-h-[28rem] items-end justify-center" style={{ borderTop: `6px solid ${dominant.accent}` }}>
             <CharacterArt tenGod={dominantKey} className="max-h-[34rem] w-full object-contain object-bottom" priority />
           </div>
         </div>
@@ -266,11 +266,11 @@ export default function ResultPage() {
 
       <div className="mx-auto max-w-6xl px-5">
         <section className="grid gap-4 py-12 md:grid-cols-2">
-          <article className="rounded-[1.5rem] border border-line bg-surface p-6">
+          <article className="border border-line bg-surface p-6">
             <p className="text-xs font-bold tracking-[.2em] text-cinnabar">02 · 朋友眼里的你</p>
             <p className="mt-4 text-lg leading-8">{dominant.friend_view}</p>
           </article>
-          <article className="rounded-[1.5rem] border border-line bg-surface p-6">
+          <article className="border border-line bg-surface p-6">
             <p className="text-xs font-bold tracking-[.2em] text-cinnabar">05 · 你的第二人格</p>
             <h2 className="mt-4 font-display text-3xl font-bold">{secondary.display_name}</h2>
             <p className="mt-2 font-semibold">“{secondary.anchor_quote.replace(/[“”]/g, "")}”</p>
@@ -279,11 +279,11 @@ export default function ResultPage() {
         </section>
 
         <section className="grid gap-4 pb-12 md:grid-cols-2">
-          <article className="rounded-[1.5rem] border border-line bg-ink p-6 text-paper">
+          <article className="border border-line bg-navy p-6 text-paper">
             <p className="text-xs font-bold tracking-[.2em] text-paper/55">03 · 你的 A 面</p>
             <p className="mt-4 text-lg leading-8">{dominant.positive_mode}</p>
           </article>
-          <article className="rounded-[1.5rem] border border-cinnabar/20 bg-cinnabar-soft p-6">
+          <article className="border border-cinnabar/20 bg-cinnabar-soft p-6">
             <p className="text-xs font-bold tracking-[.2em] text-cinnabar">04 · 你的翻车面</p>
             <p className="mt-4 text-lg leading-8">{dominant.flip_mode}</p>
           </article>
@@ -315,7 +315,7 @@ export default function ResultPage() {
           <p className="text-xs font-bold tracking-[.2em] text-cinnabar">07–14 · 你在真实生活里怎么运转</p>
           <div className="mt-7 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {modeCards.map(([title, copy]) => (
-              <article key={title} className="rounded-[1.35rem] border border-line bg-surface p-5">
+              <article key={title} className="border border-line bg-surface p-5">
                 <h3 className="font-bold">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-soft">{copy}</p>
               </article>
@@ -349,7 +349,7 @@ export default function ResultPage() {
               ["第二人格十神分", bundle.archetype.secondary_pattern.canonical_ten_god_score],
               ["映射支持度", `${Math.round(bundle.archetype.confidence * 100)}%`],
             ].map(([label, value]) => (
-              <div key={label} className="rounded-xl border border-line bg-surface p-4">
+              <div key={label} className="border border-line bg-surface p-4">
                 <p className="text-xs text-muted">{label}</p>
                 <p className="mt-2 text-2xl font-bold tabular-nums">{value}</p>
               </div>
@@ -358,12 +358,12 @@ export default function ResultPage() {
           <p className="mt-4 text-xs leading-6 text-muted">“映射支持度”只表示当前规则 Profile 对这个分类的支持程度，不是科学心理诊断置信度，也不是人生成功率。</p>
         </section>
 
-        <details className="rounded-[1.5rem] border border-line bg-surface p-5 sm:p-6">
+        <details className="border border-line bg-surface p-5 sm:p-6">
           <summary className="cursor-pointer font-bold">18 · 想看专业八字依据</summary>
           <div className="mt-6 space-y-6 text-sm leading-7 text-soft">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
               {pillars.map((pillar, index) => (
-                <div key={pillarNames[index]} className="rounded-xl bg-paper p-4">
+                <div key={pillarNames[index]} className="border border-line bg-paper p-4">
                   <p className="text-xs text-muted">{pillarNames[index]}</p>
                   <p className="mt-2 font-display text-2xl font-bold text-ink">{pillar ? `${STEM_CHINESE[pillar.stem]}${BRANCH_CHINESE[pillar.branch]}` : "未知"}</p>
                 </div>
@@ -379,7 +379,7 @@ export default function ResultPage() {
         </details>
 
         <section className="py-14">
-          <div className="rounded-[1.8rem] border border-line bg-ink p-6 text-paper sm:p-8">
+          <div className="border border-line bg-navy p-6 text-paper sm:p-8">
             <p className="text-xs font-bold tracking-[.22em] text-paper/55">PERSONALITY SHARE CARD V1</p>
             <div className="mt-8 grid gap-8 md:grid-cols-[1fr_.8fr] md:items-end">
               <div>
@@ -389,7 +389,7 @@ export default function ResultPage() {
                 <p className="mt-6 max-w-lg leading-7 text-paper/70">{dominant.share_card_copy}</p>
                 <div className="mt-5 flex flex-wrap gap-2">{dominant.tags.slice(0, 4).map((tag) => <span key={tag} className="rounded-full border border-paper/20 px-3 py-1.5 text-xs">{tag}</span>)}</div>
               </div>
-              <div className="flex min-h-52 items-end justify-center overflow-hidden rounded-2xl bg-paper/5">
+              <div className="character-paper flex min-h-52 items-end justify-center border border-paper/15">
                 <CharacterArt tenGod={dominantKey} className="max-h-64 w-full object-contain object-bottom" />
               </div>
             </div>
@@ -403,7 +403,7 @@ export default function ResultPage() {
           {shareStatus && <p className="mt-3 text-sm text-soft" aria-live="polite">{shareStatus}</p>}
         </section>
 
-        <section className="rounded-[1.6rem] border border-line bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
+        <section className="border border-line bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
           <div>
             <p className="text-xs font-bold tracking-[.2em] text-cinnabar">深度报告 · 即将开放</p>
             <h2 className="mt-2 font-display text-2xl font-bold">免费结果先给完整，不拿残缺体验逼你付钱。</h2>

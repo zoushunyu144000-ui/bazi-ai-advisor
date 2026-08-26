@@ -1,6 +1,6 @@
 # 10 — Roadmap
 
-状态：**TraditionalPatternResult ACTIVE + Presentation V2 / 10-IP Production ACTIVE**
+状态：**TraditionalPatternResult ACTIVE + Presentation V2 COMPLETE / RELEASE QA PENDING**
 最后更新：2026-08-26
 
 ## 0. Roadmap Boundary
@@ -47,8 +47,8 @@ Homepage
 9. canonical Bazi / traditional-result boundary + Authority Cutover
 10. isolate / retire legacy engineering personality authority
 11. ✅ Character V2 routing / 10 formal canonical assets — COMPLETE
-12. **City Observation Editorial UI / Result / Share Card integration — ACTIVE IN PARALLEL**
-13. mobile browser QA
+12. ✅ City Observation Editorial UI / Result / Share Card integration — COMPLETE ON `feature/ip-system-v2`
+13. **mobile / preview browser QA + PR Review — NEXT FOR PRESENTATION**
 14. full CI
 15. PR #16 Ready
 16. merge main
@@ -410,7 +410,7 @@ V1 只表达：主导 / 明显副倾向 / 辅助 / 混合 / 清晰 / 歧义。
 ```text
 10 Public Personality
 → 10 fixed official Characters
-→ public/characters/v1/{ten_god}.webp
+→ public/characters/v2/{ten_god}.png
 ```
 
 用户性别不改变 Character identity。
@@ -484,4 +484,4 @@ Rule Audit = DONE
 
 > **不扩 Scope，不降质量，不自造命理。**
 
-下一轮只实现 frozen Contract；不提前做 Translation / Authority Cutover / UI / Payment / AI。
+Traditional 分支下一轮只实现 frozen Contract；Presentation V2 分支不得提前宣称 Authority Cutover，也不得伪造 Payment / AI / Auth live 状态。
