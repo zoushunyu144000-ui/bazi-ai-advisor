@@ -908,6 +908,36 @@ TraditionalPatternResult Implementation = NEXT / ALLOWED
 
 ---
 
+## D-022 — Character Visual V2 严格采用 Owner 参考图并冻结为十个 Canonical IP
+
+日期：2026-08-26
+状态：Approved
+
+### 决定
+
+`docs/assets/character-style-master-v2.png` 成为 V2 唯一画风母版。Public Personality 继续冻结为 10 个名称，但正式角色合同统一为：
+
+```text
+10 Public Personalities
+→ 10 fixed canonical characters
+→ public/characters/v2/{ten_god}.png
+```
+
+角色性别属于品牌 IP，不跟随出生资料性别变化。V2 画风、色彩、动作与反例见 `docs/24_CHARACTER_STYLE_LOCK_V2.md`。
+
+### 原因
+
+Owner 明确否决了此前过暗、过饱和以及偏离参考图的生成方向，并要求严格复制其 City Observation Editorial 画风、重新生成 10 个完整 IP。现有 V1 二进制母版不可解码，正式角色目录仍为 0/10；代码中的 20 性别变体测试也与固定 IP 产品决策冲突。
+
+### 影响
+
+- V2 资产、网页与 Share Card 必须消费 canonical character，不再按用户性别切图；
+- 出生性别继续只服务于真实的确定性命理规则，不从 Domain Contract 移除；
+- Presentation V2 可与 TraditionalPatternResult 开发并行，但不得提前声称完成 Authority Cutover；
+- V1 文档和目录保留为历史记录，不作为 V2 runtime source。
+
+---
+
 ## 决策模板
 
 复制以下结构新增决策：
@@ -928,4 +958,4 @@ TraditionalPatternResult Implementation = NEXT / ALLOWED
 ...
 ```
 
-最后更新：2026-08-23
+最后更新：2026-08-26

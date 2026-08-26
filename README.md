@@ -148,14 +148,17 @@ npm run build
 - 不把本仓库连接到其他现有 Vercel 项目，尤其不得连接或覆盖 `bible-library-complete`。
 - 当前 foundation 不执行 production 部署。
 
-## 当前未实现
+## 当前实现边界
 
-- 完整八字算法
-- 人格映射算法
-- AI Prompt
-- 支付 Provider
-- 完整首页视觉
-- 完整 Advisor 聊天系统
-- 真实 Supabase Auth 流程
+已实现：确定性 Birth → Bazi → Interpretation 免费链路、十个固定 Public Personality、十张 V2 正式 IP、City Observation Editorial 完整公网旅程与分享卡。
+
+仍未实现或未完成 Authority Cutover：
+
+- `ziping-v1.0.0` TraditionalPatternResult 全量规则与 production authority cutover
+- 真实 AI Provider / Prompt / Advisor 会话服务
+- 支付 Provider、订单与顾问次数账本
+- 真实 Supabase Auth / 云端档案同步
+
+对应页面会显示 preview、not-configured 或 local-only，不伪造在线服务。
 
 这些应由后续独立窗口在共享 Contracts 与 Schema 基础上实现。

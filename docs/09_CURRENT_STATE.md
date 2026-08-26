@@ -1,7 +1,7 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE / Phase 2A Month Host COMPLETE IN DRAFT PR #19**
-最后更新：2026-08-23
+状态：**TraditionalPatternResult ACTIVE + Presentation V2 COMPLETE / RELEASE QA PENDING**
+最后更新：2026-08-26
 
 ## 0. Source of Truth
 
@@ -11,9 +11,10 @@
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
-5. `docs/09_CURRENT_STATE.md`
-6. `docs/10_ROADMAP.md`
-7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+5. `docs/24_CHARACTER_STYLE_LOCK_V2.md`
+6. `docs/09_CURRENT_STATE.md`
+7. `docs/10_ROADMAP.md`
+8. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
 项目执行流程：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
 
@@ -39,6 +40,32 @@
 - Production：`bazi-ai-advisor.vercel.app`
 
 PR #16 与 PR #19 均继续保持 Draft。TraditionalPatternResult 在 PR #19 中开发与 Review；公网 authority 在 Authority Cutover 前仍保持 legacy，不得提前切换。
+
+Presentation V2 隔离开发分支：`feature/ip-system-v2`。它从 PR #19 当前分支建立，用于生成 10 个 Canonical IP 与重建公网 UI；任何页面都必须继续诚实标注未完成的 Traditional Authority、Payment、AI Provider 与 Supabase Live 状态。
+
+## 2.1 Presentation V2 / Public Journey — COMPLETE ON FEATURE BRANCH
+
+已冻结：
+
+- 十个 Public Personality 名称与带梗语气不变；
+- 十个固定角色性别与人物身份；
+- 唯一画风母版 `docs/assets/character-style-master-v2.png`；
+- 正式路径 `public/characters/v2/{ten_god}.png`；
+- City Observation Editorial 的比例、线条、参考级饱和度与城市生活道具规则；
+- 七杀 / 狠人必须低、重、方、前倾、窄眼压眉，凶而稳，不用武器或黑帮符号。
+
+当前正式 V2 资产：`10 / 10`。全部为 1122 × 1402 RGB PNG，统一 Warm Ivory 纸面；manifest、尺寸、纸面角点与 SHA-256 资产测试已通过。
+
+`feature/ip-system-v2` 已完成：
+
+- City Observation Editorial 全局 design tokens、纸纹、细分栏、直角控件与可访问 focus / reduced-motion；
+- `/` 十怪人格俱乐部、十 IP 总览、确定性链路说明与档案预览；
+- `/birth` 真实出生资料输入，明确“传统排盘所需性别”不改变固定 IP；
+- `/result` 完整免费人格档案与 Canvas 分享卡；
+- `/report`、`/advisor`、`/account` 的诚实 preview / provider-not-configured / local-only 状态；
+- GitHub Pages `/bazi-ai-advisor` 与 Vercel root 两套图片请求路径。
+
+Presentation Release QA 已在 Draft PR #20 完成 390 / 430 / 768 / 1440 Vercel Preview 复验、虚构出生资料 → 结果档案流程、状态页检查与 GitHub Pages asset smoke。下一步为人工确认浏览器真实文件下载、PR Review 与合并决策。Traditional authority、Payment、AI Provider、Supabase/Auth 仍未因 UI 完成而解锁。
 
 ## 3. Traditional Bazi Rule Audit — DONE
 
@@ -338,16 +365,16 @@ Authority Cutover 前不删除 legacy；Cutover 后不得 silent fallback 到 le
 
 ```text
 10 Public Personality = 10 fixed official Character IPs
-public/characters/v1/{ten_god}.webp
+public/characters/v2/{ten_god}.png
 ```
 
 用户性别不改变 Character identity。
 
 Style Source of Truth：
 
-- `docs/assets/character-style-master-v1.webp`
-- `docs/15_CHARACTER_STYLE_LOCK_V1.md`
-- `docs/16_CHARACTER_BATCH_PRODUCTION_V1.md`
+- `docs/assets/character-style-master-v2.png`
+- `docs/24_CHARACTER_STYLE_LOCK_V2.md`
+- `public/characters/v2/manifest.json`
 
 ## 13. Current Release Blockers
 

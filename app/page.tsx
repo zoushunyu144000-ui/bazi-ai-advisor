@@ -2,111 +2,148 @@ import Link from "next/link";
 import { CharacterArt } from "@/app/_components/character-art";
 import { PUBLIC_PERSONALITIES, PUBLIC_PERSONALITY_ORDER } from "@/lib/public-personalities";
 
-const HOW = [
-  ["01", "填出生信息", "不用做几十道选择题。日期、时间和出生地进入确定性八字链路。"],
-  ["02", "认真算底层", "八字引擎先排盘，Interpretation 再把真实十神与行为维度翻译成人格。"],
-  ["03", "认真发疯", "最后只给你一个最容易记住的核心人格、一个第二人格和一份能发出去的结果。"],
+const FEATURED = ["shi_shen", "shang_guan", "qi_sha"] as const;
+
+const METHOD = [
+  ["01", "出生信息标准化", "日期、时间、地点与传统排盘所需性别先被标准化；时辰不知道也会如实保留。"],
+  ["02", "确定性八字排盘", "同一份有效输入会进入同一条 Birth → Bazi 计算链路，不靠抽签，也不让 AI 猜。"],
+  ["03", "十神人格映射", "Interpretation 把十神分布和行为维度排序，最终只从十个固定 IP 中认领主人格。"],
 ] as const;
 
 export default function HomePage() {
   return (
-    <main className="overflow-hidden">
-      <section className="relative border-b border-line">
-        <div aria-hidden className="absolute -right-24 -top-24 h-80 w-80 rounded-full bg-cinnabar/10 blur-3xl" />
-        <div className="mx-auto grid max-w-6xl gap-10 px-5 pb-20 pt-16 md:grid-cols-[1.05fr_.95fr] md:items-center md:pb-24 md:pt-24">
-          <div className="relative z-10">
-            <p className="text-xs font-bold tracking-[0.28em] text-cinnabar">八字版 SBTI · 免费人格测试</p>
-            <h1 className="mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.06] tracking-[-0.04em] text-ink sm:text-6xl md:text-7xl">
-              用八字测测，<br />你到底是个什么东西。
-            </h1>
-            <p className="mt-7 max-w-xl text-base leading-8 text-soft sm:text-lg">
-              不用答几十道题。出生信息一填，看看你是犟种、狠人、活菩萨，还是天生反骨。
-              <span className="font-semibold text-ink">里面认真算，外面认真发疯。</span>
-            </p>
+    <main data-page="club-directory" className="overflow-hidden">
+      <section className="editorial-frame border-b border-line">
+        <div className="grid lg:grid-cols-[.74fr_1.26fr]">
+          <div className="border-b border-line px-5 py-12 sm:px-8 sm:py-16 lg:border-b-0 lg:border-r lg:py-20">
+            <p className="editorial-kicker">CITY OBSERVATION / 城市观察体</p>
+            <h1 aria-label="十怪人格俱乐部" className="display-xl mt-7">十怪人格<br />俱乐部</h1>
+            <p className="mt-7 max-w-lg text-lg font-bold leading-8">十个性格，十个住在同一座城市里的普通怪人。</p>
+            <p className="mt-4 max-w-lg leading-8 text-soft">不用答几十道选择题。把出生信息交给<strong className="text-ink">确定性八字</strong>链路，看看你被分到了哪一桌。</p>
             <div className="mt-9 flex flex-wrap items-center gap-3">
-              <Link href="/birth" className="btn-primary px-6 py-3.5 text-base">测测我是什么 →</Link>
-              <span className="text-xs leading-5 text-muted">免费 · 本机计算 · 不需要登录</span>
+              <Link href="/birth" className="btn-primary">认领我的人格 →</Link>
+              <Link href="#club-directory" className="btn-ghost">先见见十个怪人</Link>
             </div>
+            <dl className="mt-12 grid grid-cols-3 border-y border-line text-center">
+              <div className="border-r border-line py-4"><dt className="text-[10px] font-bold tracking-[.15em] text-muted">固定 IP</dt><dd className="mt-1 font-display text-2xl font-black">10</dd></div>
+              <div className="border-r border-line py-4"><dt className="text-[10px] font-bold tracking-[.15em] text-muted">测试题</dt><dd className="mt-1 font-display text-2xl font-black">0</dd></div>
+              <div className="py-4"><dt className="text-[10px] font-bold tracking-[.15em] text-muted">本机计算</dt><dd className="mt-1 font-display text-2xl font-black">YES</dd></div>
+            </dl>
           </div>
 
-          <div className="relative min-h-[26rem] sm:min-h-[32rem]">
-            <div className="absolute inset-x-4 top-6 rounded-[2rem] border border-line bg-surface p-5 shadow-[0_30px_80px_-52px_rgba(0,0,0,.55)] sm:inset-x-8 sm:p-7">
-              <div className="flex items-center justify-between text-xs text-muted"><span>人格结果预览</span><span>NO. 04 / 10</span></div>
-              <div className="mt-5 grid grid-cols-[1fr_.9fr] items-end gap-2">
-                <div className="pb-4">
-                  <p className="text-xs font-semibold tracking-[.18em] text-cinnabar">伤官型人格</p>
-                  <h2 className="mt-2 font-display text-4xl font-bold sm:text-5xl">天生反骨</h2>
-                  <p className="mt-3 text-xl font-semibold">“凭什么？”</p>
-                  <p className="mt-4 text-sm leading-6 text-soft">规则写了三页，你看完第一反应不是遵守，是找它哪里不合理。</p>
-                </div>
-                <div className="flex min-h-[18rem] items-end justify-center overflow-hidden rounded-[1.5rem] bg-cinnabar-soft/60">
-                  <CharacterArt tenGod="shang_guan" gender="female" className="h-auto max-h-[20rem] w-full object-contain object-bottom" priority />
-                </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-2">{["凭什么", "开麦选手", "脑内重构", "不盲从"].map((tag)=><span key={tag} className="rounded-full border border-line bg-paper px-3 py-1.5 text-xs">{tag}</span>)}</div>
-            </div>
+          <div className="grid min-h-[32rem] grid-cols-3 bg-surface">
+            {FEATURED.map((key, index) => {
+              const personality = PUBLIC_PERSONALITIES[key];
+              return (
+                <article key={key} className="relative flex min-w-0 flex-col border-r border-line last:border-r-0">
+                  <div className="px-3 pt-5 sm:px-5">
+                    <p className="text-[10px] font-black tracking-[.12em]" style={{ color: personality.accent }}>{String(index + 1).padStart(2, "0")} / PILOT</p>
+                    <h2 className="mt-2 font-display text-xl font-black tracking-tight sm:text-3xl">{personality.display_name}</h2>
+                    <p className="mt-1 text-[10px] font-bold text-soft sm:text-xs">{personality.traditional_label.split(" · ")[0]}</p>
+                  </div>
+                  <div className="character-paper mt-auto flex min-h-72 flex-1 items-end">
+                    <CharacterArt tenGod={key} className="h-auto max-h-[34rem] w-full object-contain object-bottom" priority />
+                  </div>
+                  <div className="border-t border-line px-3 py-4 sm:px-5">
+                    <p className="text-xs font-black sm:text-sm">“{personality.anchor_quote}”</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-5 py-20">
-        <div className="max-w-2xl">
-          <p className="text-xs font-bold tracking-[.24em] text-cinnabar">THE 10 TYPES</p>
-          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">十种怪人，先认领一个。</h2>
-          <p className="mt-4 leading-7 text-soft">公网 V1 永远只认这 10 个核心人格。第二人格只负责加味，不会凭空长出第 11 种。</p>
+      <section id="club-directory" className="editorial-frame scroll-mt-20 border-b border-line px-5 py-14 sm:px-8 sm:py-20">
+        <div className="grid gap-7 lg:grid-cols-[.65fr_1.35fr] lg:items-end">
+          <div>
+            <p className="editorial-kicker">THE 10 RESIDENTS</p>
+            <h2 className="display-lg mt-5">同一栋楼里，<br />住着十种怪人。</h2>
+          </div>
+          <div className="max-w-2xl lg:justify-self-end">
+            <p className="text-lg font-bold leading-8">每个人格只有一个固定角色、固定体态和固定识别色。</p>
+            <p className="mt-3 leading-7 text-soft">他们不换脸、不因你的性别改角色，也不会临时长出第十一个人格。你的命盘只决定你最像谁。</p>
+          </div>
         </div>
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+
+        <div className="mt-10 grid gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
           {PUBLIC_PERSONALITY_ORDER.map((key, index) => {
-            const p = PUBLIC_PERSONALITIES[key];
+            const personality = PUBLIC_PERSONALITIES[key];
             return (
-              <article key={key} className="group overflow-hidden rounded-[1.35rem] border border-line bg-surface p-4 transition-transform duration-200 hover:-translate-y-1">
-                <div className="flex min-h-36 items-end justify-center overflow-hidden rounded-xl bg-paper">
-                  <CharacterArt tenGod={key} gender={index % 2 === 0 ? "male" : "female"} className="max-h-44 w-full object-contain object-bottom transition-transform duration-200 group-hover:scale-[1.02]" />
+              <article key={key} className="group relative flex min-h-[27rem] flex-col bg-surface" style={{ borderTop: `5px solid ${personality.accent}` }}>
+                <div className="flex items-start justify-between gap-3 px-4 pt-4">
+                  <div>
+                    <p className="text-[10px] font-black tracking-[.12em] text-muted">{personality.traditional_label.split(" · ")[0]}</p>
+                    <h3 className="mt-1 font-display text-2xl font-black tracking-tight">{personality.display_name}</h3>
+                  </div>
+                  <span className="font-mono text-xs text-muted">{String(index + 1).padStart(2, "0")}</span>
                 </div>
-                <div className="mt-4 flex items-start justify-between gap-2">
-                  <div><p className="text-[11px] font-semibold text-muted">{p.traditional_label.split("型人格")[0]}</p><h3 className="mt-1 font-display text-2xl font-bold">{p.display_name}</h3></div>
-                  <span className="text-xs text-muted">{String(index + 1).padStart(2,"0")}</span>
+                <div className="character-paper mt-3 flex min-h-52 flex-1 items-end border-y border-line">
+                  <CharacterArt tenGod={key} className="h-auto max-h-72 w-full object-contain object-bottom transition-transform duration-300 group-hover:scale-[1.025]" />
                 </div>
-                <p className="mt-2 text-sm font-medium">{p.anchor_quote}</p>
+                <div className="px-4 py-4">
+                  <p className="text-sm font-black">“{personality.anchor_quote}”</p>
+                  <p className="mt-2 line-clamp-2 text-xs leading-5 text-soft">{personality.one_line_roast}</p>
+                </div>
               </article>
             );
           })}
         </div>
       </section>
 
-      <section className="border-y border-line bg-surface/70">
-        <div className="mx-auto max-w-6xl px-5 py-20">
-          <p className="text-xs font-bold tracking-[.24em] text-cinnabar">HOW IT WORKS</p>
-          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">不是抽签，也不是 AI 瞎编。</h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-3">
-            {HOW.map(([n,t,d])=><article key={n} className="rounded-[1.35rem] border border-line bg-paper p-6"><span className="text-sm font-bold text-cinnabar">{n}</span><h3 className="mt-6 text-xl font-bold">{t}</h3><p className="mt-3 leading-7 text-soft">{d}</p></article>)}
+      <section className="editorial-frame border-b border-line">
+        <div className="grid lg:grid-cols-[.72fr_1.28fr]">
+          <div className="border-b border-line bg-navy px-5 py-14 text-paper sm:px-8 lg:border-b-0 lg:border-r lg:py-20">
+            <p className="text-xs font-black tracking-[.2em] text-mustard">INSIDE: SERIOUS</p>
+            <h2 className="display-lg mt-5">不是抽签，<br />不是 AI 瞎编。</h2>
+            <p className="mt-6 max-w-md leading-8 text-paper/75">传统计算负责结构，规则映射负责解释，IP 系统负责让结果好记。三层边界清楚，任何一层都不冒充另一层。</p>
+          </div>
+          <div className="grid sm:grid-cols-3">
+            {METHOD.map(([number, title, copy]) => (
+              <article key={number} className="border-b border-line p-6 last:border-b-0 sm:border-b-0 sm:border-r sm:last:border-r-0 lg:p-8">
+                <p className="font-display text-4xl font-black text-maroon">{number}</p>
+                <h3 className="mt-10 text-lg font-black">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-soft">{copy}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-8 px-5 py-20 lg:grid-cols-2 lg:items-center">
-        <div>
-          <p className="text-xs font-bold tracking-[.24em] text-cinnabar">PERSONALITY DOSSIER</p>
-          <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">不只告诉你一个外号。</h2>
-          <p className="mt-4 max-w-xl leading-8 text-soft">免费结果会继续给朋友视角、A 面、翻车面、第二人格、真实行为维度，以及工作、学习、关系、冲突、压力、回血、决策与金钱模式。</p>
-          <div className="mt-7 flex flex-wrap gap-2">{["朋友眼里的你","A 面 / 翻车面","第二人格","15 项真实维度","工作 / 关系 / 压力","八字依据可展开"].map(x=><span key={x} className="rounded-full border border-line px-3 py-2 text-sm">{x}</span>)}</div>
-        </div>
-        <div className="rounded-[1.6rem] border border-line bg-ink p-6 text-paper sm:p-8">
-          <p className="text-xs tracking-[.2em] text-paper/60">SHARE CARD PREVIEW</p>
-          <div className="mt-12 flex items-end justify-between gap-4">
-            <div><p className="text-sm text-paper/60">我的八字人格</p><h3 className="mt-2 font-display text-5xl font-bold">狠人</h3><p className="mt-3 text-xl">“我来。”</p></div>
-            <span className="rounded-full border border-paper/25 px-3 py-1.5 text-xs">七杀型人格</span>
+      <section className="editorial-frame border-b border-line px-5 py-14 sm:px-8 sm:py-20">
+        <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+          <div>
+            <p className="editorial-kicker">PERSONALITY DOSSIER</p>
+            <h2 className="display-lg mt-5">不是一个外号，<br />是一份人格档案。</h2>
+            <p className="mt-5 max-w-xl leading-8 text-soft">免费档案包含主人格、第二人格、朋友视角、A 面、翻车面、15 项行为维度，以及工作、关系、压力、决策与金钱模式。</p>
+            <div className="mt-7 grid grid-cols-2 gap-px border border-line bg-line text-sm font-bold">
+              {["朋友眼里的你", "A 面 / 翻车面", "第二人格", "15 项行为维度", "八种生活模式", "专业八字依据"].map((item) => <div key={item} className="bg-surface px-4 py-3">✓ {item}</div>)}
+            </div>
           </div>
-          <p className="mt-10 max-w-md text-sm leading-7 text-paper/70">平时可以懒，真有硬局的时候身体里会自动弹出一句：我来。</p>
-          <div className="mt-8 border-t border-paper/15 pt-4 text-xs text-paper/50">测测你是什么东西 · BAZI PERSONALITY</div>
+          <div className="border border-ink bg-surface">
+            <div className="flex items-center justify-between border-b border-line px-5 py-3 text-[10px] font-bold tracking-[.14em] text-muted"><span>SAMPLE DOSSIER / 08</span><span>七杀型人格</span></div>
+            <div className="grid grid-cols-[1.03fr_.97fr]">
+              <div className="p-6 sm:p-8">
+                <p className="text-xs font-black text-maroon">我的八字人格</p>
+                <h3 className="display-lg mt-2">狠人</h3>
+                <p className="mt-4 text-2xl font-black">“我来。”</p>
+                <p className="mt-5 text-sm leading-7 text-soft">平时未必很凶，真有硬局时，系统会迅速从“怎么办”切到“先干哪一个”。</p>
+              </div>
+              <div className="character-paper flex min-h-80 items-end border-l border-line">
+                <CharacterArt tenGod="qi_sha" className="h-auto max-h-[26rem] w-full object-contain object-bottom" />
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="border-t border-line">
-        <div className="mx-auto max-w-6xl px-5 py-20 text-center">
-          <p className="text-sm font-semibold text-cinnabar">准备好认领你的怪人身份了吗？</p>
-          <h2 className="mx-auto mt-3 max-w-3xl font-display text-4xl font-bold sm:text-5xl">出生信息一填，看看八字到底把你分到了哪一桌。</h2>
-          <Link href="/birth" className="btn-primary mt-8 inline-flex px-7 py-3.5 text-base">测测我是什么 →</Link>
+      <section className="editorial-frame grid bg-mustard lg:grid-cols-[1fr_auto] lg:items-center">
+        <div className="px-5 py-12 sm:px-8">
+          <p className="text-xs font-black tracking-[.18em]">READY TO JOIN?</p>
+          <h2 className="display-md mt-3 max-w-4xl">把出生信息交出来，看看你住几楼。</h2>
+        </div>
+        <div className="border-t border-ink px-5 py-8 lg:border-l lg:border-t-0 lg:px-10">
+          <Link href="/birth" className="btn-primary whitespace-nowrap">开始认领人格 →</Link>
         </div>
       </section>
     </main>

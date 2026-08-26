@@ -1,7 +1,7 @@
 # 10 — Roadmap
 
-状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE / Phase 2 Structural Evidence**
-最后更新：2026-08-23
+状态：**TraditionalPatternResult ACTIVE + Presentation V2 COMPLETE / RELEASE QA PENDING**
+最后更新：2026-08-26
 
 ## 0. Roadmap Boundary
 
@@ -11,9 +11,10 @@ Source of Truth：
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
-5. `docs/09_CURRENT_STATE.md`
-6. `docs/10_ROADMAP.md`
-7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+5. `docs/24_CHARACTER_STYLE_LOCK_V2.md`
+6. `docs/09_CURRENT_STATE.md`
+7. `docs/10_ROADMAP.md`
+8. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
 项目执行流程：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
 
@@ -45,14 +46,15 @@ Homepage
 8. Public Personality authoritative Translation Layer
 9. canonical Bazi / traditional-result boundary + Authority Cutover
 10. isolate / retire legacy engineering personality authority
-11. Character routing / formal asset completion
-12. Result / Share Card translation integration
-13. mobile browser QA
-14. full CI
-15. PR #16 Ready
-16. merge main
-17. Vercel Production
-18. final public smoke test
+11. ✅ Character V2 routing / 10 formal canonical assets — COMPLETE
+12. ✅ City Observation Editorial UI / Result / Share Card integration — COMPLETE ON `feature/ip-system-v2`
+13. ✅ mobile / preview browser QA — COMPLETE ON DRAFT PR #20
+14. **manual share-card download confirmation + PR Review — NEXT FOR PRESENTATION**
+15. ✅ full CI — PASS ON DRAFT PR #20
+16. PR #16 Ready
+17. merge main
+18. Vercel Production
+19. final public smoke test
 
 ## 3. P0.1 — Traditional Bazi Rule Audit
 
@@ -409,7 +411,7 @@ V1 只表达：主导 / 明显副倾向 / 辅助 / 混合 / 清晰 / 歧义。
 ```text
 10 Public Personality
 → 10 fixed official Characters
-→ public/characters/v1/{ten_god}.webp
+→ public/characters/v2/{ten_god}.png
 ```
 
 用户性别不改变 Character identity。
@@ -483,4 +485,4 @@ Rule Audit = DONE
 
 > **不扩 Scope，不降质量，不自造命理。**
 
-下一轮只实现 frozen Contract；不提前做 Translation / Authority Cutover / UI / Payment / AI。
+Traditional 分支下一轮只实现 frozen Contract；Presentation V2 分支不得提前宣称 Authority Cutover，也不得伪造 Payment / AI / Auth live 状态。

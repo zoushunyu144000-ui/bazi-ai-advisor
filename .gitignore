@@ -5,6 +5,10 @@
 
 # testing
 /coverage
+/.tmp/
+
+# local worktrees
+.worktrees/
 
 # next.js
 /.next/

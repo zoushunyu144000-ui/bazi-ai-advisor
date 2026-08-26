@@ -2,7 +2,7 @@
 
 状态：Approved / Active project governance
 
-最后核查：2026-08-18
+最后核查：2026-08-26
 
 本文件是项目重要外部依赖、开源实现、API、MCP、skill 与参考项目的长期登记表。
 
@@ -183,6 +183,10 @@ Foundation 已选择 React + Tailwind + shadcn/ui。新增常见控件（Button�
 2. 能复用则复用或轻量组合；
 3. 只有产品视觉/交互确实特殊时才写定制 primitive；
 4. 不允许另开一套不兼容的 Button/Dialog/Form 基础组件体系。
+
+### Presentation V2 implementation note（2026-08-26）
+
+City Observation Editorial V2 没有引入新的 runtime 或组件库。实现复用现有 Next.js `Image`、React、Tailwind CSS 4 与原生 HTML landmark / form controls；定制部分仅为产品专属版式、tokens、纸纹和 Character stage，不复制外部视觉资产或第三方组件代码。唯一画风母版为 Product Owner 提供并已登记在 `docs/24_CHARACTER_STYLE_LOCK_V2.md`。
 
 ## 9. AI / MCP / Skill 规则
 
