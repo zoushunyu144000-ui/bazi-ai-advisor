@@ -65,7 +65,7 @@ Presentation V2 隔离开发分支：`feature/ip-system-v2`。它从 PR #19 当�
 - `/report`、`/advisor`、`/account` 的诚实 preview / provider-not-configured / local-only 状态；
 - GitHub Pages `/bazi-ai-advisor` 与 Vercel root 两套图片请求路径。
 
-Presentation 下一步：合并前 PR Review、390 / 430 / 768 / 1440 viewport 复验、Vercel Preview 与 GitHub Pages smoke test。Traditional authority、Payment、AI Provider、Supabase/Auth 仍未因 UI 完成而解锁。
+Presentation Release QA 已在 Draft PR #20 完成 390 / 430 / 768 / 1440 Vercel Preview 复验、虚构出生资料 → 结果档案流程、状态页检查与 GitHub Pages asset smoke。下一步为人工确认浏览器真实文件下载、PR Review 与合并决策。Traditional authority、Payment、AI Provider、Supabase/Auth 仍未因 UI 完成而解锁。
 
 ## 3. Traditional Bazi Rule Audit — DONE
 

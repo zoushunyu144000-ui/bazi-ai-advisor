@@ -68,7 +68,18 @@ npm run build
 
 ## 6. 下一步
 
-1. 建立 Vercel Preview 或 GitHub Pages preview，完成 390 / 430 / 768 / 1440 screenshot QA；
-2. 人工走通出生资料 → 结果 → 分享图下载，并核对未知时辰与自定义城市错误态；
-3. Code Review 后合并到目标 release branch；
+1. 在普通浏览器允许下载后，人工确认 feed / Story 两种人格卡真实文件落盘；
+2. Review Draft PR #20，确认后合并到目标 release branch；
+3. 合并后执行 Vercel Production 与 GitHub Pages public smoke；
 4. TraditionalPatternResult、Payment、AI Provider、Auth 按各自 frozen contract 独立推进，不在 Presentation 层绕过。
+
+## 7. Release QA / Preview update
+
+- Draft PR：`#20 feat: ship personality IP system v2 and editorial public journey`
+- Preview：`https://bazi-ai-advisor-git-feature-ip-system-v2-zuriel144000.vercel.app`
+- GitHub `validate`、Vercel Deployment、Vercel Preview Comments：全部通过；PR merge state 为 CLEAN。
+- 首页 390 / 430 / 768 / 1440：无横向溢出，14 张图片无损坏，十人格 DOM 数量为 10；移动端只保留核心出生信息导航，平板/桌面显示完整导航。
+- 虚构资料 `1992-08-16` 已分别走通：手机端“女性传统规则 + 未知时辰”得到道长，桌面端默认男 / 12:00 得到狠人；固定 IP、主人格、第二人格与长档案正常渲染。
+- `/report` = `preview`、`/advisor` = `not-configured` 且输入禁用、`/account` = `local-only`；390px 均无溢出。
+- Canvas 分享卡已进入浏览器下载阶段；受控 Chrome 拒绝文件写入后，页面不再暴露英文底层错误，而显示“浏览器阻止了下载，请允许下载后重试。”。真实文件落盘仍需用户在普通浏览器允许下载后人工确认。
+- QA 截图保存在工作区外的 `outputs/personality-ip-v2-qa/`，包括首页四档、出生页手机/桌面、结果页手机/桌面与账户页手机视图。

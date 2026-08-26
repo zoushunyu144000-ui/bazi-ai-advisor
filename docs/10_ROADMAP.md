@@ -48,12 +48,13 @@ Homepage
 10. isolate / retire legacy engineering personality authority
 11. ✅ Character V2 routing / 10 formal canonical assets — COMPLETE
 12. ✅ City Observation Editorial UI / Result / Share Card integration — COMPLETE ON `feature/ip-system-v2`
-13. **mobile / preview browser QA + PR Review — NEXT FOR PRESENTATION**
-14. full CI
-15. PR #16 Ready
-16. merge main
-17. Vercel Production
-18. final public smoke test
+13. ✅ mobile / preview browser QA — COMPLETE ON DRAFT PR #20
+14. **manual share-card download confirmation + PR Review — NEXT FOR PRESENTATION**
+15. ✅ full CI — PASS ON DRAFT PR #20
+16. PR #16 Ready
+17. merge main
+18. Vercel Production
+19. final public smoke test
 
 ## 3. P0.1 — Traditional Bazi Rule Audit
 
