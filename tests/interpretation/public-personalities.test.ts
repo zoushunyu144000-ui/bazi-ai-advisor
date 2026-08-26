@@ -17,6 +17,19 @@ const EXPECTED = {
   pian_yin: "道长",
 } as const;
 
+const EXPECTED_CANONICAL_GENDERS = {
+  bi_jian: "female",
+  jie_cai: "male",
+  shi_shen: "male",
+  shang_guan: "female",
+  zheng_cai: "female",
+  pian_cai: "male",
+  zheng_guan: "female",
+  qi_sha: "male",
+  zheng_yin: "male",
+  pian_yin: "female",
+} as const;
+
 const REQUIRED_COPY = [
   "display_name", "traditional_label", "anchor_quote", "one_line_roast", "short_description",
   "friend_view", "positive_mode", "flip_mode", "work_mode", "learning_mode", "relationship_mode",
@@ -24,7 +37,7 @@ const REQUIRED_COPY = [
   "secondary_personality_copy", "share_card_copy", "paid_report_teaser",
 ] as const;
 
-test("V1 public registry exposes exactly the ten locked public identities", () => {
+test("public registry exposes exactly the ten locked public identities", () => {
   registry.assertPublicPersonalityCoverage();
   assert.deepEqual(registry.PUBLIC_PERSONALITY_ORDER, Object.keys(EXPECTED));
   assert.equal(Object.keys(registry.PUBLIC_PERSONALITIES).length, 10);
@@ -46,12 +59,19 @@ test("bi_jian and jie_cai remain honest presentation proxy mappings", () => {
   assert.match(registry.PUBLIC_PERSONALITIES.jie_cai.traditional_label, /月劫/);
 });
 
-test("character manifest contract requires 20 unique gendered assets", () => {
-  const paths = registry.PUBLIC_PERSONALITY_ORDER.flatMap((key: keyof typeof EXPECTED) => [
-    registry.characterAssetPath(key, "male"),
-    registry.characterAssetPath(key, "female"),
-  ]);
-  assert.equal(paths.length, 20);
-  assert.equal(new Set(paths).size, 20);
-  assert.ok(paths.every((path: string) => /^\/characters\/v1\/[a-z_]+-(male|female)\.webp$/.test(path)));
+test("V2 character contract exposes ten fixed canonical IPs", () => {
+  const paths = registry.PUBLIC_PERSONALITY_ORDER.map((key: keyof typeof EXPECTED) => {
+    const item = registry.PUBLIC_PERSONALITIES[key];
+    assert.equal(item.canonicalGender, EXPECTED_CANONICAL_GENDERS[key], `${key} canonical gender drifted`);
+    assert.match(item.accent, /^#[0-9A-F]{6}$/i, `${key}.accent must be a hex color`);
+    assert.ok(item.bodyVector.trim().length > 0, `${key}.bodyVector is required`);
+    assert.ok(item.heroProp.trim().length > 0, `${key}.heroProp is required`);
+    assert.equal(item.assetPath, `/characters/v2/${key}.png`);
+    assert.equal(registry.characterAssetPath(key), item.assetPath);
+    return item.assetPath;
+  });
+
+  assert.equal(paths.length, 10);
+  assert.equal(new Set(paths).size, 10);
+  assert.ok(paths.every((path: string) => /^\/characters\/v2\/[a-z_]+\.png$/.test(path)));
 });

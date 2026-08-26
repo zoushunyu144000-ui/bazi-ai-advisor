@@ -6,6 +6,11 @@ export interface PublicPersonality {
   tenGod: TenGod;
   display_name: string;
   traditional_label: string;
+  canonicalGender: CharacterGender;
+  accent: string;
+  bodyVector: string;
+  heroProp: string;
+  assetPath: string;
   anchor_quote: string;
   one_line_roast: string;
   short_description: string;
@@ -27,14 +32,19 @@ export interface PublicPersonality {
   paid_report_teaser: string;
 }
 
-export const PUBLIC_PERSONALITY_VERSION = "public-personality-registry/1.0.1";
-export const CHARACTER_VISUAL_VERSION = "character-visual/1.0.0-asset-gated";
+export const PUBLIC_PERSONALITY_VERSION = "public-personality-registry/2.0.0";
+export const CHARACTER_VISUAL_VERSION = "character-visual/2.0.0";
 
 export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
   bi_jian: {
     tenGod: "bi_jian",
     display_name: "犟种",
     traditional_label: "比肩型人格 · V1 展示代理「建禄」",
+    canonicalGender: "female",
+    accent: "#C85A3C",
+    bodyVector: "向前顶；方、稳、肩胯有支撑",
+    heroProp: "城市搬家纸箱与小凳",
+    assetPath: "/characters/v2/bi_jian.png",
     anchor_quote: "不用，我自己来。",
     one_line_roast: "别人劝你别硬撑，你听完只会把背挺得更直。",
     short_description: "你的默认设置是先靠自己。遇到麻烦不爱喊人，遇到意见也不容易跟风；好处是能扛事，坏处是有时候连一个本来十分钟能求助解决的问题，也要自己研究到凌晨两点。",
@@ -59,6 +69,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "jie_cai",
     display_name: "撒币",
     traditional_label: "劫财型人格 · V1 展示代理「月劫」",
+    canonicalGender: "male",
+    accent: "#F0A25A",
+    bodyVector: "向外打开；手臂动作最大",
+    heroProp: "野餐袋与多人咖啡杯托",
+    assetPath: "/characters/v2/jie_cai.png",
     anchor_quote: "算了算了，我来。",
     one_line_roast: "局是你组的，钱是你出的，最后你还问大家玩得开不开心。",
     short_description: "你在人群、竞争和资源流动里很容易被点燃。朋友一喊就想参与，场子冷了会想把它救起来，遇到机会也不太愿意站旁边看；但热闹一上头，时间、钱和精力经常比你本人先冲出去。",
@@ -83,6 +98,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "shi_shen",
     display_name: "享乐主义",
     traditional_label: "食神型人格",
+    canonicalGender: "male",
+    accent: "#E7C45A",
+    bodyVector: "向下舒展；软、宽、松",
+    heroProp: "咖啡、甜点、小圆桌与植物",
+    assetPath: "/characters/v2/shi_shen.png",
     anchor_quote: "人生不是拿来受苦的。",
     one_line_roast: "别人研究怎么卷，你更擅长研究怎么把今天过得有点滋味。",
     short_description: "你对生活里的舒服、好吃、好看、好玩和好体验特别敏感。不是不能努力，而是很难认同“越苦越值得”这套逻辑；你更愿意找到一个自己真正喜欢、能长期享受过程的节奏。",
@@ -107,6 +127,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "shang_guan",
     display_name: "天生反骨",
     traditional_label: "伤官型人格",
+    canonicalGender: "female",
+    accent: "#3B5C7A",
+    bodyVector: "斜向、逆向、不对称",
+    heroProp: "折叠椅与便签板",
+    assetPath: "/characters/v2/shang_guan.png",
     anchor_quote: "凭什么？",
     one_line_roast: "规则写了三页，你看完第一反应不是遵守，是找它哪里不合理。",
     short_description: "你对“大家一直都这样”这句话天然过敏。遇到规则、流程和权威，你很容易先判断它有没有道理，再决定要不要配合；脑子里常驻一个改版按钮，看到低效的东西就想重做。",
@@ -131,6 +156,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "zheng_cai",
     display_name: "抠抠搜搜",
     traditional_label: "正财型人格",
+    canonicalGender: "female",
+    accent: "#6F8F6E",
+    bodyVector: "向内收；小、紧、克制",
+    heroProp: "票据夹、收纳盒与桌面账本",
+    assetPath: "/characters/v2/zheng_cai.png",
     anchor_quote: "这真的值吗？",
     one_line_roast: "你不是舍不得花钱，你只是希望每一块钱先参加一次答辩。",
     short_description: "你对投入产出、日常秩序和“到底值不值”很敏感。现实世界里的时间、钱、精力在你脑子里都有账；你不太爱为了虚头巴脑的东西付出，能省掉的浪费会让你莫名有成就感。",
@@ -155,6 +185,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "pian_cai",
     display_name: "搞钱圣体",
     traditional_label: "偏财型人格",
+    canonicalGender: "male",
+    accent: "#1E7C75",
+    bodyVector: "向前探；轻、快、灵",
+    heroProp: "城市地图、手机与项目卡",
+    assetPath: "/characters/v2/pian_cai.png",
     anchor_quote: "等等，这能不能赚钱？",
     one_line_roast: "别人刷到新东西想点赞，你已经在想供应链、流量口和变现路径。",
     short_description: "你对机会、人脉、项目和资源组合有天然雷达。新的玩法一出现，你很容易先看见“这里是不是有空间”；生活在你眼里不只是按部就班，还像一张到处藏着支线任务的地图。",
@@ -179,6 +214,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "zheng_guan",
     display_name: "老干部",
     traditional_label: "正官型人格",
+    canonicalGender: "female",
+    accent: "#1F2E4A",
+    bodyVector: "向上立；直、正、对称",
+    heroProp: "文件夹、保温杯与公共长椅",
+    assetPath: "/characters/v2/zheng_guan.png",
     anchor_quote: "咱们还是正规一点。",
     one_line_roast: "别人只是出来玩，你已经在心里给活动排了流程、风险和结束时间。",
     short_description: "你对规则、责任、分寸和“这事做得像不像样”很敏感。很多人先问好不好玩，你会顺手再问一句合不合适、靠不靠谱、后面谁负责。",
@@ -203,6 +243,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "qi_sha",
     display_name: "狠人",
     traditional_label: "七杀型人格",
+    canonicalGender: "male",
+    accent: "#7A1E1E",
+    bodyVector: "低、重、方；前倾压迫但稳定",
+    heroProp: "深酒红几何椅与落地拳套",
+    assetPath: "/characters/v2/qi_sha.png",
     anchor_quote: "我来。",
     one_line_roast: "别人看到压力想缓一缓，你看到压力会突然进入战斗画质。",
     short_description: "你在困难、竞争、期限和高强度场景里很容易被激活。平时未必一直凶，但真有硬局时，脑子会迅速从“怎么办”切到“先干哪一个”。",
@@ -227,6 +272,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "zheng_yin",
     display_name: "活菩萨",
     traditional_label: "正印型人格",
+    canonicalGender: "male",
+    accent: "#C7A7A7",
+    bodyVector: "向外接纳；圆、柔、朝向他人",
+    heroProp: "两把椅、毯子与热水壶",
+    assetPath: "/characters/v2/zheng_yin.png",
     anchor_quote: "算了，我帮你吧。",
     one_line_roast: "别人还没开口，你已经在想要不要顺手把他的那份也做了。",
     short_description: "你很容易理解、接住、解释和照顾。看到别人卡住会自然想帮一把，遇到复杂东西也喜欢先建立一个能理解它的框架；你的温和通常不是没判断，而是习惯把判断包在理解里。",
@@ -251,6 +301,11 @@ export const PUBLIC_PERSONALITIES: Record<TenGod, PublicPersonality> = {
     tenGod: "pian_yin",
     display_name: "道长",
     traditional_label: "偏印型人格",
+    canonicalGender: "female",
+    accent: "#8770A1",
+    bodyVector: "向上漂；细、长、留白多",
+    heroProp: "书堆、黑猫、月亮窗与茶杯",
+    assetPath: "/characters/v2/pian_yin.png",
     anchor_quote: "说了你也不感兴趣。",
     one_line_roast: "别人刷短视频，你已经从一个冷门词条一路研究到凌晨三点。",
     short_description: "你的注意力很容易被冷门、抽象、非标准和“多数人为什么没注意到这个”吸走。你不是一定要显得神秘，而是脑子确实经常往主路旁边的小径拐。",
@@ -282,14 +337,16 @@ export function getPublicPersonality(tenGod: TenGod): PublicPersonality {
   return PUBLIC_PERSONALITIES[tenGod];
 }
 
-export function characterAssetPath(tenGod: TenGod, gender: CharacterGender): string {
-  return `/characters/v1/${tenGod}-${gender}.webp`;
+export function characterAssetPath(tenGod: TenGod): string {
+  return PUBLIC_PERSONALITIES[tenGod].assetPath;
 }
 
 export function assertPublicPersonalityCoverage(): void {
   if (PUBLIC_PERSONALITY_ORDER.length !== 10) throw new Error("V1 public registry must contain exactly 10 personalities.");
   for (const key of PUBLIC_PERSONALITY_ORDER) {
     const item = PUBLIC_PERSONALITIES[key];
-    if (!item || item.tags.length !== 6) throw new Error(`Incomplete public personality registry entry: ${key}`);
+    if (!item || item.tags.length !== 6 || !item.assetPath || !item.canonicalGender) {
+      throw new Error(`Incomplete public personality registry entry: ${key}`);
+    }
   }
 }

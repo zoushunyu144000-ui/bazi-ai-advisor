@@ -1,7 +1,7 @@
 # 09 — Current State
 
-状态：**V1 Release Freeze — TraditionalPatternResult Implementation ACTIVE / Phase 2A Month Host COMPLETE IN DRAFT PR #19**
-最后更新：2026-08-23
+状态：**TraditionalPatternResult ACTIVE + Presentation V2 / 10-IP Production ACTIVE**
+最后更新：2026-08-26
 
 ## 0. Source of Truth
 
@@ -11,9 +11,10 @@
 2. `docs/18_TRADITIONAL_BAZI_TRANSLATION_CONTRACT.md`
 3. `docs/22_TRADITIONAL_BAZI_RULE_PROFILE_V1.md`
 4. `docs/23_TRADITIONAL_PATTERN_RESULT_SPEC_V1.md`
-5. `docs/09_CURRENT_STATE.md`
-6. `docs/10_ROADMAP.md`
-7. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
+5. `docs/24_CHARACTER_STYLE_LOCK_V2.md`
+6. `docs/09_CURRENT_STATE.md`
+7. `docs/10_ROADMAP.md`
+8. `docs/17_PRODUCT_DESIGN_REPORT_V1.md`
 
 项目执行流程：`docs/21_AI_PROJECT_OPERATING_SYSTEM.md`。
 
@@ -39,6 +40,21 @@
 - Production：`bazi-ai-advisor.vercel.app`
 
 PR #16 与 PR #19 均继续保持 Draft。TraditionalPatternResult 在 PR #19 中开发与 Review；公网 authority 在 Authority Cutover 前仍保持 legacy，不得提前切换。
+
+Presentation V2 隔离开发分支：`feature/ip-system-v2`。它从 PR #19 当前分支建立，用于生成 10 个 Canonical IP 与重建公网 UI；任何页面都必须继续诚实标注未完成的 Traditional Authority、Payment、AI Provider 与 Supabase Live 状态。
+
+## 2.1 Presentation V2 / Character Production — ACTIVE
+
+已冻结：
+
+- 十个 Public Personality 名称与带梗语气不变；
+- 十个固定角色性别与人物身份；
+- 唯一画风母版 `docs/assets/character-style-master-v2.png`；
+- 正式路径 `public/characters/v2/{ten_god}.png`；
+- City Observation Editorial 的比例、线条、参考级饱和度与城市生活道具规则；
+- 七杀 / 狠人必须低、重、方、前倾、窄眼压眉，凶而稳，不用武器或黑帮符号。
+
+当前正式 V2 资产：`10 / 10`。全部为 1122 × 1402 RGB PNG，统一 Warm Ivory 纸面；manifest、尺寸、纸面角点与 SHA-256 资产测试已通过。下一步为 City Observation Editorial Design System 与完整公网旅程接入。
 
 ## 3. Traditional Bazi Rule Audit — DONE
 

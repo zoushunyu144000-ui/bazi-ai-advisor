@@ -1,0 +1,20 @@
+{
+  "version": "character-visual/2.0.0",
+  "styleReference": "docs/assets/character-style-master-v2.png",
+  "promptRevision": "city-observation-v2-paper-r2",
+  "background": "#F6F1E6",
+  "backgroundMode": "opaque-paper",
+  "generatedAt": "2026-08-26",
+  "assets": {
+    "bi_jian": { "path": "/characters/v2/bi_jian.png", "canonicalGender": "female", "accent": "#C85A3C", "width": 1122, "height": 1402, "sha256": "ba32edd1797f990c7223f254af28ddae78b433e7434e9a3ccb004606c51e840d" },
+    "jie_cai": { "path": "/characters/v2/jie_cai.png", "canonicalGender": "male", "accent": "#F0A25A", "width": 1122, "height": 1402, "sha256": "c8809a9e597fcb1d9e3505da2262d94525fdb6212d4a62a2d71ea7bd7b5610a3" },
+    "shi_shen": { "path": "/characters/v2/shi_shen.png", "canonicalGender": "male", "accent": "#E7C45A", "width": 1122, "height": 1402, "sha256": "286513ab03ff6d94c9d339a13f085f7eed09761d3bbdae6d2cd854fe0069bd5a" },
+    "shang_guan": { "path": "/characters/v2/shang_guan.png", "canonicalGender": "female", "accent": "#3B5C7A", "width": 1122, "height": 1402, "sha256": "4364ae96258ea565ecae720645cf1ee8681c88ac6ea82d38dcd1a1a326007c56" },
+    "zheng_cai": { "path": "/characters/v2/zheng_cai.png", "canonicalGender": "female", "accent": "#6F8F6E", "width": 1122, "height": 1402, "sha256": "e21db8853032a318f571d500b919bb056514885e4d06ee3e1580da336e647590" },
+    "pian_cai": { "path": "/characters/v2/pian_cai.png", "canonicalGender": "male", "accent": "#1E7C75", "width": 1122, "height": 1402, "sha256": "e0d9a561d2b69d05c87d31f571b7a0568c025c306b82f177e0246da489300f85" },
+    "zheng_guan": { "path": "/characters/v2/zheng_guan.png", "canonicalGender": "female", "accent": "#1F2E4A", "width": 1122, "height": 1402, "sha256": "c2ac575b28009b60a9610910547890492603257636ae4e1928a0e06fa937f553" },
+    "qi_sha": { "path": "/characters/v2/qi_sha.png", "canonicalGender": "male", "accent": "#7A1E1E", "width": 1122, "height": 1402, "sha256": "c8e8761c57557fbe854082b449b7911d9b058c8e650c483750a70ee84a7dc8c4" },
+    "zheng_yin": { "path": "/characters/v2/zheng_yin.png", "canonicalGender": "male", "accent": "#C7A7A7", "width": 1122, "height": 1402, "sha256": "2cc46438bc8942f56cbddc1bd8a2e7ed3b4689578f53b5da7b0afdf61950170b" },
+    "pian_yin": { "path": "/characters/v2/pian_yin.png", "canonicalGender": "female", "accent": "#8770A1", "width": 1122, "height": 1402, "sha256": "ac7a0931ada06055e4b59a0302edc24ff9a38a176cc4cc2c01a02f249e5e60ea" }
+  }
+}

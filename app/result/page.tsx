@@ -98,7 +98,7 @@ async function renderShareCard(bundle: PublicResultBundle, format: CardFormat): 
   ctx.font = "600 32px 'Noto Sans SC', sans-serif";
   ctx.fillText(dominant.traditional_label.split(" · ")[0], 76, 352);
 
-  const character = await loadCardImage(characterAssetPath(dominantKey, bundle.characterGender));
+  const character = await loadCardImage(characterAssetPath(dominantKey));
   const imageTop = format === "story" ? 430 : 390;
   const imageHeight = format === "story" ? 720 : 520;
   const scale = Math.min(620 / character.width, imageHeight / character.height);
@@ -259,7 +259,7 @@ export default function ResultPage() {
             </div>
           </div>
           <div className="flex min-h-[24rem] items-end justify-center overflow-hidden rounded-[2rem] bg-cinnabar-soft/55">
-            <CharacterArt tenGod={dominantKey} gender={bundle.characterGender} className="max-h-[34rem] w-full object-contain object-bottom" priority />
+            <CharacterArt tenGod={dominantKey} className="max-h-[34rem] w-full object-contain object-bottom" priority />
           </div>
         </div>
       </section>
@@ -390,7 +390,7 @@ export default function ResultPage() {
                 <div className="mt-5 flex flex-wrap gap-2">{dominant.tags.slice(0, 4).map((tag) => <span key={tag} className="rounded-full border border-paper/20 px-3 py-1.5 text-xs">{tag}</span>)}</div>
               </div>
               <div className="flex min-h-52 items-end justify-center overflow-hidden rounded-2xl bg-paper/5">
-                <CharacterArt tenGod={dominantKey} gender={bundle.characterGender} className="max-h-64 w-full object-contain object-bottom" />
+                <CharacterArt tenGod={dominantKey} className="max-h-64 w-full object-contain object-bottom" />
               </div>
             </div>
             <div className="mt-8 border-t border-paper/15 pt-5 text-xs text-paper/45">测测你是什么东西 · {RESULT_URL.replace("https://", "")}</div>

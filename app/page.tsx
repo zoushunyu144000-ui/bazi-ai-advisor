@@ -40,7 +40,7 @@ export default function HomePage() {
                   <p className="mt-4 text-sm leading-6 text-soft">规则写了三页，你看完第一反应不是遵守，是找它哪里不合理。</p>
                 </div>
                 <div className="flex min-h-[18rem] items-end justify-center overflow-hidden rounded-[1.5rem] bg-cinnabar-soft/60">
-                  <CharacterArt tenGod="shang_guan" gender="female" className="h-auto max-h-[20rem] w-full object-contain object-bottom" priority />
+                  <CharacterArt tenGod="shang_guan" className="h-auto max-h-[20rem] w-full object-contain object-bottom" priority />
                 </div>
               </div>
               <div className="mt-4 flex flex-wrap gap-2">{["凭什么", "开麦选手", "脑内重构", "不盲从"].map((tag)=><span key={tag} className="rounded-full border border-line bg-paper px-3 py-1.5 text-xs">{tag}</span>)}</div>
@@ -61,7 +61,7 @@ export default function HomePage() {
             return (
               <article key={key} className="group overflow-hidden rounded-[1.35rem] border border-line bg-surface p-4 transition-transform duration-200 hover:-translate-y-1">
                 <div className="flex min-h-36 items-end justify-center overflow-hidden rounded-xl bg-paper">
-                  <CharacterArt tenGod={key} gender={index % 2 === 0 ? "male" : "female"} className="max-h-44 w-full object-contain object-bottom transition-transform duration-200 group-hover:scale-[1.02]" />
+                  <CharacterArt tenGod={key} className="max-h-44 w-full object-contain object-bottom transition-transform duration-200 group-hover:scale-[1.02]" />
                 </div>
                 <div className="mt-4 flex items-start justify-between gap-2">
                   <div><p className="text-[11px] font-semibold text-muted">{p.traditional_label.split("型人格")[0]}</p><h3 className="mt-1 font-display text-2xl font-bold">{p.display_name}</h3></div>
