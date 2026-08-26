@@ -52,7 +52,9 @@ test("birth page separates calculation sex from canonical character identity", (
 });
 
 test("result, report, advisor and account expose honest product states", () => {
-  assert.match(source("app/result/page.tsx"), /data-result-dossier/);
+  const result = source("app/result/page.tsx");
+  assert.match(result, /data-result-dossier/);
+  assert.match(result, /浏览器阻止了下载，请允许下载后重试/);
   assert.match(source("app/report/page.tsx"), /data-report-state="preview"/);
   assert.match(source("app/advisor/page.tsx"), /data-provider-state="not-configured"/);
   assert.match(source("app/account/page.tsx"), /data-auth-state="local-only"/);

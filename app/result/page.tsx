@@ -236,7 +236,12 @@ export default function ResultPage() {
       window.setTimeout(() => URL.revokeObjectURL(url), 1000);
       setShareStatus(format === "story" ? "Story / 小红书版已保存。" : "人格卡已保存。");
     } catch (error) {
-      setShareStatus(error instanceof Error ? error.message : "生成失败，请稍后再试。");
+      const message = error instanceof Error ? error.message : "";
+      setShareStatus(
+        /permission denied|not allowed/i.test(message)
+          ? "浏览器阻止了下载，请允许下载后重试。"
+          : message || "生成失败，请稍后再试。",
+      );
     }
   }
 
